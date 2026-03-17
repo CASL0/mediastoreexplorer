@@ -23,7 +23,7 @@ class PermissionScreenTest {
     // region メッセージ表示
 
     @Test
-    fun `渡したメッセージが画面に表示される`() {
+    fun 渡したメッセージが画面に表示される() {
         composeTestRule.setContent {
             PermissionRequiredScreen(
                 message = "テストメッセージ",
@@ -39,7 +39,7 @@ class PermissionScreenTest {
     // region 権限付与ボタン
 
     @Test
-    fun `権限付与ボタンが表示される`() {
+    fun 権限付与ボタンが表示される() {
         composeTestRule.setContent {
             PermissionRequiredScreen(
                 message = "テストメッセージ",
@@ -53,7 +53,7 @@ class PermissionScreenTest {
     }
 
     @Test
-    fun `権限付与ボタンをタップするとコールバックが呼ばれる`() {
+    fun 権限付与ボタンをタップするとコールバックが呼ばれる() {
         var called = false
         composeTestRule.setContent {
             PermissionRequiredScreen(
