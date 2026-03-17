@@ -1,3 +1,60 @@
 <resources>
     <string name="app_name">MediaStore Explorer</string>
+
+    <!-- Tabs -->
+    <string name="tab_images">Images</string>
+    <string name="tab_videos">Videos</string>
+
+    <!-- Table states -->
+    <string name="error_message">Error: %s</string>
+    <string name="no_items">No items</string>
+
+    <!-- Permission screen -->
+    <string name="grant_permission">Grant Permission</string>
+    <string name="permission_images_message">Permission to access images is required.\nTap \"Grant Permission\".</string>
+    <string name="permission_videos_message">Permission to access videos is required.\nTap \"Grant Permission\".</string>
+
+    <!-- Boolean display -->
+    <string name="bool_yes">Yes</string>
+    <string name="bool_no">No</string>
+
+    <!-- Common columns -->
+    <string name="col_id">ID</string>
+    <string name="col_display_name">Display Name</string>
+    <string name="col_size">Size</string>
+    <string name="col_mime_type">MIME Type</string>
+    <string name="col_date_added">Date Added</string>
+    <string name="col_date_modified">Date Modified</string>
+    <string name="col_date_taken">Date Taken</string>
+    <string name="col_width">Width (px)</string>
+    <string name="col_height">Height (px)</string>
+    <string name="col_bucket_id">Bucket ID</string>
+    <string name="col_bucket_name">Bucket Name</string>
+    <string name="col_description">Description</string>
+    <string name="col_is_private">Private</string>
+    <string name="col_latitude">Latitude (deprecated)</string>
+    <string name="col_longitude">Longitude (deprecated)</string>
+    <string name="col_data">Path (deprecated)</string>
+    <string name="col_relative_path">Relative Path</string>
+    <string name="col_volume_name">Volume Name</string>
+    <string name="col_is_pending">Pending</string>
+    <string name="col_is_favorite">Favorite</string>
+    <string name="col_is_trashed">Trashed</string>
+    <string name="col_generation_added">Generation (Added)</string>
+    <string name="col_generation_modified">Generation (Modified)</string>
+    <string name="col_document_id">Document ID</string>
+    <string name="col_original_document_id">Original Document ID</string>
+
+    <!-- Image-specific columns -->
+    <string name="col_orientation">Orientation (°)</string>
+
+    <!-- Video-specific columns -->
+    <string name="col_duration">Duration</string>
+    <string name="col_resolution">Resolution</string>
+    <string name="col_category">Category</string>
+    <string name="col_language">Language</string>
+    <string name="col_artist">Artist</string>
+    <string name="col_album">Album</string>
+    <string name="col_tags">Tags</string>
+    <string name="col_bookmark">Bookmark (ms)</string>
 </resources>

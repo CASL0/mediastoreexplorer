@@ -1,0 +1,60 @@
+<resources>
+    <string name="app_name">MediaStore Explorer</string>
+
+    <!-- タブ -->
+    <string name="tab_images">画像</string>
+    <string name="tab_videos">動画</string>
+
+    <!-- テーブル状態 -->
+    <string name="error_message">エラー: %s</string>
+    <string name="no_items">アイテムがありません</string>
+
+    <!-- 権限画面 -->
+    <string name="grant_permission">権限を付与する</string>
+    <string name="permission_images_message">画像へのアクセス権限が必要です。\n「権限を付与する」をタップしてください。</string>
+    <string name="permission_videos_message">動画へのアクセス権限が必要です。\n「権限を付与する」をタップしてください。</string>
+
+    <!-- 真偽値表示 -->
+    <string name="bool_yes">はい</string>
+    <string name="bool_no">いいえ</string>
+
+    <!-- 共通カラム -->
+    <string name="col_id">ID</string>
+    <string name="col_display_name">表示名</string>
+    <string name="col_size">サイズ</string>
+    <string name="col_mime_type">MIMEタイプ</string>
+    <string name="col_date_added">追加日時</string>
+    <string name="col_date_modified">更新日時</string>
+    <string name="col_date_taken">撮影日時</string>
+    <string name="col_width">幅 (px)</string>
+    <string name="col_height">高さ (px)</string>
+    <string name="col_bucket_id">バケットID</string>
+    <string name="col_bucket_name">バケット名</string>
+    <string name="col_description">説明</string>
+    <string name="col_is_private">非公開</string>
+    <string name="col_latitude">緯度 (非推奨)</string>
+    <string name="col_longitude">経度 (非推奨)</string>
+    <string name="col_data">パス (非推奨)</string>
+    <string name="col_relative_path">相対パス</string>
+    <string name="col_volume_name">ボリューム名</string>
+    <string name="col_is_pending">保留中</string>
+    <string name="col_is_favorite">お気に入り</string>
+    <string name="col_is_trashed">ゴミ箱</string>
+    <string name="col_generation_added">世代 (追加)</string>
+    <string name="col_generation_modified">世代 (更新)</string>
+    <string name="col_document_id">ドキュメントID</string>
+    <string name="col_original_document_id">元ドキュメントID</string>
+
+    <!-- 画像固有カラム -->
+    <string name="col_orientation">向き (°)</string>
+
+    <!-- 動画固有カラム -->
+    <string name="col_duration">再生時間</string>
+    <string name="col_resolution">解像度</string>
+    <string name="col_category">カテゴリ</string>
+    <string name="col_language">言語</string>
+    <string name="col_artist">アーティスト</string>
+    <string name="col_album">アルバム</string>
+    <string name="col_tags">タグ</string>
+    <string name="col_bookmark">しおり (ms)</string>
+</resources>
