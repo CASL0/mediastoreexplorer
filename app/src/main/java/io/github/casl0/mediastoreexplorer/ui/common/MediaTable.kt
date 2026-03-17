@@ -20,11 +20,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import io.github.casl0.mediastoreexplorer.R
 
 /**
  * テーブルの 1 カラムを定義するデータクラス。
@@ -70,11 +72,14 @@ fun <T> MediaTable(
         }
 
         error != null -> Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text(text = "エラー: $error", color = MaterialTheme.colorScheme.error)
+            Text(
+                text = stringResource(R.string.error_message, error),
+                color = MaterialTheme.colorScheme.error,
+            )
         }
 
         items.isEmpty() -> Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text(text = "アイテムがありません")
+            Text(text = stringResource(R.string.no_items))
         }
 
         else -> {
