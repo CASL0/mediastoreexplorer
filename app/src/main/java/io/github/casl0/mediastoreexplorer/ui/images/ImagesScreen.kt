@@ -50,6 +50,7 @@ import io.github.casl0.mediastoreexplorer.ui.common.formatString
 fun ImagesScreen(
     viewModel: ImagesViewModel,
     modifier: Modifier = Modifier,
+    initialPermissionsGranted: Boolean? = null,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -62,7 +63,7 @@ fun ImagesScreen(
 
     var permissionsGranted by remember {
         mutableStateOf(
-            requiredPermissions.all {
+            initialPermissionsGranted ?: requiredPermissions.all {
                 ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
             }
         )

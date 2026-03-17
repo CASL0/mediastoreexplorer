@@ -25,7 +25,7 @@ class ImagesScreenTest {
     fun パーミッション未付与のとき_パーミッション要求画面のメッセージが表示される() {
         val viewModel = ImagesViewModel(FakeMediaRepository())
         composeTestRule.setContent {
-            ImagesScreen(viewModel = viewModel)
+            ImagesScreen(viewModel = viewModel, initialPermissionsGranted = false)
         }
 
         composeTestRule
@@ -37,7 +37,7 @@ class ImagesScreenTest {
     fun パーミッション未付与のとき_権限付与ボタンが表示される() {
         val viewModel = ImagesViewModel(FakeMediaRepository())
         composeTestRule.setContent {
-            ImagesScreen(viewModel = viewModel)
+            ImagesScreen(viewModel = viewModel, initialPermissionsGranted = false)
         }
 
         composeTestRule

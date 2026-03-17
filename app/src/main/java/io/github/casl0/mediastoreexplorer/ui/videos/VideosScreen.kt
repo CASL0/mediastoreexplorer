@@ -51,6 +51,7 @@ import io.github.casl0.mediastoreexplorer.ui.common.formatString
 fun VideosScreen(
     viewModel: VideosViewModel,
     modifier: Modifier = Modifier,
+    initialPermissionsGranted: Boolean? = null,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -63,7 +64,7 @@ fun VideosScreen(
 
     var permissionsGranted by remember {
         mutableStateOf(
-            requiredPermissions.all {
+            initialPermissionsGranted ?: requiredPermissions.all {
                 ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
             }
         )
