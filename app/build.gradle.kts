@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
+    jacoco
 }
 
 android {
@@ -24,6 +25,10 @@ android {
     }
 
     buildTypes {
+        debug {
+            enableUnitTestCoverage = true
+            enableAndroidTestCoverage = true
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(
@@ -45,6 +50,71 @@ kotlin {
     compilerOptions {
         jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11
     }
+}
+
+val jacocoExcludes = listOf(
+    "**/R.class",
+    "**/R\$*.class",
+    "**/BuildConfig.*",
+    "**/Manifest*.*",
+    "**/*Test*.*",
+    // Hilt / Dagger 生成クラス
+    "**/*_MembersInjector.class",
+    "**/Dagger*Component*.class",
+    "**/*_Factory.class",
+    "**/*HiltComponents*.class",
+    "**/*Hilt_*.class",
+    "**/*_HiltModules*.class",
+    "**/hilt_aggregated_deps/**",
+    // Compose 生成クラス
+    "**/*ComposableSingletons*.*",
+)
+
+// 単体テスト + インストルメンテッドテスト の合算カバレッジレポート
+tasks.register<JacocoReport>("jacocoDebugCoverageReport") {
+    dependsOn("testDebugUnitTest", "connectedDebugAndroidTest")
+
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+    }
+
+    classDirectories.setFrom(
+        fileTree(layout.buildDirectory.dir("intermediates/built_in_kotlinc/debug/compileDebugKotlin/classes")) {
+            exclude(jacocoExcludes)
+        }
+    )
+    sourceDirectories.setFrom(files("src/main/java", "src/main/kotlin"))
+    executionData.setFrom(
+        fileTree(layout.buildDirectory) {
+            include(
+                "outputs/unit_test_code_coverage/debugUnitTest/*.exec",
+                "outputs/code_coverage/debugAndroidTest/connected/**/*.ec",
+            )
+        }
+    )
+}
+
+// 単体テストのみのカバレッジレポート（デバイス不要）
+tasks.register<JacocoReport>("jacocoUnitTestCoverageReport") {
+    dependsOn("testDebugUnitTest")
+
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+    }
+
+    classDirectories.setFrom(
+        fileTree(layout.buildDirectory.dir("intermediates/built_in_kotlinc/debug/compileDebugKotlin/classes")) {
+            exclude(jacocoExcludes)
+        }
+    )
+    sourceDirectories.setFrom(files("src/main/java", "src/main/kotlin"))
+    executionData.setFrom(
+        fileTree(layout.buildDirectory) {
+            include("outputs/unit_test_code_coverage/debugUnitTest/*.exec")
+        }
+    )
 }
 
 dependencies {
