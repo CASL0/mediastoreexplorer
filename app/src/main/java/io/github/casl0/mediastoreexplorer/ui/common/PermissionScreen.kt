@@ -13,7 +13,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import io.github.casl0.mediastoreexplorer.R
 
 /**
  * 権限が付与されていない場合に表示する汎用画面。
@@ -42,7 +44,7 @@ fun PermissionRequiredScreen(
         )
         Spacer(modifier = Modifier.height(24.dp))
         Button(onClick = onRequestPermission) {
-            Text("権限を付与する")
+            Text(stringResource(R.string.grant_permission))
         }
     }
 }
