@@ -43,8 +43,16 @@ fun formatInt(value: Int?): String = value?.toString() ?: "-"
 fun formatLong(value: Long?): String = value?.toString() ?: "-"
 fun formatDouble(value: Double?): String = value?.toString() ?: "-"
 fun formatString(value: String?): String = if (value.isNullOrEmpty()) "-" else value
-fun formatBool(value: Int?): String = when (value) {
-    1 -> "はい"
-    0 -> "いいえ"
+
+/**
+ * 0/1 の整数値を真偽値文字列に変換する。
+ *
+ * @param value 変換する整数値（1 = true、0 = false）
+ * @param yes 1 に対応する文字列
+ * @param no 0 に対応する文字列
+ */
+fun formatBool(value: Int?, yes: String, no: String): String = when (value) {
+    1 -> yes
+    0 -> no
     else -> "-"
 }
