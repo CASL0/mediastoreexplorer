@@ -13,6 +13,7 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object AppModule {
 
+    /** アプリケーション [ContentResolver] を Singleton で提供する。 */
     @Provides
     @Singleton
     fun provideContentResolver(@ApplicationContext context: Context): ContentResolver =

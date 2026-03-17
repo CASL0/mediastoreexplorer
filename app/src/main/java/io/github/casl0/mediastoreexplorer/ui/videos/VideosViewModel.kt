@@ -26,6 +26,7 @@ class VideosViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(VideosUiState())
     val uiState: StateFlow<VideosUiState> = _uiState.asStateFlow()
 
+    /** MediaStore から動画一覧を読み込み、[uiState] を更新する。 */
     fun loadVideos() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }

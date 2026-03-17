@@ -26,6 +26,7 @@ class ImagesViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(ImagesUiState())
     val uiState: StateFlow<ImagesUiState> = _uiState.asStateFlow()
 
+    /** MediaStore から画像一覧を読み込み、[uiState] を更新する。 */
     fun loadImages() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }

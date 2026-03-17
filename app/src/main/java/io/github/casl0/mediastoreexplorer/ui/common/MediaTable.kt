@@ -26,12 +26,33 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+/**
+ * テーブルの 1 カラムを定義するデータクラス。
+ *
+ * @param T テーブルに表示するアイテムの型
+ * @property header ヘッダーに表示する文字列
+ * @property width カラムの表示幅
+ * @property getValue アイテムからセルの表示文字列を取得する関数
+ */
 data class TableColumn<T>(
     val header: String,
     val width: Dp,
     val getValue: (T) -> String,
 )
 
+/**
+ * sticky ヘッダーと水平スクロールを備えたメディアテーブル。
+ *
+ * ロード中はプログレスインジケーター、エラー時はエラーメッセージ、
+ * アイテムが空の場合は空メッセージを表示する。
+ *
+ * @param T テーブルに表示するアイテムの型
+ * @param items 表示するアイテムのリスト
+ * @param columns 表示するカラムの定義リスト
+ * @param isLoading データ読み込み中かどうか
+ * @param error エラーメッセージ。エラーがない場合は null
+ * @param modifier レイアウト調整用の [Modifier]
+ */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun <T> MediaTable(
@@ -58,7 +79,6 @@ fun <T> MediaTable(
 
         else -> {
             LazyColumn(modifier = modifier.fillMaxSize()) {
-                // ヘッダー行 (sticky)
                 stickyHeader {
                     Row(
                         modifier = Modifier
@@ -73,7 +93,6 @@ fun <T> MediaTable(
                     HorizontalDivider(thickness = 2.dp, color = MaterialTheme.colorScheme.primary)
                 }
 
-                // データ行
                 itemsIndexed(items) { index, item ->
                     val rowBackground = if (index % 2 == 0) {
                         MaterialTheme.colorScheme.surface

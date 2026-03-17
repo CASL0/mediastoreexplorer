@@ -58,6 +58,15 @@ private val imageColumns: List<TableColumn<ImageItem>> = listOf(
     TableColumn("元ドキュメントID", 220.dp) { formatString(it.originalDocumentId) },
 )
 
+/**
+ * 端末内の画像をテーブル形式で表示する画面。
+ *
+ * 権限が未付与の場合は [PermissionRequiredScreen] を表示し、
+ * 付与後に自動で画像を読み込む。
+ *
+ * @param viewModel 画像データと UI 状態を管理する [ImagesViewModel]
+ * @param modifier レイアウト調整用の [Modifier]
+ */
 @Composable
 fun ImagesScreen(
     viewModel: ImagesViewModel,

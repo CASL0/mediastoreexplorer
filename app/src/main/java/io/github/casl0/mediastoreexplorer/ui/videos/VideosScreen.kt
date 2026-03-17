@@ -66,6 +66,15 @@ private val videoColumns: List<TableColumn<VideoItem>> = listOf(
     TableColumn("元ドキュメントID", 220.dp) { formatString(it.originalDocumentId) },
 )
 
+/**
+ * 端末内の動画をテーブル形式で表示する画面。
+ *
+ * 権限が未付与の場合は [PermissionRequiredScreen] を表示し、
+ * 付与後に自動で動画を読み込む。
+ *
+ * @param viewModel 動画データと UI 状態を管理する [VideosViewModel]
+ * @param modifier レイアウト調整用の [Modifier]
+ */
 @Composable
 fun VideosScreen(
     viewModel: VideosViewModel,

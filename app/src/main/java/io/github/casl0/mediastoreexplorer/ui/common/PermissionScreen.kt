@@ -15,6 +15,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
+/**
+ * 権限が付与されていない場合に表示する汎用画面。
+ *
+ * @param message ユーザーに表示する権限の説明メッセージ
+ * @param onRequestPermission 権限リクエストボタンがタップされたときのコールバック
+ * @param modifier レイアウト調整用の [Modifier]
+ */
 @Composable
 fun PermissionRequiredScreen(
     message: String,
