@@ -45,6 +45,9 @@
     <string name="col_document_id">Document ID</string>
     <string name="col_original_document_id">Original Document ID</string>
 
+    <!-- Thumbnail column -->
+    <string name="col_thumbnail">Thumbnail</string>
+
     <!-- Image-specific columns -->
     <string name="col_orientation">Orientation (°)</string>
 

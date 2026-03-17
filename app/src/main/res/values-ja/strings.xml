@@ -45,6 +45,9 @@
     <string name="col_document_id">ドキュメントID</string>
     <string name="col_original_document_id">元ドキュメントID</string>
 
+    <!-- サムネイルカラム -->
+    <string name="col_thumbnail">サムネイル</string>
+
     <!-- 画像固有カラム -->
     <string name="col_orientation">向き (°)</string>
 
