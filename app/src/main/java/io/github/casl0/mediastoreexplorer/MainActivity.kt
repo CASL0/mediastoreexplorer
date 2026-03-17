@@ -26,6 +26,7 @@ import io.github.casl0.mediastoreexplorer.ui.theme.MediaStoreExplorerTheme
 import io.github.casl0.mediastoreexplorer.ui.videos.VideosScreen
 import io.github.casl0.mediastoreexplorer.ui.videos.VideosViewModel
 import kotlinx.coroutines.launch
+import androidx.compose.ui.res.stringResource
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -47,20 +48,22 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-private val tabs = listOf("画像", "動画")
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun MainScreen(
     imagesViewModel: ImagesViewModel,
     videosViewModel: VideosViewModel,
 ) {
+    val tabs = listOf(
+        stringResource(R.string.tab_images),
+        stringResource(R.string.tab_videos),
+    )
     val pagerState = rememberPagerState(pageCount = { tabs.size })
     val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("MediaStore Explorer") })
+            TopAppBar(title = { Text(stringResource(R.string.app_name)) })
         },
     ) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
