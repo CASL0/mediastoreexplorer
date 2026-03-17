@@ -6,16 +6,18 @@ import android.os.Build
 import android.provider.MediaStore
 import io.github.casl0.mediastoreexplorer.data.model.ImageItem
 import io.github.casl0.mediastoreexplorer.data.model.VideoItem
-import kotlinx.coroutines.Dispatchers
+import io.github.casl0.mediastoreexplorer.di.IoDispatcher
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class MediaRepositoryImpl @Inject constructor(
     private val contentResolver: ContentResolver,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
 ) : MediaRepository {
 
     @Suppress("DEPRECATION")
-    override suspend fun getImages(): List<ImageItem> = withContext(Dispatchers.IO) {
+    override suspend fun getImages(): List<ImageItem> = withContext(ioDispatcher) {
         val projection = buildList {
             add(MediaStore.Images.Media._ID)
             add(MediaStore.Images.Media.DISPLAY_NAME)
@@ -145,7 +147,7 @@ class MediaRepositoryImpl @Inject constructor(
     }
 
     @Suppress("DEPRECATION")
-    override suspend fun getVideos(): List<VideoItem> = withContext(Dispatchers.IO) {
+    override suspend fun getVideos(): List<VideoItem> = withContext(ioDispatcher) {
         val projection = buildList {
             add(MediaStore.Video.Media._ID)
             add(MediaStore.Video.Media.DISPLAY_NAME)
