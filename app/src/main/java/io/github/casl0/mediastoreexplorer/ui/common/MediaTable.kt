@@ -1,5 +1,6 @@
 package io.github.casl0.mediastoreexplorer.ui.common
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
@@ -31,6 +32,7 @@ data class TableColumn<T>(
     val getValue: (T) -> String,
 )
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun <T> MediaTable(
     items: List<T>,

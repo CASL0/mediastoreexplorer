@@ -141,7 +141,7 @@ class MediaRepositoryImpl @Inject constructor(
                 )
             )
         }
-        items
+        return items
     }
 
     @Suppress("DEPRECATION")
@@ -292,6 +292,6 @@ class MediaRepositoryImpl @Inject constructor(
                 )
             )
         }
-        items
+        return items
     }
 }
