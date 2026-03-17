@@ -27,19 +27,26 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.casl0.mediastoreexplorer.R
+import androidx.compose.foundation.layout.size
 
 /**
- * テーブルの 1 カラムを定義するデータクラス。
+ * テーブルの 1 カラムを定義するクラス。
+ *
+ * テキストセルの場合は [getValue] を指定する。
+ * カスタム Composable セル（サムネイル等）の場合は [customContent] を指定する。
+ * 両方指定した場合は [customContent] が優先される。
  *
  * @param T テーブルに表示するアイテムの型
  * @property header ヘッダーに表示する文字列
  * @property width カラムの表示幅
- * @property getValue アイテムからセルの表示文字列を取得する関数
+ * @property customContent カスタムセル描画用の Composable。null の場合は [getValue] の結果をテキスト表示する
+ * @property getValue アイテムからセルの表示文字列を取得する関数。[customContent] が null の場合のみ使用される
  */
-data class TableColumn<T>(
+class TableColumn<T>(
     val header: String,
     val width: Dp,
-    val getValue: (T) -> String,
+    val customContent: (@Composable (T) -> Unit)? = null,
+    val getValue: (T) -> String = { "" },
 )
 
 /**
@@ -111,7 +118,18 @@ fun <T> MediaTable(
                             .horizontalScroll(scrollState),
                     ) {
                         columns.forEach { col ->
-                            TableDataCell(text = col.getValue(item), width = col.width)
+                            if (col.customContent != null) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(col.width)
+                                        .padding(4.dp),
+                                    contentAlignment = Alignment.Center,
+                                ) {
+                                    col.customContent.invoke(item)
+                                }
+                            } else {
+                                TableDataCell(text = col.getValue(item), width = col.width)
+                            }
                         }
                     }
                     HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
