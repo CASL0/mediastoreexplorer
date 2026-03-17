@@ -13,8 +13,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.github.casl0.mediastoreexplorer.R
 import io.github.casl0.mediastoreexplorer.data.model.ImageItem
 import io.github.casl0.mediastoreexplorer.ui.common.MediaTable
 import io.github.casl0.mediastoreexplorer.ui.common.PermissionRequiredScreen
@@ -27,36 +30,6 @@ import io.github.casl0.mediastoreexplorer.ui.common.formatInt
 import io.github.casl0.mediastoreexplorer.ui.common.formatLong
 import io.github.casl0.mediastoreexplorer.ui.common.formatSize
 import io.github.casl0.mediastoreexplorer.ui.common.formatString
-import androidx.compose.ui.unit.dp
-
-private val imageColumns: List<TableColumn<ImageItem>> = listOf(
-    TableColumn("ID", 80.dp) { it.id.toString() },
-    TableColumn("表示名", 200.dp) { formatString(it.displayName) },
-    TableColumn("サイズ", 100.dp) { formatSize(it.size) },
-    TableColumn("MIMEタイプ", 160.dp) { formatString(it.mimeType) },
-    TableColumn("追加日時", 160.dp) { formatDateSec(it.dateAdded) },
-    TableColumn("更新日時", 160.dp) { formatDateSec(it.dateModified) },
-    TableColumn("撮影日時", 160.dp) { formatDateMs(it.dateTaken) },
-    TableColumn("幅 (px)", 80.dp) { formatInt(it.width) },
-    TableColumn("高さ (px)", 80.dp) { formatInt(it.height) },
-    TableColumn("向き (°)", 80.dp) { formatInt(it.orientation) },
-    TableColumn("バケットID", 140.dp) { formatString(it.bucketId) },
-    TableColumn("バケット名", 180.dp) { formatString(it.bucketDisplayName) },
-    TableColumn("説明", 200.dp) { formatString(it.description) },
-    TableColumn("非公開", 80.dp) { formatBool(it.isPrivate) },
-    TableColumn("緯度 (非推奨)", 130.dp) { formatDouble(it.latitude) },
-    TableColumn("経度 (非推奨)", 130.dp) { formatDouble(it.longitude) },
-    TableColumn("パス (非推奨)", 300.dp) { formatString(it.data) },
-    TableColumn("相対パス", 220.dp) { formatString(it.relativePath) },
-    TableColumn("ボリューム名", 140.dp) { formatString(it.volumeName) },
-    TableColumn("保留中", 80.dp) { formatBool(it.isPending) },
-    TableColumn("お気に入り", 100.dp) { formatBool(it.isFavorite) },
-    TableColumn("ゴミ箱", 80.dp) { formatBool(it.isTrashed) },
-    TableColumn("世代 (追加)", 120.dp) { formatLong(it.generationAdded) },
-    TableColumn("世代 (更新)", 120.dp) { formatLong(it.generationModified) },
-    TableColumn("ドキュメントID", 220.dp) { formatString(it.documentId) },
-    TableColumn("元ドキュメントID", 220.dp) { formatString(it.originalDocumentId) },
-)
 
 /**
  * 端末内の画像をテーブル形式で表示する画面。
@@ -103,14 +76,44 @@ fun ImagesScreen(
 
     if (!permissionsGranted) {
         PermissionRequiredScreen(
-            message = "画像へのアクセス権限が必要です。\n「権限を付与する」をタップしてください。",
+            message = stringResource(R.string.permission_images_message),
             onRequestPermission = { permissionLauncher.launch(requiredPermissions) },
             modifier = modifier,
         )
     } else {
+        val yes = stringResource(R.string.bool_yes)
+        val no = stringResource(R.string.bool_no)
+        val columns: List<TableColumn<ImageItem>> = listOf(
+            TableColumn(stringResource(R.string.col_id), 80.dp) { it.id.toString() },
+            TableColumn(stringResource(R.string.col_display_name), 200.dp) { formatString(it.displayName) },
+            TableColumn(stringResource(R.string.col_size), 100.dp) { formatSize(it.size) },
+            TableColumn(stringResource(R.string.col_mime_type), 160.dp) { formatString(it.mimeType) },
+            TableColumn(stringResource(R.string.col_date_added), 160.dp) { formatDateSec(it.dateAdded) },
+            TableColumn(stringResource(R.string.col_date_modified), 160.dp) { formatDateSec(it.dateModified) },
+            TableColumn(stringResource(R.string.col_date_taken), 160.dp) { formatDateMs(it.dateTaken) },
+            TableColumn(stringResource(R.string.col_width), 80.dp) { formatInt(it.width) },
+            TableColumn(stringResource(R.string.col_height), 80.dp) { formatInt(it.height) },
+            TableColumn(stringResource(R.string.col_orientation), 80.dp) { formatInt(it.orientation) },
+            TableColumn(stringResource(R.string.col_bucket_id), 140.dp) { formatString(it.bucketId) },
+            TableColumn(stringResource(R.string.col_bucket_name), 180.dp) { formatString(it.bucketDisplayName) },
+            TableColumn(stringResource(R.string.col_description), 200.dp) { formatString(it.description) },
+            TableColumn(stringResource(R.string.col_is_private), 80.dp) { formatBool(it.isPrivate, yes, no) },
+            TableColumn(stringResource(R.string.col_latitude), 130.dp) { formatDouble(it.latitude) },
+            TableColumn(stringResource(R.string.col_longitude), 130.dp) { formatDouble(it.longitude) },
+            TableColumn(stringResource(R.string.col_data), 300.dp) { formatString(it.data) },
+            TableColumn(stringResource(R.string.col_relative_path), 220.dp) { formatString(it.relativePath) },
+            TableColumn(stringResource(R.string.col_volume_name), 140.dp) { formatString(it.volumeName) },
+            TableColumn(stringResource(R.string.col_is_pending), 80.dp) { formatBool(it.isPending, yes, no) },
+            TableColumn(stringResource(R.string.col_is_favorite), 100.dp) { formatBool(it.isFavorite, yes, no) },
+            TableColumn(stringResource(R.string.col_is_trashed), 80.dp) { formatBool(it.isTrashed, yes, no) },
+            TableColumn(stringResource(R.string.col_generation_added), 120.dp) { formatLong(it.generationAdded) },
+            TableColumn(stringResource(R.string.col_generation_modified), 120.dp) { formatLong(it.generationModified) },
+            TableColumn(stringResource(R.string.col_document_id), 220.dp) { formatString(it.documentId) },
+            TableColumn(stringResource(R.string.col_original_document_id), 220.dp) { formatString(it.originalDocumentId) },
+        )
         MediaTable(
             items = uiState.images,
-            columns = imageColumns,
+            columns = columns,
             isLoading = uiState.isLoading,
             error = uiState.error,
             modifier = modifier,
