@@ -1,5 +1,6 @@
 package io.github.casl0.mediastoreexplorer.ui.common
 
+import android.content.res.Configuration
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
@@ -29,10 +30,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.casl0.mediastoreexplorer.R
+import io.github.casl0.mediastoreexplorer.ui.theme.MediaStoreExplorerTheme
 
 /**
  * テーブルの 1 カラムを定義するクラス。
@@ -155,6 +158,63 @@ private fun TableHeaderCell(text: String, width: Dp) {
         overflow = TextOverflow.Ellipsis,
         color = MaterialTheme.colorScheme.onPrimaryContainer,
     )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+private val previewColumns: List<TableColumn<String>> =
+    listOf(TableColumn("Name", 180.dp) { it }, TableColumn("Value", 120.dp) { "sample" })
+
+@Preview(showBackground = true)
+@Composable
+private fun MediaTableLoadingPreview() {
+    MediaStoreExplorerTheme {
+        MediaTable(
+            items = emptyList<String>(),
+            columns = previewColumns,
+            isLoading = true,
+            error = null,
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun MediaTableErrorPreview() {
+    MediaStoreExplorerTheme {
+        MediaTable(
+            items = emptyList<String>(),
+            columns = previewColumns,
+            isLoading = false,
+            error = "ContentResolver query failed",
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun MediaTableEmptyPreview() {
+    MediaStoreExplorerTheme {
+        MediaTable(
+            items = emptyList<String>(),
+            columns = previewColumns,
+            isLoading = false,
+            error = null,
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
+@Composable
+private fun MediaTableWithDataPreview() {
+    MediaStoreExplorerTheme {
+        MediaTable(
+            items = listOf("photo_001.jpg", "photo_002.png", "video_clip.mp4"),
+            columns = previewColumns,
+            isLoading = false,
+            error = null,
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

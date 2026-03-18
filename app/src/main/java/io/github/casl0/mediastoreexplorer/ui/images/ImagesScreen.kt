@@ -3,6 +3,7 @@ package io.github.casl0.mediastoreexplorer.ui.images
 import android.Manifest
 import android.content.ContentUris
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.os.Build
 import android.provider.MediaStore
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -19,6 +20,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -36,6 +38,8 @@ import io.github.casl0.mediastoreexplorer.ui.common.formatInt
 import io.github.casl0.mediastoreexplorer.ui.common.formatLong
 import io.github.casl0.mediastoreexplorer.ui.common.formatSize
 import io.github.casl0.mediastoreexplorer.ui.common.formatString
+import io.github.casl0.mediastoreexplorer.ui.preview.PreviewMediaRepository
+import io.github.casl0.mediastoreexplorer.ui.theme.MediaStoreExplorerTheme
 
 /**
  * 端末内の画像をテーブル形式で表示する画面。
@@ -187,6 +191,18 @@ fun ImagesScreen(
             isLoading = uiState.isLoading,
             error = uiState.error,
             modifier = modifier,
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
+@Composable
+private fun ImagesScreenPermissionDeniedPreview() {
+    MediaStoreExplorerTheme {
+        ImagesScreen(
+            viewModel = ImagesViewModel(PreviewMediaRepository()),
+            initialPermissionsGranted = false,
         )
     }
 }
