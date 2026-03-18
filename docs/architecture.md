@@ -40,9 +40,10 @@
 
 | 要素 | 実装 | 責務 |
 | --- | --- | --- |
-| UI Elements | `ImagesScreen.kt` / `VideosScreen.kt` | 状態の表示とユーザーイベントの受け付け |
-| State Holder | `ImagesViewModel.kt` / `VideosViewModel.kt` | UI 状態を `StateFlow` で保持・公開、ビジネスロジックの実行 |
+| UI Elements | `ImagesScreen.kt` / `VideosScreen.kt` / `AudiosScreen.kt` | 状態の表示とユーザーイベントの受け付け |
+| State Holder | `ImagesViewModel.kt` / `VideosViewModel.kt` / `AudiosViewModel.kt` | UI 状態を `StateFlow` で保持・公開、ビジネスロジックの実行 |
 | 共通 UI | `MediaTable.kt` / `PermissionScreen.kt` | 再利用可能な Composable |
+| Preview 用 Repository | `PreviewMediaRepository.kt` | `@Preview` 専用のノーオペレーション実装。R8 がリリースビルドで除去する |
 
 **UI 状態の公開パターン（推奨に従う）：**
 
@@ -67,9 +68,10 @@ val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
 | 要素 | 実装 | 責務 |
 | --- | --- | --- |
-| Repository インターフェース | `MediaRepository.kt` | `getImages()` / `getVideos()` の契約定義 |
+| Repository インターフェース | `MediaRepository.kt` | `getImages()` / `getVideos()` / `getAudios()` の契約定義 |
 | Repository 実装 | `MediaRepositoryImpl.kt` | `ContentResolver.query()` で MediaStore に問い合わせ、Cursor → モデルにマッピング |
-| モデル | `ImageItem` / `VideoItem` | MediaStore カラムを全フィールド化したデータクラス |
+| Cursor 拡張関数 | `CursorExtensions.kt` | `opt*Col` / `opt*ColQ` / `opt*ColR` — nullable 列読み取りと API バージョンガードを集約 |
+| モデル | `ImageItem` / `VideoItem` / `AudioItem` | MediaStore カラムを全フィールド化したデータクラス |
 
 ---
 
@@ -77,17 +79,18 @@ val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
 ```text
 app/src/main/java/.../
-├── MainActivity.kt              # @AndroidEntryPoint、HorizontalPager + TabRow で2タブ管理
+├── MainActivity.kt              # @AndroidEntryPoint、HorizontalPager + TabRow で3タブ管理
 ├── MediaStoreExplorerApp.kt     # @HiltAndroidApp
 ├── di/
 │   ├── AppModule.kt             # ContentResolver, @IoDispatcher の Singleton 提供
 │   ├── RepositoryModule.kt      # MediaRepository → MediaRepositoryImpl のバインド
 │   └── DispatcherQualifiers.kt  # @IoDispatcher アノテーション定義
 ├── data/
-│   ├── model/                   # ImageItem, VideoItem
+│   ├── model/                   # ImageItem, VideoItem, AudioItem
 │   └── repository/
 │       ├── MediaRepository.kt
-│       └── MediaRepositoryImpl.kt
+│       ├── MediaRepositoryImpl.kt
+│       └── CursorExtensions.kt  # Cursor opt*Col 拡張関数
 └── ui/
     ├── common/
     │   ├── MediaTable.kt
@@ -96,7 +99,10 @@ app/src/main/java/.../
     ├── images/
     │   ├── ImagesViewModel.kt
     │   └── ImagesScreen.kt
-    └── videos/                  # images と対称な構造
+    ├── videos/                  # images と対称な構造
+    ├── audios/                  # images / videos と対称な構造
+    └── preview/
+        └── PreviewMediaRepository.kt  # @Preview 専用（R8 がリリースビルドで除去）
 ```
 
 ---
