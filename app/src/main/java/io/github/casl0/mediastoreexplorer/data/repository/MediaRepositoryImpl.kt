@@ -82,135 +82,44 @@ constructor(
     @Suppress("DEPRECATION")
     override suspend fun getVideos(): List<VideoItem> =
         withContext(ioDispatcher) {
-            val projection =
-                buildList {
-                        add(MediaStore.Video.Media._ID)
-                        add(MediaStore.Video.Media.DISPLAY_NAME)
-                        add(MediaStore.Video.Media.SIZE)
-                        add(MediaStore.Video.Media.MIME_TYPE)
-                        add(MediaStore.Video.Media.DATE_ADDED)
-                        add(MediaStore.Video.Media.DATE_MODIFIED)
-                        add(MediaStore.Video.Media.DATE_TAKEN)
-                        add(MediaStore.Video.Media.WIDTH)
-                        add(MediaStore.Video.Media.HEIGHT)
-                        add(MediaStore.Video.Media.BUCKET_ID)
-                        add(MediaStore.Video.Media.BUCKET_DISPLAY_NAME)
-                        add(MediaStore.Video.Media.DESCRIPTION)
-                        add(MediaStore.Video.Media.CATEGORY)
-                        add(MediaStore.Video.Media.LANGUAGE)
-                        add(MediaStore.Video.Media.ARTIST)
-                        add(MediaStore.Video.Media.ALBUM)
-                        add(MediaStore.Video.Media.TAGS)
-                        add(MediaStore.Video.Media.DURATION)
-                        add(MediaStore.Video.Media.RESOLUTION)
-                        add(MediaStore.Video.Media.BOOKMARK)
-                        add(MediaStore.Video.Media.IS_PRIVATE)
-                        add(MediaStore.Video.Media.LATITUDE)
-                        add(MediaStore.Video.Media.LONGITUDE)
-                        add(MediaStore.Video.Media.DATA)
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                            add(MediaStore.Video.Media.RELATIVE_PATH)
-                            add(MediaStore.Video.Media.VOLUME_NAME)
-                            add(MediaStore.Video.Media.IS_PENDING)
-                        }
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                            add(MediaStore.Video.Media.IS_FAVORITE)
-                            add(MediaStore.Video.Media.IS_TRASHED)
-                            add(MediaStore.Video.Media.GENERATION_ADDED)
-                            add(MediaStore.Video.Media.GENERATION_MODIFIED)
-                            add(MediaStore.Video.Media.DOCUMENT_ID)
-                            add(MediaStore.Video.Media.ORIGINAL_DOCUMENT_ID)
-                        }
-                    }
-                    .toTypedArray()
-
-            val result = mutableListOf<VideoItem>()
-
             val queryUri =
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                     MediaStore.Video.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
                 } else {
                     MediaStore.Video.Media.EXTERNAL_CONTENT_URI
                 }
-
+            val result = mutableListOf<VideoItem>()
             contentResolver
                 .query(
                     queryUri,
-                    projection,
+                    videoProjection(),
                     null,
                     null,
                     "${MediaStore.Video.Media.DATE_MODIFIED} DESC",
                 )
                 ?.use { cursor -> result.addAll(cursor.toVideoItems()) }
-
             result
         }
 
     @Suppress("DEPRECATION")
     override suspend fun getAudios(): List<AudioItem> =
         withContext(ioDispatcher) {
-            val projection =
-                buildList {
-                        add(MediaStore.Audio.Media._ID)
-                        add(MediaStore.Audio.Media.DISPLAY_NAME)
-                        add(MediaStore.Audio.Media.SIZE)
-                        add(MediaStore.Audio.Media.MIME_TYPE)
-                        add(MediaStore.Audio.Media.DATE_ADDED)
-                        add(MediaStore.Audio.Media.DATE_MODIFIED)
-                        add(MediaStore.Audio.Media.TITLE)
-                        add(MediaStore.Audio.Media.ALBUM)
-                        add(MediaStore.Audio.Media.ALBUM_ID)
-                        add(MediaStore.Audio.Media.ARTIST)
-                        add(MediaStore.Audio.Media.ARTIST_ID)
-                        add(MediaStore.Audio.Media.COMPOSER)
-                        add(MediaStore.Audio.Media.TRACK)
-                        add(MediaStore.Audio.Media.YEAR)
-                        add(MediaStore.Audio.Media.DURATION)
-                        add(MediaStore.Audio.Media.BOOKMARK)
-                        add(MediaStore.Audio.Media.IS_MUSIC)
-                        add(MediaStore.Audio.Media.IS_PODCAST)
-                        add(MediaStore.Audio.Media.IS_RINGTONE)
-                        add(MediaStore.Audio.Media.IS_ALARM)
-                        add(MediaStore.Audio.Media.IS_NOTIFICATION)
-                        add(MediaStore.Audio.Media.BUCKET_ID)
-                        add(MediaStore.Audio.Media.BUCKET_DISPLAY_NAME)
-                        add(MediaStore.Audio.Media.DATA)
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                            add(MediaStore.Audio.Media.RELATIVE_PATH)
-                            add(MediaStore.Audio.Media.VOLUME_NAME)
-                            add(MediaStore.Audio.Media.IS_PENDING)
-                            add(MediaStore.Audio.Media.IS_AUDIOBOOK)
-                        }
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                            add(MediaStore.Audio.Media.IS_FAVORITE)
-                            add(MediaStore.Audio.Media.IS_TRASHED)
-                            add(MediaStore.Audio.Media.GENERATION_ADDED)
-                            add(MediaStore.Audio.Media.GENERATION_MODIFIED)
-                            add(MediaStore.Audio.Media.DOCUMENT_ID)
-                            add(MediaStore.Audio.Media.ORIGINAL_DOCUMENT_ID)
-                        }
-                    }
-                    .toTypedArray()
-
-            val result = mutableListOf<AudioItem>()
-
             val queryUri =
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                     MediaStore.Audio.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
                 } else {
                     MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
                 }
-
+            val result = mutableListOf<AudioItem>()
             contentResolver
                 .query(
                     queryUri,
-                    projection,
+                    audioProjection(),
                     null,
                     null,
                     "${MediaStore.Audio.Media.DATE_MODIFIED} DESC",
                 )
                 ?.use { cursor -> result.addAll(cursor.toAudioItems()) }
-
             result
         }
 }
@@ -292,32 +201,92 @@ private fun Cursor.toVideoItem(): VideoItem =
         originalDocumentId = optStringColR(MediaStore.Video.Media.ORIGINAL_DOCUMENT_ID),
     )
 
-private fun Cursor.optStringCol(column: String): String? =
-    getColumnIndex(column).takeIf { it >= 0 }?.let { getString(it) }
+@Suppress("DEPRECATION")
+private fun videoProjection(): Array<String> =
+    buildList {
+            add(MediaStore.Video.Media._ID)
+            add(MediaStore.Video.Media.DISPLAY_NAME)
+            add(MediaStore.Video.Media.SIZE)
+            add(MediaStore.Video.Media.MIME_TYPE)
+            add(MediaStore.Video.Media.DATE_ADDED)
+            add(MediaStore.Video.Media.DATE_MODIFIED)
+            add(MediaStore.Video.Media.DATE_TAKEN)
+            add(MediaStore.Video.Media.WIDTH)
+            add(MediaStore.Video.Media.HEIGHT)
+            add(MediaStore.Video.Media.BUCKET_ID)
+            add(MediaStore.Video.Media.BUCKET_DISPLAY_NAME)
+            add(MediaStore.Video.Media.DESCRIPTION)
+            add(MediaStore.Video.Media.CATEGORY)
+            add(MediaStore.Video.Media.LANGUAGE)
+            add(MediaStore.Video.Media.ARTIST)
+            add(MediaStore.Video.Media.ALBUM)
+            add(MediaStore.Video.Media.TAGS)
+            add(MediaStore.Video.Media.DURATION)
+            add(MediaStore.Video.Media.RESOLUTION)
+            add(MediaStore.Video.Media.BOOKMARK)
+            add(MediaStore.Video.Media.IS_PRIVATE)
+            add(MediaStore.Video.Media.LATITUDE)
+            add(MediaStore.Video.Media.LONGITUDE)
+            add(MediaStore.Video.Media.DATA)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                add(MediaStore.Video.Media.RELATIVE_PATH)
+                add(MediaStore.Video.Media.VOLUME_NAME)
+                add(MediaStore.Video.Media.IS_PENDING)
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                add(MediaStore.Video.Media.IS_FAVORITE)
+                add(MediaStore.Video.Media.IS_TRASHED)
+                add(MediaStore.Video.Media.GENERATION_ADDED)
+                add(MediaStore.Video.Media.GENERATION_MODIFIED)
+                add(MediaStore.Video.Media.DOCUMENT_ID)
+                add(MediaStore.Video.Media.ORIGINAL_DOCUMENT_ID)
+            }
+        }
+        .toTypedArray()
 
-private fun Cursor.optLongCol(column: String): Long? =
-    getColumnIndex(column).takeIf { it >= 0 }?.let { getLong(it) }
-
-private fun Cursor.optIntCol(column: String): Int? =
-    getColumnIndex(column).takeIf { it >= 0 }?.let { getInt(it) }
-
-private fun Cursor.optDoubleCol(column: String): Double? =
-    getColumnIndex(column).takeIf { it >= 0 }?.let { getDouble(it) }
-
-private fun Cursor.optStringColQ(column: String): String? =
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) optStringCol(column) else null
-
-private fun Cursor.optIntColQ(column: String): Int? =
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) optIntCol(column) else null
-
-private fun Cursor.optStringColR(column: String): String? =
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) optStringCol(column) else null
-
-private fun Cursor.optLongColR(column: String): Long? =
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) optLongCol(column) else null
-
-private fun Cursor.optIntColR(column: String): Int? =
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) optIntCol(column) else null
+@Suppress("DEPRECATION")
+private fun audioProjection(): Array<String> =
+    buildList {
+            add(MediaStore.Audio.Media._ID)
+            add(MediaStore.Audio.Media.DISPLAY_NAME)
+            add(MediaStore.Audio.Media.SIZE)
+            add(MediaStore.Audio.Media.MIME_TYPE)
+            add(MediaStore.Audio.Media.DATE_ADDED)
+            add(MediaStore.Audio.Media.DATE_MODIFIED)
+            add(MediaStore.Audio.Media.TITLE)
+            add(MediaStore.Audio.Media.ALBUM)
+            add(MediaStore.Audio.Media.ALBUM_ID)
+            add(MediaStore.Audio.Media.ARTIST)
+            add(MediaStore.Audio.Media.ARTIST_ID)
+            add(MediaStore.Audio.Media.COMPOSER)
+            add(MediaStore.Audio.Media.TRACK)
+            add(MediaStore.Audio.Media.YEAR)
+            add(MediaStore.Audio.Media.DURATION)
+            add(MediaStore.Audio.Media.BOOKMARK)
+            add(MediaStore.Audio.Media.IS_MUSIC)
+            add(MediaStore.Audio.Media.IS_PODCAST)
+            add(MediaStore.Audio.Media.IS_RINGTONE)
+            add(MediaStore.Audio.Media.IS_ALARM)
+            add(MediaStore.Audio.Media.IS_NOTIFICATION)
+            add(MediaStore.Audio.Media.BUCKET_ID)
+            add(MediaStore.Audio.Media.BUCKET_DISPLAY_NAME)
+            add(MediaStore.Audio.Media.DATA)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                add(MediaStore.Audio.Media.RELATIVE_PATH)
+                add(MediaStore.Audio.Media.VOLUME_NAME)
+                add(MediaStore.Audio.Media.IS_PENDING)
+                add(MediaStore.Audio.Media.IS_AUDIOBOOK)
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                add(MediaStore.Audio.Media.IS_FAVORITE)
+                add(MediaStore.Audio.Media.IS_TRASHED)
+                add(MediaStore.Audio.Media.GENERATION_ADDED)
+                add(MediaStore.Audio.Media.GENERATION_MODIFIED)
+                add(MediaStore.Audio.Media.DOCUMENT_ID)
+                add(MediaStore.Audio.Media.ORIGINAL_DOCUMENT_ID)
+            }
+        }
+        .toTypedArray()
 
 @Suppress("DEPRECATION")
 private fun Cursor.toAudioItems(): List<AudioItem> =
