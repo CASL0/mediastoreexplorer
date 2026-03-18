@@ -1,14 +1,11 @@
 package io.github.casl0.mediastoreexplorer.ui.videos
 
 import android.Manifest
-import android.content.ContentUris
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Build
-import android.provider.MediaStore
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -16,15 +13,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil3.compose.AsyncImage
 import io.github.casl0.mediastoreexplorer.R
 import io.github.casl0.mediastoreexplorer.data.model.VideoItem
 import io.github.casl0.mediastoreexplorer.ui.common.MediaTable
@@ -100,23 +94,6 @@ fun VideosScreen(
         val no = stringResource(R.string.bool_no)
         val columns: List<TableColumn<VideoItem>> =
             listOf(
-                TableColumn(
-                    header = stringResource(R.string.col_thumbnail),
-                    width = 72.dp,
-                    customContent = { item ->
-                        val uri =
-                            ContentUris.withAppendedId(
-                                MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
-                                item.id,
-                            )
-                        AsyncImage(
-                            model = uri,
-                            contentDescription = item.displayName,
-                            modifier = Modifier.clip(RoundedCornerShape(4.dp)),
-                            contentScale = ContentScale.Crop,
-                        )
-                    },
-                ),
                 TableColumn(stringResource(R.string.col_id), 80.dp) { it.id.toString() },
                 TableColumn(stringResource(R.string.col_display_name), 200.dp) {
                     formatString(it.displayName)
