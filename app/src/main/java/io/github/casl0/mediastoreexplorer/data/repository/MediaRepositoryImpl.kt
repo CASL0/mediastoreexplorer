@@ -80,100 +80,6 @@ constructor(
         }
 
     @Suppress("DEPRECATION")
-    private fun Cursor.toImageItems(): List<ImageItem> {
-        val idCol = getColumnIndexOrThrow(MediaStore.Images.Media._ID)
-        val displayNameCol = getColumnIndex(MediaStore.Images.Media.DISPLAY_NAME)
-        val sizeCol = getColumnIndex(MediaStore.Images.Media.SIZE)
-        val mimeTypeCol = getColumnIndex(MediaStore.Images.Media.MIME_TYPE)
-        val dateAddedCol = getColumnIndex(MediaStore.Images.Media.DATE_ADDED)
-        val dateModifiedCol = getColumnIndex(MediaStore.Images.Media.DATE_MODIFIED)
-        val dateTakenCol = getColumnIndex(MediaStore.Images.Media.DATE_TAKEN)
-        val widthCol = getColumnIndex(MediaStore.Images.Media.WIDTH)
-        val heightCol = getColumnIndex(MediaStore.Images.Media.HEIGHT)
-        val orientationCol = getColumnIndex(MediaStore.Images.Media.ORIENTATION)
-        val bucketIdCol = getColumnIndex(MediaStore.Images.Media.BUCKET_ID)
-        val bucketNameCol = getColumnIndex(MediaStore.Images.Media.BUCKET_DISPLAY_NAME)
-        val descriptionCol = getColumnIndex(MediaStore.Images.Media.DESCRIPTION)
-        val isPrivateCol = getColumnIndex(MediaStore.Images.Media.IS_PRIVATE)
-        val latitudeCol = getColumnIndex(MediaStore.Images.Media.LATITUDE)
-        val longitudeCol = getColumnIndex(MediaStore.Images.Media.LONGITUDE)
-        val dataCol = getColumnIndex(MediaStore.Images.Media.DATA)
-        val relativePathCol =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
-                getColumnIndex(MediaStore.Images.Media.RELATIVE_PATH)
-            else -1
-        val volumeNameCol =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
-                getColumnIndex(MediaStore.Images.Media.VOLUME_NAME)
-            else -1
-        val isPendingCol =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
-                getColumnIndex(MediaStore.Images.Media.IS_PENDING)
-            else -1
-        val isFavoriteCol =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
-                getColumnIndex(MediaStore.Images.Media.IS_FAVORITE)
-            else -1
-        val isTrashedCol =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
-                getColumnIndex(MediaStore.Images.Media.IS_TRASHED)
-            else -1
-        val generationAddedCol =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
-                getColumnIndex(MediaStore.Images.Media.GENERATION_ADDED)
-            else -1
-        val generationModifiedCol =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
-                getColumnIndex(MediaStore.Images.Media.GENERATION_MODIFIED)
-            else -1
-        val documentIdCol =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
-                getColumnIndex(MediaStore.Images.Media.DOCUMENT_ID)
-            else -1
-        val originalDocumentIdCol =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
-                getColumnIndex(MediaStore.Images.Media.ORIGINAL_DOCUMENT_ID)
-            else -1
-
-        val items = mutableListOf<ImageItem>()
-        while (moveToNext()) {
-            items.add(
-                ImageItem(
-                    id = getLong(idCol),
-                    displayName = displayNameCol.takeIf { it >= 0 }?.let { getString(it) },
-                    size = sizeCol.takeIf { it >= 0 }?.let { getLong(it) },
-                    mimeType = mimeTypeCol.takeIf { it >= 0 }?.let { getString(it) },
-                    dateAdded = dateAddedCol.takeIf { it >= 0 }?.let { getLong(it) },
-                    dateModified = dateModifiedCol.takeIf { it >= 0 }?.let { getLong(it) },
-                    dateTaken = dateTakenCol.takeIf { it >= 0 }?.let { getLong(it) },
-                    width = widthCol.takeIf { it >= 0 }?.let { getInt(it) },
-                    height = heightCol.takeIf { it >= 0 }?.let { getInt(it) },
-                    orientation = orientationCol.takeIf { it >= 0 }?.let { getInt(it) },
-                    bucketId = bucketIdCol.takeIf { it >= 0 }?.let { getString(it) },
-                    bucketDisplayName = bucketNameCol.takeIf { it >= 0 }?.let { getString(it) },
-                    description = descriptionCol.takeIf { it >= 0 }?.let { getString(it) },
-                    isPrivate = isPrivateCol.takeIf { it >= 0 }?.let { getInt(it) },
-                    latitude = latitudeCol.takeIf { it >= 0 }?.let { getDouble(it) },
-                    longitude = longitudeCol.takeIf { it >= 0 }?.let { getDouble(it) },
-                    data = dataCol.takeIf { it >= 0 }?.let { getString(it) },
-                    relativePath = relativePathCol.takeIf { it >= 0 }?.let { getString(it) },
-                    volumeName = volumeNameCol.takeIf { it >= 0 }?.let { getString(it) },
-                    isPending = isPendingCol.takeIf { it >= 0 }?.let { getInt(it) },
-                    isFavorite = isFavoriteCol.takeIf { it >= 0 }?.let { getInt(it) },
-                    isTrashed = isTrashedCol.takeIf { it >= 0 }?.let { getInt(it) },
-                    generationAdded = generationAddedCol.takeIf { it >= 0 }?.let { getLong(it) },
-                    generationModified =
-                        generationModifiedCol.takeIf { it >= 0 }?.let { getLong(it) },
-                    documentId = documentIdCol.takeIf { it >= 0 }?.let { getString(it) },
-                    originalDocumentId =
-                        originalDocumentIdCol.takeIf { it >= 0 }?.let { getString(it) },
-                )
-            )
-        }
-        return items
-    }
-
-    @Suppress("DEPRECATION")
     override suspend fun getVideos(): List<VideoItem> =
         withContext(ioDispatcher) {
             val projection =
@@ -529,3 +435,77 @@ constructor(
         return items
     }
 }
+
+@Suppress("DEPRECATION")
+private fun Cursor.toImageItems(): List<ImageItem> =
+    generateSequence { if (moveToNext()) toImageItem() else null }.toList()
+
+@Suppress("DEPRECATION")
+private fun Cursor.toImageItem(): ImageItem =
+    ImageItem(
+        id = getLong(getColumnIndexOrThrow(MediaStore.Images.Media._ID)),
+        displayName = optStringCol(MediaStore.Images.Media.DISPLAY_NAME),
+        size = optLongCol(MediaStore.Images.Media.SIZE),
+        mimeType = optStringCol(MediaStore.Images.Media.MIME_TYPE),
+        dateAdded = optLongCol(MediaStore.Images.Media.DATE_ADDED),
+        dateModified = optLongCol(MediaStore.Images.Media.DATE_MODIFIED),
+        dateTaken = optLongCol(MediaStore.Images.Media.DATE_TAKEN),
+        width = optIntCol(MediaStore.Images.Media.WIDTH),
+        height = optIntCol(MediaStore.Images.Media.HEIGHT),
+        orientation = optIntCol(MediaStore.Images.Media.ORIENTATION),
+        bucketId = optStringCol(MediaStore.Images.Media.BUCKET_ID),
+        bucketDisplayName = optStringCol(MediaStore.Images.Media.BUCKET_DISPLAY_NAME),
+        description = optStringCol(MediaStore.Images.Media.DESCRIPTION),
+        isPrivate = optIntCol(MediaStore.Images.Media.IS_PRIVATE),
+        latitude = optDoubleCol(MediaStore.Images.Media.LATITUDE),
+        longitude = optDoubleCol(MediaStore.Images.Media.LONGITUDE),
+        data = optStringCol(MediaStore.Images.Media.DATA),
+        relativePath =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+                optStringCol(MediaStore.Images.Media.RELATIVE_PATH)
+            else null,
+        volumeName =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+                optStringCol(MediaStore.Images.Media.VOLUME_NAME)
+            else null,
+        isPending =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+                optIntCol(MediaStore.Images.Media.IS_PENDING)
+            else null,
+        isFavorite =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+                optIntCol(MediaStore.Images.Media.IS_FAVORITE)
+            else null,
+        isTrashed =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+                optIntCol(MediaStore.Images.Media.IS_TRASHED)
+            else null,
+        generationAdded =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+                optLongCol(MediaStore.Images.Media.GENERATION_ADDED)
+            else null,
+        generationModified =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+                optLongCol(MediaStore.Images.Media.GENERATION_MODIFIED)
+            else null,
+        documentId =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+                optStringCol(MediaStore.Images.Media.DOCUMENT_ID)
+            else null,
+        originalDocumentId =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+                optStringCol(MediaStore.Images.Media.ORIGINAL_DOCUMENT_ID)
+            else null,
+    )
+
+private fun Cursor.optStringCol(column: String): String? =
+    getColumnIndex(column).takeIf { it >= 0 }?.let { getString(it) }
+
+private fun Cursor.optLongCol(column: String): Long? =
+    getColumnIndex(column).takeIf { it >= 0 }?.let { getLong(it) }
+
+private fun Cursor.optIntCol(column: String): Int? =
+    getColumnIndex(column).takeIf { it >= 0 }?.let { getInt(it) }
+
+private fun Cursor.optDoubleCol(column: String): Double? =
+    getColumnIndex(column).takeIf { it >= 0 }?.let { getDouble(it) }
