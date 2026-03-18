@@ -23,6 +23,7 @@ class MediaRepositoryImplTest {
             GrantPermissionRule.grant(
                 Manifest.permission.READ_MEDIA_IMAGES,
                 Manifest.permission.READ_MEDIA_VIDEO,
+                Manifest.permission.READ_MEDIA_AUDIO,
             )
         } else {
             GrantPermissionRule.grant(Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -74,6 +75,28 @@ class MediaRepositoryImplTest {
     @Test
     fun getVideos_アイテムが存在する場合_idが正の値である() = runBlocking {
         val result = repository.getVideos()
+        result.forEach { item -> assert(item.id > 0) { "id must be positive, but was ${item.id}" } }
+    }
+
+    // endregion
+
+    // region getAudios
+
+    @Test
+    fun getAudios_例外を投げずに呼び出せる() = runBlocking {
+        val result = repository.getAudios()
+        assertNotNull(result)
+    }
+
+    @Test
+    fun getAudios_戻り値はリストである() = runBlocking {
+        val result = repository.getAudios()
+        assert(result.size >= 0)
+    }
+
+    @Test
+    fun getAudios_アイテムが存在する場合_idが正の値である() = runBlocking {
+        val result = repository.getAudios()
         result.forEach { item -> assert(item.id > 0) { "id must be positive, but was ${item.id}" } }
     }
 

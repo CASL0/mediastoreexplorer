@@ -348,5 +348,184 @@ constructor(
         return items
     }
 
-    override suspend fun getAudios(): List<AudioItem> = withContext(ioDispatcher) { emptyList() }
+    @Suppress("DEPRECATION")
+    override suspend fun getAudios(): List<AudioItem> =
+        withContext(ioDispatcher) {
+            val projection =
+                buildList {
+                        add(MediaStore.Audio.Media._ID)
+                        add(MediaStore.Audio.Media.DISPLAY_NAME)
+                        add(MediaStore.Audio.Media.SIZE)
+                        add(MediaStore.Audio.Media.MIME_TYPE)
+                        add(MediaStore.Audio.Media.DATE_ADDED)
+                        add(MediaStore.Audio.Media.DATE_MODIFIED)
+                        add(MediaStore.Audio.Media.TITLE)
+                        add(MediaStore.Audio.Media.ALBUM)
+                        add(MediaStore.Audio.Media.ALBUM_ID)
+                        add(MediaStore.Audio.Media.ARTIST)
+                        add(MediaStore.Audio.Media.ARTIST_ID)
+                        add(MediaStore.Audio.Media.COMPOSER)
+                        add(MediaStore.Audio.Media.TRACK)
+                        add(MediaStore.Audio.Media.YEAR)
+                        add(MediaStore.Audio.Media.DURATION)
+                        add(MediaStore.Audio.Media.BOOKMARK)
+                        add(MediaStore.Audio.Media.IS_MUSIC)
+                        add(MediaStore.Audio.Media.IS_PODCAST)
+                        add(MediaStore.Audio.Media.IS_RINGTONE)
+                        add(MediaStore.Audio.Media.IS_ALARM)
+                        add(MediaStore.Audio.Media.IS_NOTIFICATION)
+                        add(MediaStore.Audio.Media.BUCKET_ID)
+                        add(MediaStore.Audio.Media.BUCKET_DISPLAY_NAME)
+                        add(MediaStore.Audio.Media.DATA)
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                            add(MediaStore.Audio.Media.RELATIVE_PATH)
+                            add(MediaStore.Audio.Media.VOLUME_NAME)
+                            add(MediaStore.Audio.Media.IS_PENDING)
+                            add(MediaStore.Audio.Media.IS_AUDIOBOOK)
+                        }
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                            add(MediaStore.Audio.Media.IS_FAVORITE)
+                            add(MediaStore.Audio.Media.IS_TRASHED)
+                            add(MediaStore.Audio.Media.GENERATION_ADDED)
+                            add(MediaStore.Audio.Media.GENERATION_MODIFIED)
+                            add(MediaStore.Audio.Media.DOCUMENT_ID)
+                            add(MediaStore.Audio.Media.ORIGINAL_DOCUMENT_ID)
+                        }
+                    }
+                    .toTypedArray()
+
+            val result = mutableListOf<AudioItem>()
+
+            val queryUri =
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    MediaStore.Audio.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
+                } else {
+                    MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+                }
+
+            contentResolver
+                .query(
+                    queryUri,
+                    projection,
+                    null,
+                    null,
+                    "${MediaStore.Audio.Media.DATE_MODIFIED} DESC",
+                )
+                ?.use { cursor -> result.addAll(cursor.toAudioItems()) }
+
+            result
+        }
+
+    @Suppress("DEPRECATION")
+    private fun Cursor.toAudioItems(): List<AudioItem> {
+        val idCol = getColumnIndexOrThrow(MediaStore.Audio.Media._ID)
+        val displayNameCol = getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME)
+        val sizeCol = getColumnIndex(MediaStore.Audio.Media.SIZE)
+        val mimeTypeCol = getColumnIndex(MediaStore.Audio.Media.MIME_TYPE)
+        val dateAddedCol = getColumnIndex(MediaStore.Audio.Media.DATE_ADDED)
+        val dateModifiedCol = getColumnIndex(MediaStore.Audio.Media.DATE_MODIFIED)
+        val titleCol = getColumnIndex(MediaStore.Audio.Media.TITLE)
+        val albumCol = getColumnIndex(MediaStore.Audio.Media.ALBUM)
+        val albumIdCol = getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)
+        val artistCol = getColumnIndex(MediaStore.Audio.Media.ARTIST)
+        val artistIdCol = getColumnIndex(MediaStore.Audio.Media.ARTIST_ID)
+        val composerCol = getColumnIndex(MediaStore.Audio.Media.COMPOSER)
+        val trackCol = getColumnIndex(MediaStore.Audio.Media.TRACK)
+        val yearCol = getColumnIndex(MediaStore.Audio.Media.YEAR)
+        val durationCol = getColumnIndex(MediaStore.Audio.Media.DURATION)
+        val bookmarkCol = getColumnIndex(MediaStore.Audio.Media.BOOKMARK)
+        val isMusicCol = getColumnIndex(MediaStore.Audio.Media.IS_MUSIC)
+        val isPodcastCol = getColumnIndex(MediaStore.Audio.Media.IS_PODCAST)
+        val isRingtoneCol = getColumnIndex(MediaStore.Audio.Media.IS_RINGTONE)
+        val isAlarmCol = getColumnIndex(MediaStore.Audio.Media.IS_ALARM)
+        val isNotificationCol = getColumnIndex(MediaStore.Audio.Media.IS_NOTIFICATION)
+        val bucketIdCol = getColumnIndex(MediaStore.Audio.Media.BUCKET_ID)
+        val bucketNameCol = getColumnIndex(MediaStore.Audio.Media.BUCKET_DISPLAY_NAME)
+        val dataCol = getColumnIndex(MediaStore.Audio.Media.DATA)
+        val relativePathCol =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+                getColumnIndex(MediaStore.Audio.Media.RELATIVE_PATH)
+            else -1
+        val volumeNameCol =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+                getColumnIndex(MediaStore.Audio.Media.VOLUME_NAME)
+            else -1
+        val isPendingCol =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+                getColumnIndex(MediaStore.Audio.Media.IS_PENDING)
+            else -1
+        val isAudiobookCol =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+                getColumnIndex(MediaStore.Audio.Media.IS_AUDIOBOOK)
+            else -1
+        val isFavoriteCol =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+                getColumnIndex(MediaStore.Audio.Media.IS_FAVORITE)
+            else -1
+        val isTrashedCol =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+                getColumnIndex(MediaStore.Audio.Media.IS_TRASHED)
+            else -1
+        val generationAddedCol =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+                getColumnIndex(MediaStore.Audio.Media.GENERATION_ADDED)
+            else -1
+        val generationModifiedCol =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+                getColumnIndex(MediaStore.Audio.Media.GENERATION_MODIFIED)
+            else -1
+        val documentIdCol =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+                getColumnIndex(MediaStore.Audio.Media.DOCUMENT_ID)
+            else -1
+        val originalDocumentIdCol =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+                getColumnIndex(MediaStore.Audio.Media.ORIGINAL_DOCUMENT_ID)
+            else -1
+
+        val items = mutableListOf<AudioItem>()
+        while (moveToNext()) {
+            items.add(
+                AudioItem(
+                    id = getLong(idCol),
+                    displayName = displayNameCol.takeIf { it >= 0 }?.let { getString(it) },
+                    size = sizeCol.takeIf { it >= 0 }?.let { getLong(it) },
+                    mimeType = mimeTypeCol.takeIf { it >= 0 }?.let { getString(it) },
+                    dateAdded = dateAddedCol.takeIf { it >= 0 }?.let { getLong(it) },
+                    dateModified = dateModifiedCol.takeIf { it >= 0 }?.let { getLong(it) },
+                    title = titleCol.takeIf { it >= 0 }?.let { getString(it) },
+                    album = albumCol.takeIf { it >= 0 }?.let { getString(it) },
+                    albumId = albumIdCol.takeIf { it >= 0 }?.let { getLong(it) },
+                    artist = artistCol.takeIf { it >= 0 }?.let { getString(it) },
+                    artistId = artistIdCol.takeIf { it >= 0 }?.let { getLong(it) },
+                    composer = composerCol.takeIf { it >= 0 }?.let { getString(it) },
+                    track = trackCol.takeIf { it >= 0 }?.let { getInt(it) },
+                    year = yearCol.takeIf { it >= 0 }?.let { getInt(it) },
+                    duration = durationCol.takeIf { it >= 0 }?.let { getLong(it) },
+                    bookmark = bookmarkCol.takeIf { it >= 0 }?.let { getLong(it) },
+                    isMusic = isMusicCol.takeIf { it >= 0 }?.let { getInt(it) },
+                    isPodcast = isPodcastCol.takeIf { it >= 0 }?.let { getInt(it) },
+                    isRingtone = isRingtoneCol.takeIf { it >= 0 }?.let { getInt(it) },
+                    isAlarm = isAlarmCol.takeIf { it >= 0 }?.let { getInt(it) },
+                    isNotification = isNotificationCol.takeIf { it >= 0 }?.let { getInt(it) },
+                    bucketId = bucketIdCol.takeIf { it >= 0 }?.let { getString(it) },
+                    bucketDisplayName = bucketNameCol.takeIf { it >= 0 }?.let { getString(it) },
+                    data = dataCol.takeIf { it >= 0 }?.let { getString(it) },
+                    relativePath = relativePathCol.takeIf { it >= 0 }?.let { getString(it) },
+                    volumeName = volumeNameCol.takeIf { it >= 0 }?.let { getString(it) },
+                    isPending = isPendingCol.takeIf { it >= 0 }?.let { getInt(it) },
+                    isAudiobook = isAudiobookCol.takeIf { it >= 0 }?.let { getInt(it) },
+                    isFavorite = isFavoriteCol.takeIf { it >= 0 }?.let { getInt(it) },
+                    isTrashed = isTrashedCol.takeIf { it >= 0 }?.let { getInt(it) },
+                    generationAdded = generationAddedCol.takeIf { it >= 0 }?.let { getLong(it) },
+                    generationModified =
+                        generationModifiedCol.takeIf { it >= 0 }?.let { getLong(it) },
+                    documentId = documentIdCol.takeIf { it >= 0 }?.let { getString(it) },
+                    originalDocumentId =
+                        originalDocumentIdCol.takeIf { it >= 0 }?.let { getString(it) },
+                )
+            )
+        }
+        return items
+    }
 }
