@@ -1,0 +1,33 @@
+{
+  "enabledPlugins": {
+    "kotlin-lsp@claude-plugins-official": true,
+    "commit-commands@claude-plugins-official": true,
+    "claude-md-management@claude-plugins-official": true,
+    "everything-claude-code@everything-claude-code": true,
+    "everything-claude-code-mobile@everything-claude-code-mobile": true
+  },
+  "language": "japanese",
+  "permissions": {
+    "allow": [
+      "Bash(./gradlew test*UnitTest)",
+      "Bash(./gradlew connected*AndroidTest)",
+      "Bash(./gradlew jacoco*)",
+      "Bash(./gradlew spotless*)",
+      "Bash(./gradlew assemble*)",
+      "Bash(./gradlew detekt)"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "./gradlew spotlessApply"
+          }
+        ]
+      }
+    ]
+  }
+}
