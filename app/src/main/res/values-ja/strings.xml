@@ -60,4 +60,24 @@
     <string name="col_album">アルバム</string>
     <string name="col_tags">タグ</string>
     <string name="col_bookmark">しおり (ms)</string>
+
+    <!-- 音声タブ -->
+    <string name="tab_audios">音声</string>
+
+    <!-- 権限画面（音声） -->
+    <string name="permission_audios_message">音声ファイルへのアクセス権限が必要です。\n「権限を付与する」をタップしてください。</string>
+
+    <!-- 音声固有カラム -->
+    <string name="col_title">タイトル</string>
+    <string name="col_album_id">アルバムID</string>
+    <string name="col_artist_id">アーティストID</string>
+    <string name="col_composer">作曲者</string>
+    <string name="col_track">トラック番号</string>
+    <string name="col_year">年</string>
+    <string name="col_is_music">音楽</string>
+    <string name="col_is_podcast">ポッドキャスト</string>
+    <string name="col_is_ringtone">着信音</string>
+    <string name="col_is_alarm">アラーム</string>
+    <string name="col_is_notification">通知音</string>
+    <string name="col_is_audiobook">オーディオブック</string>
 </resources>

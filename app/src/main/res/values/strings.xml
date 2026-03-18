@@ -60,4 +60,24 @@
     <string name="col_album">Album</string>
     <string name="col_tags">Tags</string>
     <string name="col_bookmark">Bookmark (ms)</string>
+
+    <!-- Audio tab -->
+    <string name="tab_audios">Audios</string>
+
+    <!-- Permission screen (audio) -->
+    <string name="permission_audios_message">Permission to access audio files is required.\nTap \"Grant Permission\".</string>
+
+    <!-- Audio-specific columns -->
+    <string name="col_title">Title</string>
+    <string name="col_album_id">Album ID</string>
+    <string name="col_artist_id">Artist ID</string>
+    <string name="col_composer">Composer</string>
+    <string name="col_track">Track</string>
+    <string name="col_year">Year</string>
+    <string name="col_is_music">Music</string>
+    <string name="col_is_podcast">Podcast</string>
+    <string name="col_is_ringtone">Ringtone</string>
+    <string name="col_is_alarm">Alarm</string>
+    <string name="col_is_notification">Notification</string>
+    <string name="col_is_audiobook">Audiobook</string>
 </resources>
