@@ -1,0 +1,19 @@
+build:
+  maxIssues: 0
+
+config:
+  validation: true
+  warningsAsErrors: true
+
+style:
+  # Compose の dp 値などで頻出するためオフ
+  MagicNumber:
+    active: false
+  # Compose の末尾ラムダスタイルと衝突するためオフ
+  TrailingWhitespace:
+    active: true
+
+naming:
+  FunctionNaming:
+    # Compose の Composable 関数は大文字始まりを許容
+    functionPattern: '[a-zA-Z][a-zA-Z0-9]*'
