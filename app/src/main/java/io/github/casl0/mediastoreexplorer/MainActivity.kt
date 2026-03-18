@@ -22,6 +22,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import dagger.hilt.android.AndroidEntryPoint
+import io.github.casl0.mediastoreexplorer.ui.audios.AudiosScreen
+import io.github.casl0.mediastoreexplorer.ui.audios.AudiosViewModel
 import io.github.casl0.mediastoreexplorer.ui.images.ImagesScreen
 import io.github.casl0.mediastoreexplorer.ui.images.ImagesViewModel
 import io.github.casl0.mediastoreexplorer.ui.theme.MediaStoreExplorerTheme
@@ -34,6 +36,7 @@ class MainActivity : ComponentActivity() {
 
     private val imagesViewModel: ImagesViewModel by viewModels()
     private val videosViewModel: VideosViewModel by viewModels()
+    private val audiosViewModel: AudiosViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,7 +44,11 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             MediaStoreExplorerTheme {
-                MainScreen(imagesViewModel = imagesViewModel, videosViewModel = videosViewModel)
+                MainScreen(
+                    imagesViewModel = imagesViewModel,
+                    videosViewModel = videosViewModel,
+                    audiosViewModel = audiosViewModel,
+                )
             }
         }
     }
@@ -49,8 +56,17 @@ class MainActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun MainScreen(imagesViewModel: ImagesViewModel, videosViewModel: VideosViewModel) {
-    val tabs = listOf(stringResource(R.string.tab_images), stringResource(R.string.tab_videos))
+private fun MainScreen(
+    imagesViewModel: ImagesViewModel,
+    videosViewModel: VideosViewModel,
+    audiosViewModel: AudiosViewModel,
+) {
+    val tabs =
+        listOf(
+            stringResource(R.string.tab_images),
+            stringResource(R.string.tab_videos),
+            stringResource(R.string.tab_audios),
+        )
     val pagerState = rememberPagerState(pageCount = { tabs.size })
     val coroutineScope = rememberCoroutineScope()
 
@@ -73,6 +89,7 @@ private fun MainScreen(imagesViewModel: ImagesViewModel, videosViewModel: Videos
                 when (page) {
                     0 -> ImagesScreen(viewModel = imagesViewModel)
                     1 -> VideosScreen(viewModel = videosViewModel)
+                    2 -> AudiosScreen(viewModel = audiosViewModel)
                 }
             }
         }
