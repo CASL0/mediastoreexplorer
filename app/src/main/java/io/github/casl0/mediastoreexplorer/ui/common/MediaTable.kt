@@ -76,6 +76,7 @@ fun <T> MediaTable(
     isLoading: Boolean,
     error: String?,
     modifier: Modifier = Modifier,
+    key: (T) -> Any,
 ) {
     val scrollState: ScrollState = rememberScrollState()
 
@@ -114,7 +115,7 @@ fun <T> MediaTable(
                     HorizontalDivider(thickness = 2.dp, color = MaterialTheme.colorScheme.primary)
                 }
 
-                itemsIndexed(items) { index, item ->
+                itemsIndexed(items, key = { _, item -> key(item) }) { index, item ->
                     val rowBackground =
                         if (index % 2 == 0) {
                             MaterialTheme.colorScheme.surface
@@ -173,6 +174,7 @@ private fun MediaTableLoadingPreview() {
             columns = previewColumns,
             isLoading = true,
             error = null,
+            key = { it },
         )
     }
 }
@@ -186,6 +188,7 @@ private fun MediaTableErrorPreview() {
             columns = previewColumns,
             isLoading = false,
             error = "ContentResolver query failed",
+            key = { it },
         )
     }
 }
@@ -199,6 +202,7 @@ private fun MediaTableEmptyPreview() {
             columns = previewColumns,
             isLoading = false,
             error = null,
+            key = { it },
         )
     }
 }
@@ -213,6 +217,7 @@ private fun MediaTableWithDataPreview() {
             columns = previewColumns,
             isLoading = false,
             error = null,
+            key = { it },
         )
     }
 }

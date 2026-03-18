@@ -191,6 +191,7 @@ fun ImagesScreen(
             isLoading = uiState.isLoading,
             error = uiState.error,
             modifier = modifier,
+            key = { it.id },
         )
     }
 }

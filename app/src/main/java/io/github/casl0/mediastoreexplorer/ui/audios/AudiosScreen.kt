@@ -187,6 +187,7 @@ fun AudiosScreen(
             isLoading = uiState.isLoading,
             error = uiState.error,
             modifier = modifier,
+            key = { it.id },
         )
     }
 }
