@@ -8,11 +8,7 @@ plugins {
 
 android {
     namespace = "io.github.casl0.mediastoreexplorer"
-    compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
-    }
+    compileSdk { version = release(36) { minorApiLevel = 1 } }
 
     defaultConfig {
         applicationId = "io.github.casl0.mediastoreexplorer"
@@ -33,7 +29,7 @@ android {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
     }
@@ -41,34 +37,29 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    buildFeatures {
-        compose = true
-    }
+    buildFeatures { compose = true }
 }
 
-kotlin {
-    compilerOptions {
-        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11
-    }
-}
+kotlin { compilerOptions { jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11 } }
 
-val jacocoExcludes = listOf(
-    "**/R.class",
-    "**/R\$*.class",
-    "**/BuildConfig.*",
-    "**/Manifest*.*",
-    "**/*Test*.*",
-    // Hilt / Dagger 生成クラス
-    "**/*_MembersInjector.class",
-    "**/Dagger*Component*.class",
-    "**/*_Factory.class",
-    "**/*HiltComponents*.class",
-    "**/*Hilt_*.class",
-    "**/*_HiltModules*.class",
-    "**/hilt_aggregated_deps/**",
-    // Compose 生成クラス
-    "**/*ComposableSingletons*.*",
-)
+val jacocoExcludes =
+    listOf(
+        "**/R.class",
+        "**/R\$*.class",
+        "**/BuildConfig.*",
+        "**/Manifest*.*",
+        "**/*Test*.*",
+        // Hilt / Dagger 生成クラス
+        "**/*_MembersInjector.class",
+        "**/Dagger*Component*.class",
+        "**/*_Factory.class",
+        "**/*HiltComponents*.class",
+        "**/*Hilt_*.class",
+        "**/*_HiltModules*.class",
+        "**/hilt_aggregated_deps/**",
+        // Compose 生成クラス
+        "**/*ComposableSingletons*.*",
+    )
 
 // 単体テスト + インストルメンテッドテスト の合算カバレッジレポート
 tasks.register<JacocoReport>("jacocoDebugCoverageReport") {
@@ -80,7 +71,11 @@ tasks.register<JacocoReport>("jacocoDebugCoverageReport") {
     }
 
     classDirectories.setFrom(
-        fileTree(layout.buildDirectory.dir("intermediates/built_in_kotlinc/debug/compileDebugKotlin/classes")) {
+        fileTree(
+            layout.buildDirectory.dir(
+                "intermediates/built_in_kotlinc/debug/compileDebugKotlin/classes"
+            )
+        ) {
             exclude(jacocoExcludes)
         }
     )
@@ -105,7 +100,11 @@ tasks.register<JacocoReport>("jacocoUnitTestCoverageReport") {
     }
 
     classDirectories.setFrom(
-        fileTree(layout.buildDirectory.dir("intermediates/built_in_kotlinc/debug/compileDebugKotlin/classes")) {
+        fileTree(
+            layout.buildDirectory.dir(
+                "intermediates/built_in_kotlinc/debug/compileDebugKotlin/classes"
+            )
+        ) {
             exclude(jacocoExcludes)
         }
     )

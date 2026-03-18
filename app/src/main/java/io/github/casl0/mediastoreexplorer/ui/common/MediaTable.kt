@@ -37,9 +37,8 @@ import io.github.casl0.mediastoreexplorer.R
 /**
  * テーブルの 1 カラムを定義するクラス。
  *
- * テキストセルの場合は [getValue] を指定する。
- * カスタム Composable セル（サムネイル等）の場合は [customContent] を指定する。
- * 両方指定した場合は [customContent] が優先される。
+ * テキストセルの場合は [getValue] を指定する。 カスタム Composable セル（サムネイル等）の場合は [customContent] を指定する。 両方指定した場合は
+ * [customContent] が優先される。
  *
  * @param T テーブルに表示するアイテムの型
  * @property header ヘッダーに表示する文字列
@@ -57,8 +56,7 @@ class TableColumn<T>(
 /**
  * sticky ヘッダーと水平スクロールを備えたメディアテーブル。
  *
- * ロード中はプログレスインジケーター、エラー時はエラーメッセージ、
- * アイテムが空の場合は空メッセージを表示する。
+ * ロード中はプログレスインジケーター、エラー時はエラーメッセージ、 アイテムが空の場合は空メッセージを表示する。
  *
  * @param T テーブルに表示するアイテムの型
  * @param items 表示するアイテムのリスト
@@ -79,29 +77,32 @@ fun <T> MediaTable(
     val scrollState: ScrollState = rememberScrollState()
 
     when {
-        isLoading -> Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
-        }
+        isLoading ->
+            Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
 
-        error != null -> Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text(
-                text = stringResource(R.string.error_message, error),
-                color = MaterialTheme.colorScheme.error,
-            )
-        }
+        error != null ->
+            Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(
+                    text = stringResource(R.string.error_message, error),
+                    color = MaterialTheme.colorScheme.error,
+                )
+            }
 
-        items.isEmpty() -> Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text(text = stringResource(R.string.no_items))
-        }
+        items.isEmpty() ->
+            Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(text = stringResource(R.string.no_items))
+            }
 
         else -> {
             LazyColumn(modifier = modifier.fillMaxSize()) {
                 stickyHeader {
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(MaterialTheme.colorScheme.primaryContainer)
-                            .horizontalScroll(scrollState),
+                        modifier =
+                            Modifier.fillMaxWidth()
+                                .background(MaterialTheme.colorScheme.primaryContainer)
+                                .horizontalScroll(scrollState)
                     ) {
                         columns.forEach { col ->
                             TableHeaderCell(text = col.header, width = col.width)
@@ -111,23 +112,22 @@ fun <T> MediaTable(
                 }
 
                 itemsIndexed(items) { index, item ->
-                    val rowBackground = if (index % 2 == 0) {
-                        MaterialTheme.colorScheme.surface
-                    } else {
-                        MaterialTheme.colorScheme.surfaceVariant
-                    }
+                    val rowBackground =
+                        if (index % 2 == 0) {
+                            MaterialTheme.colorScheme.surface
+                        } else {
+                            MaterialTheme.colorScheme.surfaceVariant
+                        }
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(rowBackground)
-                            .horizontalScroll(scrollState),
+                        modifier =
+                            Modifier.fillMaxWidth()
+                                .background(rowBackground)
+                                .horizontalScroll(scrollState)
                     ) {
                         columns.forEach { col ->
                             if (col.customContent != null) {
                                 Box(
-                                    modifier = Modifier
-                                        .size(col.width)
-                                        .padding(4.dp),
+                                    modifier = Modifier.size(col.width).padding(4.dp),
                                     contentAlignment = Alignment.Center,
                                 ) {
                                     col.customContent.invoke(item)
@@ -148,9 +148,7 @@ fun <T> MediaTable(
 private fun TableHeaderCell(text: String, width: Dp) {
     Text(
         text = text,
-        modifier = Modifier
-            .width(width)
-            .padding(horizontal = 8.dp, vertical = 6.dp),
+        modifier = Modifier.width(width).padding(horizontal = 8.dp, vertical = 6.dp),
         fontSize = 12.sp,
         fontWeight = FontWeight.Bold,
         maxLines = 1,
@@ -169,9 +167,7 @@ private fun TableDataCell(text: String, width: Dp) {
     ) {
         Text(
             text = text,
-            modifier = Modifier
-                .width(width)
-                .padding(horizontal = 8.dp, vertical = 4.dp),
+            modifier = Modifier.width(width).padding(horizontal = 8.dp, vertical = 4.dp),
             fontSize = 11.sp,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,

@@ -12,8 +12,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import io.github.casl0.mediastoreexplorer.R
 
@@ -31,9 +31,7 @@ fun PermissionRequiredScreen(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(32.dp),
+        modifier = modifier.fillMaxSize().padding(32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
@@ -43,8 +41,6 @@ fun PermissionRequiredScreen(
             textAlign = TextAlign.Center,
         )
         Spacer(modifier = Modifier.height(24.dp))
-        Button(onClick = onRequestPermission) {
-            Text(stringResource(R.string.grant_permission))
-        }
+        Button(onClick = onRequestPermission) { Text(stringResource(R.string.grant_permission)) }
     }
 }

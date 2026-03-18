@@ -19,6 +19,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.casl0.mediastoreexplorer.ui.images.ImagesScreen
 import io.github.casl0.mediastoreexplorer.ui.images.ImagesViewModel
@@ -26,7 +27,6 @@ import io.github.casl0.mediastoreexplorer.ui.theme.MediaStoreExplorerTheme
 import io.github.casl0.mediastoreexplorer.ui.videos.VideosScreen
 import io.github.casl0.mediastoreexplorer.ui.videos.VideosViewModel
 import kotlinx.coroutines.launch
-import androidx.compose.ui.res.stringResource
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -39,10 +39,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             MediaStoreExplorerTheme {
-                MainScreen(
-                    imagesViewModel = imagesViewModel,
-                    videosViewModel = videosViewModel,
-                )
+                MainScreen(imagesViewModel = imagesViewModel, videosViewModel = videosViewModel)
             }
         }
     }
@@ -50,22 +47,13 @@ class MainActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun MainScreen(
-    imagesViewModel: ImagesViewModel,
-    videosViewModel: VideosViewModel,
-) {
-    val tabs = listOf(
-        stringResource(R.string.tab_images),
-        stringResource(R.string.tab_videos),
-    )
+private fun MainScreen(imagesViewModel: ImagesViewModel, videosViewModel: VideosViewModel) {
+    val tabs = listOf(stringResource(R.string.tab_images), stringResource(R.string.tab_videos))
     val pagerState = rememberPagerState(pageCount = { tabs.size })
     val coroutineScope = rememberCoroutineScope()
 
-    Scaffold(
-        topBar = {
-            TopAppBar(title = { Text(stringResource(R.string.app_name)) })
-        },
-    ) { innerPadding ->
+    Scaffold(topBar = { TopAppBar(title = { Text(stringResource(R.string.app_name)) }) }) {
+        innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
             TabRow(selectedTabIndex = pagerState.currentPage) {
                 tabs.forEachIndexed { index, title ->
@@ -79,10 +67,7 @@ private fun MainScreen(
                 }
             }
 
-            HorizontalPager(
-                state = pagerState,
-                modifier = Modifier.fillMaxSize(),
-            ) { page ->
+            HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize()) { page ->
                 when (page) {
                     0 -> ImagesScreen(viewModel = imagesViewModel)
                     1 -> VideosScreen(viewModel = videosViewModel)

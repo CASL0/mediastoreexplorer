@@ -16,14 +16,11 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class MediaTableTest {
 
-    @get:Rule
-    val composeTestRule = createComposeRule()
+    @get:Rule val composeTestRule = createComposeRule()
 
     private val context = InstrumentationRegistry.getInstrumentation().targetContext
 
-    private val testColumns = listOf(
-        TableColumn<String>(header = "Name", width = 120.dp) { it },
-    )
+    private val testColumns = listOf(TableColumn<String>(header = "Name", width = 120.dp) { it })
 
     // region ローディング状態
 
@@ -71,17 +68,10 @@ class MediaTableTest {
     @Test
     fun items_が空_のとき_空メッセージが表示される() {
         composeTestRule.setContent {
-            MediaTable(
-                items = emptyList(),
-                columns = testColumns,
-                isLoading = false,
-                error = null,
-            )
+            MediaTable(items = emptyList(), columns = testColumns, isLoading = false, error = null)
         }
 
-        composeTestRule
-            .onNodeWithText(context.getString(R.string.no_items))
-            .assertIsDisplayed()
+        composeTestRule.onNodeWithText(context.getString(R.string.no_items)).assertIsDisplayed()
     }
 
     // endregion
@@ -119,10 +109,11 @@ class MediaTableTest {
 
     @Test
     fun 複数カラムのヘッダーがすべて表示される() {
-        val multiColumns = listOf(
-            TableColumn<String>(header = "Col_A", width = 100.dp) { it },
-            TableColumn<String>(header = "Col_B", width = 100.dp) { it.uppercase() },
-        )
+        val multiColumns =
+            listOf(
+                TableColumn<String>(header = "Col_A", width = 100.dp) { it },
+                TableColumn<String>(header = "Col_B", width = 100.dp) { it.uppercase() },
+            )
         composeTestRule.setContent {
             MediaTable(
                 items = listOf("hello"),

@@ -12,8 +12,7 @@ import org.junit.Test
 
 class ImagesViewModelTest {
 
-    @get:Rule
-    val mainDispatcherRule = MainDispatcherRule()
+    @get:Rule val mainDispatcherRule = MainDispatcherRule()
 
     private lateinit var fakeRepository: FakeMediaRepository
     private lateinit var viewModel: ImagesViewModel
@@ -40,34 +39,35 @@ class ImagesViewModelTest {
 
     @Test
     fun loadImages_成功時_images_に取得結果が格納される() {
-        val item = ImageItem(
-            id = 1L,
-            displayName = "photo.jpg",
-            size = null,
-            mimeType = null,
-            dateAdded = null,
-            dateModified = null,
-            dateTaken = null,
-            width = null,
-            height = null,
-            orientation = null,
-            bucketId = null,
-            bucketDisplayName = null,
-            description = null,
-            isPrivate = null,
-            latitude = null,
-            longitude = null,
-            data = null,
-            relativePath = null,
-            volumeName = null,
-            isPending = null,
-            isFavorite = null,
-            isTrashed = null,
-            generationAdded = null,
-            generationModified = null,
-            documentId = null,
-            originalDocumentId = null,
-        )
+        val item =
+            ImageItem(
+                id = 1L,
+                displayName = "photo.jpg",
+                size = null,
+                mimeType = null,
+                dateAdded = null,
+                dateModified = null,
+                dateTaken = null,
+                width = null,
+                height = null,
+                orientation = null,
+                bucketId = null,
+                bucketDisplayName = null,
+                description = null,
+                isPrivate = null,
+                latitude = null,
+                longitude = null,
+                data = null,
+                relativePath = null,
+                volumeName = null,
+                isPending = null,
+                isFavorite = null,
+                isTrashed = null,
+                generationAdded = null,
+                generationModified = null,
+                documentId = null,
+                originalDocumentId = null,
+            )
         fakeRepository.images = listOf(item)
 
         viewModel.loadImages()

@@ -15,8 +15,7 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class PermissionScreenTest {
 
-    @get:Rule
-    val composeTestRule = createComposeRule()
+    @get:Rule val composeTestRule = createComposeRule()
 
     private val context = InstrumentationRegistry.getInstrumentation().targetContext
 
@@ -25,10 +24,7 @@ class PermissionScreenTest {
     @Test
     fun 渡したメッセージが画面に表示される() {
         composeTestRule.setContent {
-            PermissionRequiredScreen(
-                message = "テストメッセージ",
-                onRequestPermission = {},
-            )
+            PermissionRequiredScreen(message = "テストメッセージ", onRequestPermission = {})
         }
 
         composeTestRule.onNodeWithText("テストメッセージ").assertIsDisplayed()
@@ -41,10 +37,7 @@ class PermissionScreenTest {
     @Test
     fun 権限付与ボタンが表示される() {
         composeTestRule.setContent {
-            PermissionRequiredScreen(
-                message = "テストメッセージ",
-                onRequestPermission = {},
-            )
+            PermissionRequiredScreen(message = "テストメッセージ", onRequestPermission = {})
         }
 
         composeTestRule
@@ -56,15 +49,10 @@ class PermissionScreenTest {
     fun 権限付与ボタンをタップするとコールバックが呼ばれる() {
         var called = false
         composeTestRule.setContent {
-            PermissionRequiredScreen(
-                message = "テストメッセージ",
-                onRequestPermission = { called = true },
-            )
+            PermissionRequiredScreen(message = "テストメッセージ", onRequestPermission = { called = true })
         }
 
-        composeTestRule
-            .onNodeWithText(context.getString(R.string.grant_permission))
-            .performClick()
+        composeTestRule.onNodeWithText(context.getString(R.string.grant_permission)).performClick()
 
         assertTrue(called)
     }

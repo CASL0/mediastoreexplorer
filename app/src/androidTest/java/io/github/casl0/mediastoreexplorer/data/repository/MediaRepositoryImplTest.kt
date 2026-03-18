@@ -18,14 +18,15 @@ class MediaRepositoryImplTest {
     private val context = InstrumentationRegistry.getInstrumentation().targetContext
 
     @get:Rule
-    val permissionRule: GrantPermissionRule = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        GrantPermissionRule.grant(
-            Manifest.permission.READ_MEDIA_IMAGES,
-            Manifest.permission.READ_MEDIA_VIDEO,
-        )
-    } else {
-        GrantPermissionRule.grant(Manifest.permission.READ_EXTERNAL_STORAGE)
-    }
+    val permissionRule: GrantPermissionRule =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            GrantPermissionRule.grant(
+                Manifest.permission.READ_MEDIA_IMAGES,
+                Manifest.permission.READ_MEDIA_VIDEO,
+            )
+        } else {
+            GrantPermissionRule.grant(Manifest.permission.READ_EXTERNAL_STORAGE)
+        }
 
     private val repository by lazy {
         MediaRepositoryImpl(
@@ -51,9 +52,7 @@ class MediaRepositoryImplTest {
     @Test
     fun getImages_アイテムが存在する場合_idが正の値である() = runBlocking {
         val result = repository.getImages()
-        result.forEach { item ->
-            assert(item.id > 0) { "id must be positive, but was ${item.id}" }
-        }
+        result.forEach { item -> assert(item.id > 0) { "id must be positive, but was ${item.id}" } }
     }
 
     // endregion
@@ -75,9 +74,7 @@ class MediaRepositoryImplTest {
     @Test
     fun getVideos_アイテムが存在する場合_idが正の値である() = runBlocking {
         val result = repository.getVideos()
-        result.forEach { item ->
-            assert(item.id > 0) { "id must be positive, but was ${item.id}" }
-        }
+        result.forEach { item -> assert(item.id > 0) { "id must be positive, but was ${item.id}" } }
     }
 
     // endregion

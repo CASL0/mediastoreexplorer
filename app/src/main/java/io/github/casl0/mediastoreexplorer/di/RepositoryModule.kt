@@ -13,7 +13,5 @@ import javax.inject.Singleton
 abstract class RepositoryModule {
 
     /** [MediaRepositoryImpl] を [MediaRepository] インターフェースにバインドする。 */
-    @Binds
-    @Singleton
-    abstract fun bindMediaRepository(impl: MediaRepositoryImpl): MediaRepository
+    @Binds @Singleton abstract fun bindMediaRepository(impl: MediaRepositoryImpl): MediaRepository
 }

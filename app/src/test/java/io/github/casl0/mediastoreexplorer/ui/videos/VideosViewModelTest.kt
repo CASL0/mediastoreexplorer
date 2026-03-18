@@ -12,8 +12,7 @@ import org.junit.Test
 
 class VideosViewModelTest {
 
-    @get:Rule
-    val mainDispatcherRule = MainDispatcherRule()
+    @get:Rule val mainDispatcherRule = MainDispatcherRule()
 
     private lateinit var fakeRepository: FakeMediaRepository
     private lateinit var viewModel: VideosViewModel
@@ -40,41 +39,42 @@ class VideosViewModelTest {
 
     @Test
     fun loadVideos_成功時_videos_に取得結果が格納される() {
-        val item = VideoItem(
-            id = 1L,
-            displayName = "video.mp4",
-            size = null,
-            mimeType = null,
-            dateAdded = null,
-            dateModified = null,
-            dateTaken = null,
-            width = null,
-            height = null,
-            bucketId = null,
-            bucketDisplayName = null,
-            description = null,
-            category = null,
-            language = null,
-            artist = null,
-            album = null,
-            tags = null,
-            duration = null,
-            resolution = null,
-            bookmark = null,
-            isPrivate = null,
-            latitude = null,
-            longitude = null,
-            data = null,
-            relativePath = null,
-            volumeName = null,
-            isPending = null,
-            isFavorite = null,
-            isTrashed = null,
-            generationAdded = null,
-            generationModified = null,
-            documentId = null,
-            originalDocumentId = null,
-        )
+        val item =
+            VideoItem(
+                id = 1L,
+                displayName = "video.mp4",
+                size = null,
+                mimeType = null,
+                dateAdded = null,
+                dateModified = null,
+                dateTaken = null,
+                width = null,
+                height = null,
+                bucketId = null,
+                bucketDisplayName = null,
+                description = null,
+                category = null,
+                language = null,
+                artist = null,
+                album = null,
+                tags = null,
+                duration = null,
+                resolution = null,
+                bookmark = null,
+                isPrivate = null,
+                latitude = null,
+                longitude = null,
+                data = null,
+                relativePath = null,
+                volumeName = null,
+                isPending = null,
+                isFavorite = null,
+                isTrashed = null,
+                generationAdded = null,
+                generationModified = null,
+                documentId = null,
+                originalDocumentId = null,
+            )
         fakeRepository.videos = listOf(item)
 
         viewModel.loadVideos()

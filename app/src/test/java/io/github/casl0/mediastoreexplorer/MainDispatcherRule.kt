@@ -11,9 +11,8 @@ import org.junit.runner.Description
 
 /** [Dispatchers.Main] をテスト用ディスパッチャーに差し替える JUnit 4 ルール。 */
 @OptIn(ExperimentalCoroutinesApi::class)
-class MainDispatcherRule(
-    val testDispatcher: TestDispatcher = UnconfinedTestDispatcher(),
-) : TestWatcher() {
+class MainDispatcherRule(val testDispatcher: TestDispatcher = UnconfinedTestDispatcher()) :
+    TestWatcher() {
 
     override fun starting(description: Description) {
         Dispatchers.setMain(testDispatcher)

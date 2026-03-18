@@ -40,8 +40,11 @@ fun formatDuration(durationMs: Long?): String {
 }
 
 fun formatInt(value: Int?): String = value?.toString() ?: "-"
+
 fun formatLong(value: Long?): String = value?.toString() ?: "-"
+
 fun formatDouble(value: Double?): String = value?.toString() ?: "-"
+
 fun formatString(value: String?): String = if (value.isNullOrEmpty()) "-" else value
 
 /**
@@ -51,8 +54,9 @@ fun formatString(value: String?): String = if (value.isNullOrEmpty()) "-" else v
  * @param yes 1 に対応する文字列
  * @param no 0 に対応する文字列
  */
-fun formatBool(value: Int?, yes: String, no: String): String = when (value) {
-    1 -> yes
-    0 -> no
-    else -> "-"
-}
+fun formatBool(value: Int?, yes: String, no: String): String =
+    when (value) {
+        1 -> yes
+        0 -> no
+        else -> "-"
+    }
