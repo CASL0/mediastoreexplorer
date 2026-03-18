@@ -147,114 +147,6 @@ constructor(
         }
 
     @Suppress("DEPRECATION")
-    private fun Cursor.toVideoItems(): List<VideoItem> {
-        val idCol = getColumnIndexOrThrow(MediaStore.Video.Media._ID)
-        val displayNameCol = getColumnIndex(MediaStore.Video.Media.DISPLAY_NAME)
-        val sizeCol = getColumnIndex(MediaStore.Video.Media.SIZE)
-        val mimeTypeCol = getColumnIndex(MediaStore.Video.Media.MIME_TYPE)
-        val dateAddedCol = getColumnIndex(MediaStore.Video.Media.DATE_ADDED)
-        val dateModifiedCol = getColumnIndex(MediaStore.Video.Media.DATE_MODIFIED)
-        val dateTakenCol = getColumnIndex(MediaStore.Video.Media.DATE_TAKEN)
-        val widthCol = getColumnIndex(MediaStore.Video.Media.WIDTH)
-        val heightCol = getColumnIndex(MediaStore.Video.Media.HEIGHT)
-        val bucketIdCol = getColumnIndex(MediaStore.Video.Media.BUCKET_ID)
-        val bucketNameCol = getColumnIndex(MediaStore.Video.Media.BUCKET_DISPLAY_NAME)
-        val descriptionCol = getColumnIndex(MediaStore.Video.Media.DESCRIPTION)
-        val categoryCol = getColumnIndex(MediaStore.Video.Media.CATEGORY)
-        val languageCol = getColumnIndex(MediaStore.Video.Media.LANGUAGE)
-        val artistCol = getColumnIndex(MediaStore.Video.Media.ARTIST)
-        val albumCol = getColumnIndex(MediaStore.Video.Media.ALBUM)
-        val tagsCol = getColumnIndex(MediaStore.Video.Media.TAGS)
-        val durationCol = getColumnIndex(MediaStore.Video.Media.DURATION)
-        val resolutionCol = getColumnIndex(MediaStore.Video.Media.RESOLUTION)
-        val bookmarkCol = getColumnIndex(MediaStore.Video.Media.BOOKMARK)
-        val isPrivateCol = getColumnIndex(MediaStore.Video.Media.IS_PRIVATE)
-        val latitudeCol = getColumnIndex(MediaStore.Video.Media.LATITUDE)
-        val longitudeCol = getColumnIndex(MediaStore.Video.Media.LONGITUDE)
-        val dataCol = getColumnIndex(MediaStore.Video.Media.DATA)
-        val relativePathCol =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
-                getColumnIndex(MediaStore.Video.Media.RELATIVE_PATH)
-            else -1
-        val volumeNameCol =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
-                getColumnIndex(MediaStore.Video.Media.VOLUME_NAME)
-            else -1
-        val isPendingCol =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
-                getColumnIndex(MediaStore.Video.Media.IS_PENDING)
-            else -1
-        val isFavoriteCol =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
-                getColumnIndex(MediaStore.Video.Media.IS_FAVORITE)
-            else -1
-        val isTrashedCol =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
-                getColumnIndex(MediaStore.Video.Media.IS_TRASHED)
-            else -1
-        val generationAddedCol =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
-                getColumnIndex(MediaStore.Video.Media.GENERATION_ADDED)
-            else -1
-        val generationModifiedCol =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
-                getColumnIndex(MediaStore.Video.Media.GENERATION_MODIFIED)
-            else -1
-        val documentIdCol =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
-                getColumnIndex(MediaStore.Video.Media.DOCUMENT_ID)
-            else -1
-        val originalDocumentIdCol =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
-                getColumnIndex(MediaStore.Video.Media.ORIGINAL_DOCUMENT_ID)
-            else -1
-
-        val items = mutableListOf<VideoItem>()
-        while (moveToNext()) {
-            items.add(
-                VideoItem(
-                    id = getLong(idCol),
-                    displayName = displayNameCol.takeIf { it >= 0 }?.let { getString(it) },
-                    size = sizeCol.takeIf { it >= 0 }?.let { getLong(it) },
-                    mimeType = mimeTypeCol.takeIf { it >= 0 }?.let { getString(it) },
-                    dateAdded = dateAddedCol.takeIf { it >= 0 }?.let { getLong(it) },
-                    dateModified = dateModifiedCol.takeIf { it >= 0 }?.let { getLong(it) },
-                    dateTaken = dateTakenCol.takeIf { it >= 0 }?.let { getLong(it) },
-                    width = widthCol.takeIf { it >= 0 }?.let { getInt(it) },
-                    height = heightCol.takeIf { it >= 0 }?.let { getInt(it) },
-                    bucketId = bucketIdCol.takeIf { it >= 0 }?.let { getString(it) },
-                    bucketDisplayName = bucketNameCol.takeIf { it >= 0 }?.let { getString(it) },
-                    description = descriptionCol.takeIf { it >= 0 }?.let { getString(it) },
-                    category = categoryCol.takeIf { it >= 0 }?.let { getString(it) },
-                    language = languageCol.takeIf { it >= 0 }?.let { getString(it) },
-                    artist = artistCol.takeIf { it >= 0 }?.let { getString(it) },
-                    album = albumCol.takeIf { it >= 0 }?.let { getString(it) },
-                    tags = tagsCol.takeIf { it >= 0 }?.let { getString(it) },
-                    duration = durationCol.takeIf { it >= 0 }?.let { getLong(it) },
-                    resolution = resolutionCol.takeIf { it >= 0 }?.let { getString(it) },
-                    bookmark = bookmarkCol.takeIf { it >= 0 }?.let { getLong(it) },
-                    isPrivate = isPrivateCol.takeIf { it >= 0 }?.let { getInt(it) },
-                    latitude = latitudeCol.takeIf { it >= 0 }?.let { getDouble(it) },
-                    longitude = longitudeCol.takeIf { it >= 0 }?.let { getDouble(it) },
-                    data = dataCol.takeIf { it >= 0 }?.let { getString(it) },
-                    relativePath = relativePathCol.takeIf { it >= 0 }?.let { getString(it) },
-                    volumeName = volumeNameCol.takeIf { it >= 0 }?.let { getString(it) },
-                    isPending = isPendingCol.takeIf { it >= 0 }?.let { getInt(it) },
-                    isFavorite = isFavoriteCol.takeIf { it >= 0 }?.let { getInt(it) },
-                    isTrashed = isTrashedCol.takeIf { it >= 0 }?.let { getInt(it) },
-                    generationAdded = generationAddedCol.takeIf { it >= 0 }?.let { getLong(it) },
-                    generationModified =
-                        generationModifiedCol.takeIf { it >= 0 }?.let { getLong(it) },
-                    documentId = documentIdCol.takeIf { it >= 0 }?.let { getString(it) },
-                    originalDocumentId =
-                        originalDocumentIdCol.takeIf { it >= 0 }?.let { getString(it) },
-                )
-            )
-        }
-        return items
-    }
-
-    @Suppress("DEPRECATION")
     override suspend fun getAudios(): List<AudioItem> =
         withContext(ioDispatcher) {
             val projection =
@@ -460,42 +352,57 @@ private fun Cursor.toImageItem(): ImageItem =
         latitude = optDoubleCol(MediaStore.Images.Media.LATITUDE),
         longitude = optDoubleCol(MediaStore.Images.Media.LONGITUDE),
         data = optStringCol(MediaStore.Images.Media.DATA),
-        relativePath =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
-                optStringCol(MediaStore.Images.Media.RELATIVE_PATH)
-            else null,
-        volumeName =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
-                optStringCol(MediaStore.Images.Media.VOLUME_NAME)
-            else null,
-        isPending =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
-                optIntCol(MediaStore.Images.Media.IS_PENDING)
-            else null,
-        isFavorite =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
-                optIntCol(MediaStore.Images.Media.IS_FAVORITE)
-            else null,
-        isTrashed =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
-                optIntCol(MediaStore.Images.Media.IS_TRASHED)
-            else null,
-        generationAdded =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
-                optLongCol(MediaStore.Images.Media.GENERATION_ADDED)
-            else null,
-        generationModified =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
-                optLongCol(MediaStore.Images.Media.GENERATION_MODIFIED)
-            else null,
-        documentId =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
-                optStringCol(MediaStore.Images.Media.DOCUMENT_ID)
-            else null,
-        originalDocumentId =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
-                optStringCol(MediaStore.Images.Media.ORIGINAL_DOCUMENT_ID)
-            else null,
+        relativePath = optStringColQ(MediaStore.Images.Media.RELATIVE_PATH),
+        volumeName = optStringColQ(MediaStore.Images.Media.VOLUME_NAME),
+        isPending = optIntColQ(MediaStore.Images.Media.IS_PENDING),
+        isFavorite = optIntColR(MediaStore.Images.Media.IS_FAVORITE),
+        isTrashed = optIntColR(MediaStore.Images.Media.IS_TRASHED),
+        generationAdded = optLongColR(MediaStore.Images.Media.GENERATION_ADDED),
+        generationModified = optLongColR(MediaStore.Images.Media.GENERATION_MODIFIED),
+        documentId = optStringColR(MediaStore.Images.Media.DOCUMENT_ID),
+        originalDocumentId = optStringColR(MediaStore.Images.Media.ORIGINAL_DOCUMENT_ID),
+    )
+
+@Suppress("DEPRECATION")
+private fun Cursor.toVideoItems(): List<VideoItem> =
+    generateSequence { if (moveToNext()) toVideoItem() else null }.toList()
+
+@Suppress("DEPRECATION")
+private fun Cursor.toVideoItem(): VideoItem =
+    VideoItem(
+        id = getLong(getColumnIndexOrThrow(MediaStore.Video.Media._ID)),
+        displayName = optStringCol(MediaStore.Video.Media.DISPLAY_NAME),
+        size = optLongCol(MediaStore.Video.Media.SIZE),
+        mimeType = optStringCol(MediaStore.Video.Media.MIME_TYPE),
+        dateAdded = optLongCol(MediaStore.Video.Media.DATE_ADDED),
+        dateModified = optLongCol(MediaStore.Video.Media.DATE_MODIFIED),
+        dateTaken = optLongCol(MediaStore.Video.Media.DATE_TAKEN),
+        width = optIntCol(MediaStore.Video.Media.WIDTH),
+        height = optIntCol(MediaStore.Video.Media.HEIGHT),
+        bucketId = optStringCol(MediaStore.Video.Media.BUCKET_ID),
+        bucketDisplayName = optStringCol(MediaStore.Video.Media.BUCKET_DISPLAY_NAME),
+        description = optStringCol(MediaStore.Video.Media.DESCRIPTION),
+        category = optStringCol(MediaStore.Video.Media.CATEGORY),
+        language = optStringCol(MediaStore.Video.Media.LANGUAGE),
+        artist = optStringCol(MediaStore.Video.Media.ARTIST),
+        album = optStringCol(MediaStore.Video.Media.ALBUM),
+        tags = optStringCol(MediaStore.Video.Media.TAGS),
+        duration = optLongCol(MediaStore.Video.Media.DURATION),
+        resolution = optStringCol(MediaStore.Video.Media.RESOLUTION),
+        bookmark = optLongCol(MediaStore.Video.Media.BOOKMARK),
+        isPrivate = optIntCol(MediaStore.Video.Media.IS_PRIVATE),
+        latitude = optDoubleCol(MediaStore.Video.Media.LATITUDE),
+        longitude = optDoubleCol(MediaStore.Video.Media.LONGITUDE),
+        data = optStringCol(MediaStore.Video.Media.DATA),
+        relativePath = optStringColQ(MediaStore.Video.Media.RELATIVE_PATH),
+        volumeName = optStringColQ(MediaStore.Video.Media.VOLUME_NAME),
+        isPending = optIntColQ(MediaStore.Video.Media.IS_PENDING),
+        isFavorite = optIntColR(MediaStore.Video.Media.IS_FAVORITE),
+        isTrashed = optIntColR(MediaStore.Video.Media.IS_TRASHED),
+        generationAdded = optLongColR(MediaStore.Video.Media.GENERATION_ADDED),
+        generationModified = optLongColR(MediaStore.Video.Media.GENERATION_MODIFIED),
+        documentId = optStringColR(MediaStore.Video.Media.DOCUMENT_ID),
+        originalDocumentId = optStringColR(MediaStore.Video.Media.ORIGINAL_DOCUMENT_ID),
     )
 
 private fun Cursor.optStringCol(column: String): String? =
@@ -509,3 +416,18 @@ private fun Cursor.optIntCol(column: String): Int? =
 
 private fun Cursor.optDoubleCol(column: String): Double? =
     getColumnIndex(column).takeIf { it >= 0 }?.let { getDouble(it) }
+
+private fun Cursor.optStringColQ(column: String): String? =
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) optStringCol(column) else null
+
+private fun Cursor.optIntColQ(column: String): Int? =
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) optIntCol(column) else null
+
+private fun Cursor.optStringColR(column: String): String? =
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) optStringCol(column) else null
+
+private fun Cursor.optLongColR(column: String): Long? =
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) optLongCol(column) else null
+
+private fun Cursor.optIntColR(column: String): Int? =
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) optIntCol(column) else null
