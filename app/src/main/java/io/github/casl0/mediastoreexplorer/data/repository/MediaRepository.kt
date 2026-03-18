@@ -1,5 +1,6 @@
 package io.github.casl0.mediastoreexplorer.data.repository
 
+import io.github.casl0.mediastoreexplorer.data.model.AudioItem
 import io.github.casl0.mediastoreexplorer.data.model.ImageItem
 import io.github.casl0.mediastoreexplorer.data.model.VideoItem
 
@@ -9,4 +10,7 @@ interface MediaRepository {
 
     /** MediaStore から端末内の動画一覧を取得する。 */
     suspend fun getVideos(): List<VideoItem>
+
+    /** MediaStore から端末内の音声一覧を取得する。 */
+    suspend fun getAudios(): List<AudioItem>
 }

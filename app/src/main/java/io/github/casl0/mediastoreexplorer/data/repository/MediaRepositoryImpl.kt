@@ -4,6 +4,7 @@ import android.content.ContentResolver
 import android.database.Cursor
 import android.os.Build
 import android.provider.MediaStore
+import io.github.casl0.mediastoreexplorer.data.model.AudioItem
 import io.github.casl0.mediastoreexplorer.data.model.ImageItem
 import io.github.casl0.mediastoreexplorer.data.model.VideoItem
 import io.github.casl0.mediastoreexplorer.di.IoDispatcher
@@ -346,4 +347,6 @@ constructor(
         }
         return items
     }
+
+    override suspend fun getAudios(): List<AudioItem> = withContext(ioDispatcher) { emptyList() }
 }
