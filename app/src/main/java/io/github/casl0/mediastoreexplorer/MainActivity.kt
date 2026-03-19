@@ -26,6 +26,8 @@ import io.github.casl0.mediastoreexplorer.ui.audios.AudiosScreen
 import io.github.casl0.mediastoreexplorer.ui.audios.AudiosViewModel
 import io.github.casl0.mediastoreexplorer.ui.downloads.DownloadsScreen
 import io.github.casl0.mediastoreexplorer.ui.downloads.DownloadsViewModel
+import io.github.casl0.mediastoreexplorer.ui.files.FilesScreen
+import io.github.casl0.mediastoreexplorer.ui.files.FilesViewModel
 import io.github.casl0.mediastoreexplorer.ui.images.ImagesScreen
 import io.github.casl0.mediastoreexplorer.ui.images.ImagesViewModel
 import io.github.casl0.mediastoreexplorer.ui.theme.MediaStoreExplorerTheme
@@ -40,6 +42,7 @@ class MainActivity : ComponentActivity() {
     private val videosViewModel: VideosViewModel by viewModels()
     private val audiosViewModel: AudiosViewModel by viewModels()
     private val downloadsViewModel: DownloadsViewModel by viewModels()
+    private val filesViewModel: FilesViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,6 +55,7 @@ class MainActivity : ComponentActivity() {
                     videosViewModel = videosViewModel,
                     audiosViewModel = audiosViewModel,
                     downloadsViewModel = downloadsViewModel,
+                    filesViewModel = filesViewModel,
                 )
             }
         }
@@ -65,6 +69,7 @@ private fun MainScreen(
     videosViewModel: VideosViewModel,
     audiosViewModel: AudiosViewModel,
     downloadsViewModel: DownloadsViewModel,
+    filesViewModel: FilesViewModel,
 ) {
     val tabs =
         listOf(
@@ -72,6 +77,7 @@ private fun MainScreen(
             stringResource(R.string.tab_videos),
             stringResource(R.string.tab_audios),
             stringResource(R.string.tab_downloads),
+            stringResource(R.string.tab_files),
         )
     val pagerState = rememberPagerState(pageCount = { tabs.size })
     val coroutineScope = rememberCoroutineScope()
@@ -97,6 +103,7 @@ private fun MainScreen(
                     1 -> VideosScreen(viewModel = videosViewModel)
                     2 -> AudiosScreen(viewModel = audiosViewModel)
                     3 -> DownloadsScreen(viewModel = downloadsViewModel)
+                    4 -> FilesScreen(viewModel = filesViewModel)
                 }
             }
         }
