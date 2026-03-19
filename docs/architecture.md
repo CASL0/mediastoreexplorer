@@ -40,8 +40,8 @@
 
 | 要素 | 実装 | 責務 |
 | --- | --- | --- |
-| UI Elements | `ImagesScreen.kt` / `VideosScreen.kt` / `AudiosScreen.kt` | 状態の表示とユーザーイベントの受け付け |
-| State Holder | `ImagesViewModel.kt` / `VideosViewModel.kt` / `AudiosViewModel.kt` | UI 状態を `StateFlow` で保持・公開、ビジネスロジックの実行 |
+| UI Elements | `ImagesScreen.kt` / `VideosScreen.kt` / `AudiosScreen.kt` / `DownloadsScreen.kt` | 状態の表示とユーザーイベントの受け付け |
+| State Holder | `ImagesViewModel.kt` / `VideosViewModel.kt` / `AudiosViewModel.kt` / `DownloadsViewModel.kt` | UI 状態を `StateFlow` で保持・公開、ビジネスロジックの実行 |
 | 共通 UI | `MediaTable.kt` / `PermissionScreen.kt` | 再利用可能な Composable |
 | Preview 用 Repository | `PreviewMediaRepository.kt` | `@Preview` 専用のノーオペレーション実装。R8 がリリースビルドで除去する |
 
@@ -68,10 +68,11 @@ val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
 | 要素 | 実装 | 責務 |
 | --- | --- | --- |
-| Repository インターフェース | `MediaRepository.kt` | `getImages()` / `getVideos()` / `getAudios()` の契約定義 |
-| Repository 実装 | `MediaRepositoryImpl.kt` | `ContentResolver.query()` で MediaStore に問い合わせ、Cursor → モデルにマッピング |
-| Cursor 拡張関数 | `CursorExtensions.kt` | `opt*Col` / `opt*ColQ` / `opt*ColR` — nullable 列読み取りと API バージョンガードを集約 |
-| モデル | `ImageItem` / `VideoItem` / `AudioItem` | MediaStore カラムを全フィールド化したデータクラス |
+| Repository インターフェース | `MediaRepository.kt` | `getImages()` / `getVideos()` / `getAudios()` / `getDownloads()` の契約定義 |
+| Repository 実装 | `MediaRepositoryImpl.kt` | 各 DataSource へ委譲し `withContext(@IoDispatcher)` でスレッドを切り替える薄いアダプター |
+| DataSource | `datasource/ImageMediaDataSource.kt` など (4クラス) | コレクションごとに `ContentResolver.query()` → Cursor マッピングの責務を持つ |
+| Cursor 拡張関数 | `CursorExtensions.kt` | `opt*Col` / `opt*ColQ` / `opt*ColR` / `opt*ColU` — nullable 列読み取りと API バージョンガードを集約 |
+| モデル | `ImageItem` / `VideoItem` / `AudioItem` / `DownloadItem` | MediaStore カラムを全フィールド化したデータクラス |
 
 ---
 
@@ -79,18 +80,23 @@ val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
 ```text
 app/src/main/java/.../
-├── MainActivity.kt              # @AndroidEntryPoint、HorizontalPager + TabRow で3タブ管理
+├── MainActivity.kt              # @AndroidEntryPoint、HorizontalPager + TabRow で4タブ管理
 ├── MediaStoreExplorerApp.kt     # @HiltAndroidApp
 ├── di/
 │   ├── AppModule.kt             # ContentResolver, @IoDispatcher の Singleton 提供
 │   ├── RepositoryModule.kt      # MediaRepository → MediaRepositoryImpl のバインド
 │   └── DispatcherQualifiers.kt  # @IoDispatcher アノテーション定義
 ├── data/
-│   ├── model/                   # ImageItem, VideoItem, AudioItem
+│   ├── model/                   # ImageItem, VideoItem, AudioItem, DownloadItem
 │   └── repository/
 │       ├── MediaRepository.kt
 │       ├── MediaRepositoryImpl.kt
-│       └── CursorExtensions.kt  # Cursor opt*Col 拡張関数
+│       ├── CursorExtensions.kt  # Cursor opt*Col 拡張関数
+│       └── datasource/
+│           ├── ImageMediaDataSource.kt
+│           ├── VideoMediaDataSource.kt
+│           ├── AudioMediaDataSource.kt
+│           └── DownloadMediaDataSource.kt
 └── ui/
     ├── common/
     │   ├── MediaTable.kt
@@ -101,6 +107,7 @@ app/src/main/java/.../
     │   └── ImagesScreen.kt
     ├── videos/                  # images と対称な構造
     ├── audios/                  # images / videos と対称な構造
+    ├── downloads/               # images / videos / audios と対称な構造
     └── preview/
         └── PreviewMediaRepository.kt  # @Preview 専用（R8 がリリースビルドで除去）
 ```
@@ -121,6 +128,9 @@ Screen
                     ▼
                Repository.get*()
                     │  withContext(@IoDispatcher)
+                    ▼
+               DataSource.get*()
+                    │
                     ▼
                ContentResolver.query()  ─→  MediaStore
                     │
