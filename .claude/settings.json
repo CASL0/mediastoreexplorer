@@ -15,7 +15,8 @@
       "Bash(./gradlew spotless*)",
       "Bash(./gradlew assemble*)",
       "Bash(./gradlew detekt)",
-      "Bash(./gradlew compile*)"
+      "Bash(./gradlew compile*)",
+      "Bash(./gradlew lint*)"
     ]
   },
   "hooks": {
