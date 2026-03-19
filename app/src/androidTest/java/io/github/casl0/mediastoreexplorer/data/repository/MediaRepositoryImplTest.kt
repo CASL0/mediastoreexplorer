@@ -7,6 +7,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import io.github.casl0.mediastoreexplorer.data.repository.datasource.AudioMediaDataSource
 import io.github.casl0.mediastoreexplorer.data.repository.datasource.DownloadMediaDataSource
+import io.github.casl0.mediastoreexplorer.data.repository.datasource.FileMediaDataSource
 import io.github.casl0.mediastoreexplorer.data.repository.datasource.ImageMediaDataSource
 import io.github.casl0.mediastoreexplorer.data.repository.datasource.VideoMediaDataSource
 import kotlinx.coroutines.Dispatchers
@@ -40,6 +41,7 @@ class MediaRepositoryImplTest {
             videoDataSource = VideoMediaDataSource(resolver),
             audioDataSource = AudioMediaDataSource(resolver),
             downloadDataSource = DownloadMediaDataSource(resolver),
+            fileDataSource = FileMediaDataSource(resolver),
             ioDispatcher = Dispatchers.Unconfined,
         )
     }
