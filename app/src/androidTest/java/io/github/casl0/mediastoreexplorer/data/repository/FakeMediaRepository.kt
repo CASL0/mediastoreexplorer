@@ -2,6 +2,7 @@ package io.github.casl0.mediastoreexplorer.data.repository
 
 import io.github.casl0.mediastoreexplorer.data.model.AudioItem
 import io.github.casl0.mediastoreexplorer.data.model.DownloadItem
+import io.github.casl0.mediastoreexplorer.data.model.FileItem
 import io.github.casl0.mediastoreexplorer.data.model.ImageItem
 import io.github.casl0.mediastoreexplorer.data.model.VideoItem
 
@@ -12,6 +13,7 @@ class FakeMediaRepository : MediaRepository {
     var videos: List<VideoItem> = emptyList()
     var audios: List<AudioItem> = emptyList()
     var downloads: List<DownloadItem> = emptyList()
+    var files: List<FileItem> = emptyList()
     var shouldThrow: Throwable? = null
 
     override suspend fun getImages(): List<ImageItem> {
@@ -32,5 +34,10 @@ class FakeMediaRepository : MediaRepository {
     override suspend fun getDownloads(): List<DownloadItem> {
         shouldThrow?.let { throw it }
         return downloads
+    }
+
+    override suspend fun getFiles(): List<FileItem> {
+        shouldThrow?.let { throw it }
+        return files
     }
 }

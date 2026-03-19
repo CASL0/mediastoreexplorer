@@ -2,6 +2,7 @@ package io.github.casl0.mediastoreexplorer.data.repository
 
 import io.github.casl0.mediastoreexplorer.data.model.AudioItem
 import io.github.casl0.mediastoreexplorer.data.model.DownloadItem
+import io.github.casl0.mediastoreexplorer.data.model.FileItem
 import io.github.casl0.mediastoreexplorer.data.model.ImageItem
 import io.github.casl0.mediastoreexplorer.data.model.VideoItem
 
@@ -17,4 +18,7 @@ interface MediaRepository {
 
     /** MediaStore から端末内のダウンロードファイル一覧を取得する。API 29 未満は空リストを返す。 */
     suspend fun getDownloads(): List<DownloadItem>
+
+    /** MediaStore から端末内の全ファイル一覧を取得する。 */
+    suspend fun getFiles(): List<FileItem>
 }
