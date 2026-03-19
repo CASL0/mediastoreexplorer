@@ -91,4 +91,14 @@
     <string name="col_download_uri">ダウンロードURI</string>
     <string name="col_referer_uri">リファラーURI</string>
     <string name="col_is_drm">DRM</string>
+
+    <!-- ファイルタブ -->
+    <string name="tab_files">ファイル</string>
+
+    <!-- 権限画面（ファイル） -->
+    <string name="permission_files_message">ファイルへのアクセス権限が必要です。\n「権限を付与する」をタップしてください。</string>
+
+    <!-- ファイル固有カラム -->
+    <string name="col_media_type">メディアタイプ</string>
+    <string name="col_parent">親ID (非推奨)</string>
 </resources>

@@ -91,4 +91,14 @@
     <string name="col_download_uri">Download URI</string>
     <string name="col_referer_uri">Referer URI</string>
     <string name="col_is_drm">DRM</string>
+
+    <!-- Files tab -->
+    <string name="tab_files">Files</string>
+
+    <!-- Permission screen (files) -->
+    <string name="permission_files_message">Permission to access files is required.\nTap \"Grant Permission\".</string>
+
+    <!-- Files-specific columns -->
+    <string name="col_media_type">Media Type</string>
+    <string name="col_parent">Parent ID (deprecated)</string>
 </resources>
