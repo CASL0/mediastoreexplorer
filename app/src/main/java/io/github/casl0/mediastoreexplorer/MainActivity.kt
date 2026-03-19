@@ -24,6 +24,8 @@ import androidx.compose.ui.res.stringResource
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.casl0.mediastoreexplorer.ui.audios.AudiosScreen
 import io.github.casl0.mediastoreexplorer.ui.audios.AudiosViewModel
+import io.github.casl0.mediastoreexplorer.ui.downloads.DownloadsScreen
+import io.github.casl0.mediastoreexplorer.ui.downloads.DownloadsViewModel
 import io.github.casl0.mediastoreexplorer.ui.images.ImagesScreen
 import io.github.casl0.mediastoreexplorer.ui.images.ImagesViewModel
 import io.github.casl0.mediastoreexplorer.ui.theme.MediaStoreExplorerTheme
@@ -37,6 +39,7 @@ class MainActivity : ComponentActivity() {
     private val imagesViewModel: ImagesViewModel by viewModels()
     private val videosViewModel: VideosViewModel by viewModels()
     private val audiosViewModel: AudiosViewModel by viewModels()
+    private val downloadsViewModel: DownloadsViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,6 +51,7 @@ class MainActivity : ComponentActivity() {
                     imagesViewModel = imagesViewModel,
                     videosViewModel = videosViewModel,
                     audiosViewModel = audiosViewModel,
+                    downloadsViewModel = downloadsViewModel,
                 )
             }
         }
@@ -60,12 +64,14 @@ private fun MainScreen(
     imagesViewModel: ImagesViewModel,
     videosViewModel: VideosViewModel,
     audiosViewModel: AudiosViewModel,
+    downloadsViewModel: DownloadsViewModel,
 ) {
     val tabs =
         listOf(
             stringResource(R.string.tab_images),
             stringResource(R.string.tab_videos),
             stringResource(R.string.tab_audios),
+            stringResource(R.string.tab_downloads),
         )
     val pagerState = rememberPagerState(pageCount = { tabs.size })
     val coroutineScope = rememberCoroutineScope()
@@ -90,6 +96,7 @@ private fun MainScreen(
                     0 -> ImagesScreen(viewModel = imagesViewModel)
                     1 -> VideosScreen(viewModel = videosViewModel)
                     2 -> AudiosScreen(viewModel = audiosViewModel)
+                    3 -> DownloadsScreen(viewModel = downloadsViewModel)
                 }
             }
         }
