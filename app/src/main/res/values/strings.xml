@@ -80,4 +80,15 @@
     <string name="col_is_alarm">Alarm</string>
     <string name="col_is_notification">Notification</string>
     <string name="col_is_audiobook">Audiobook</string>
+
+    <!-- Downloads tab -->
+    <string name="tab_downloads">Downloads</string>
+
+    <!-- Permission screen (downloads) -->
+    <string name="permission_downloads_message">Permission to access downloads is required.\nTap \"Grant Permission\".</string>
+
+    <!-- Downloads-specific columns -->
+    <string name="col_download_uri">Download URI</string>
+    <string name="col_referer_uri">Referer URI</string>
+    <string name="col_is_drm">DRM</string>
 </resources>

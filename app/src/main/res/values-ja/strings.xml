@@ -80,4 +80,15 @@
     <string name="col_is_alarm">アラーム</string>
     <string name="col_is_notification">通知音</string>
     <string name="col_is_audiobook">オーディオブック</string>
+
+    <!-- ダウンロードタブ -->
+    <string name="tab_downloads">ダウンロード</string>
+
+    <!-- 権限画面（ダウンロード） -->
+    <string name="permission_downloads_message">ダウンロードファイルへのアクセス権限が必要です。\n「権限を付与する」をタップしてください。</string>
+
+    <!-- ダウンロード固有カラム -->
+    <string name="col_download_uri">ダウンロードURI</string>
+    <string name="col_referer_uri">リファラーURI</string>
+    <string name="col_is_drm">DRM</string>
 </resources>
