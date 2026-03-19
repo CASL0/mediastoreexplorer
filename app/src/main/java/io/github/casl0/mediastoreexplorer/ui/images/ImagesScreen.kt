@@ -38,7 +38,6 @@ import io.github.casl0.mediastoreexplorer.ui.common.formatInt
 import io.github.casl0.mediastoreexplorer.ui.common.formatLong
 import io.github.casl0.mediastoreexplorer.ui.common.formatSize
 import io.github.casl0.mediastoreexplorer.ui.common.formatString
-import io.github.casl0.mediastoreexplorer.ui.preview.PreviewMediaRepository
 import io.github.casl0.mediastoreexplorer.ui.theme.MediaStoreExplorerTheme
 
 /**
@@ -56,7 +55,21 @@ fun ImagesScreen(
     initialPermissionsGranted: Boolean? = null,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    ImagesContent(
+        uiState = uiState,
+        onLoadImages = viewModel::loadImages,
+        modifier = modifier,
+        initialPermissionsGranted = initialPermissionsGranted,
+    )
+}
 
+@Composable
+private fun ImagesContent(
+    uiState: ImagesUiState,
+    onLoadImages: () -> Unit,
+    modifier: Modifier = Modifier,
+    initialPermissionsGranted: Boolean? = null,
+) {
     val context = LocalContext.current
     val requiredPermissions =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -84,7 +97,7 @@ fun ImagesScreen(
 
     LaunchedEffect(permissionsGranted) {
         if (permissionsGranted) {
-            viewModel.loadImages()
+            onLoadImages()
         }
     }
 
@@ -201,8 +214,9 @@ fun ImagesScreen(
 @Composable
 private fun ImagesScreenPermissionDeniedPreview() {
     MediaStoreExplorerTheme {
-        ImagesScreen(
-            viewModel = ImagesViewModel(PreviewMediaRepository()),
+        ImagesContent(
+            uiState = ImagesUiState(),
+            onLoadImages = {},
             initialPermissionsGranted = false,
         )
     }

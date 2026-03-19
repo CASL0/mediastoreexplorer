@@ -29,7 +29,6 @@ import io.github.casl0.mediastoreexplorer.ui.common.formatDateSec
 import io.github.casl0.mediastoreexplorer.ui.common.formatLong
 import io.github.casl0.mediastoreexplorer.ui.common.formatSize
 import io.github.casl0.mediastoreexplorer.ui.common.formatString
-import io.github.casl0.mediastoreexplorer.ui.preview.PreviewMediaRepository
 import io.github.casl0.mediastoreexplorer.ui.theme.MediaStoreExplorerTheme
 
 /**
@@ -48,7 +47,21 @@ fun DownloadsScreen(
     initialPermissionsGranted: Boolean? = null,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    DownloadsContent(
+        uiState = uiState,
+        onLoadDownloads = viewModel::loadDownloads,
+        modifier = modifier,
+        initialPermissionsGranted = initialPermissionsGranted,
+    )
+}
 
+@Composable
+private fun DownloadsContent(
+    uiState: DownloadsUiState,
+    onLoadDownloads: () -> Unit,
+    modifier: Modifier = Modifier,
+    initialPermissionsGranted: Boolean? = null,
+) {
     val context = LocalContext.current
     val requiredPermissions =
         if (Build.VERSION.SDK_INT in Build.VERSION_CODES.Q..Build.VERSION_CODES.S_V2) {
@@ -78,7 +91,7 @@ fun DownloadsScreen(
 
     LaunchedEffect(permissionsGranted) {
         if (permissionsGranted) {
-            viewModel.loadDownloads()
+            onLoadDownloads()
         }
     }
 
@@ -161,8 +174,9 @@ fun DownloadsScreen(
 @Composable
 private fun DownloadsScreenPermissionDeniedPreview() {
     MediaStoreExplorerTheme {
-        DownloadsScreen(
-            viewModel = DownloadsViewModel(PreviewMediaRepository()),
+        DownloadsContent(
+            uiState = DownloadsUiState(),
+            onLoadDownloads = {},
             initialPermissionsGranted = false,
         )
     }

@@ -31,7 +31,6 @@ import io.github.casl0.mediastoreexplorer.ui.common.formatInt
 import io.github.casl0.mediastoreexplorer.ui.common.formatLong
 import io.github.casl0.mediastoreexplorer.ui.common.formatSize
 import io.github.casl0.mediastoreexplorer.ui.common.formatString
-import io.github.casl0.mediastoreexplorer.ui.preview.PreviewMediaRepository
 import io.github.casl0.mediastoreexplorer.ui.theme.MediaStoreExplorerTheme
 
 /**
@@ -49,7 +48,21 @@ fun AudiosScreen(
     initialPermissionsGranted: Boolean? = null,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    AudiosContent(
+        uiState = uiState,
+        onLoadAudios = viewModel::loadAudios,
+        modifier = modifier,
+        initialPermissionsGranted = initialPermissionsGranted,
+    )
+}
 
+@Composable
+private fun AudiosContent(
+    uiState: AudiosUiState,
+    onLoadAudios: () -> Unit,
+    modifier: Modifier = Modifier,
+    initialPermissionsGranted: Boolean? = null,
+) {
     val context = LocalContext.current
     val requiredPermissions =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -77,7 +90,7 @@ fun AudiosScreen(
 
     LaunchedEffect(permissionsGranted) {
         if (permissionsGranted) {
-            viewModel.loadAudios()
+            onLoadAudios()
         }
     }
 
@@ -197,8 +210,9 @@ fun AudiosScreen(
 @Composable
 private fun AudiosScreenPermissionDeniedPreview() {
     MediaStoreExplorerTheme {
-        AudiosScreen(
-            viewModel = AudiosViewModel(PreviewMediaRepository()),
+        AudiosContent(
+            uiState = AudiosUiState(),
+            onLoadAudios = {},
             initialPermissionsGranted = false,
         )
     }

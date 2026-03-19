@@ -33,7 +33,6 @@ import io.github.casl0.mediastoreexplorer.ui.common.formatInt
 import io.github.casl0.mediastoreexplorer.ui.common.formatLong
 import io.github.casl0.mediastoreexplorer.ui.common.formatSize
 import io.github.casl0.mediastoreexplorer.ui.common.formatString
-import io.github.casl0.mediastoreexplorer.ui.preview.PreviewMediaRepository
 import io.github.casl0.mediastoreexplorer.ui.theme.MediaStoreExplorerTheme
 
 /**
@@ -51,7 +50,21 @@ fun VideosScreen(
     initialPermissionsGranted: Boolean? = null,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    VideosContent(
+        uiState = uiState,
+        onLoadVideos = viewModel::loadVideos,
+        modifier = modifier,
+        initialPermissionsGranted = initialPermissionsGranted,
+    )
+}
 
+@Composable
+private fun VideosContent(
+    uiState: VideosUiState,
+    onLoadVideos: () -> Unit,
+    modifier: Modifier = Modifier,
+    initialPermissionsGranted: Boolean? = null,
+) {
     val context = LocalContext.current
     val requiredPermissions =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -79,7 +92,7 @@ fun VideosScreen(
 
     LaunchedEffect(permissionsGranted) {
         if (permissionsGranted) {
-            viewModel.loadVideos()
+            onLoadVideos()
         }
     }
 
@@ -196,8 +209,9 @@ fun VideosScreen(
 @Composable
 private fun VideosScreenPermissionDeniedPreview() {
     MediaStoreExplorerTheme {
-        VideosScreen(
-            viewModel = VideosViewModel(PreviewMediaRepository()),
+        VideosContent(
+            uiState = VideosUiState(),
+            onLoadVideos = {},
             initialPermissionsGranted = false,
         )
     }

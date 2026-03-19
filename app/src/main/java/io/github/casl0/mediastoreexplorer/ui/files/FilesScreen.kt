@@ -29,7 +29,6 @@ import io.github.casl0.mediastoreexplorer.ui.common.formatDateSec
 import io.github.casl0.mediastoreexplorer.ui.common.formatLong
 import io.github.casl0.mediastoreexplorer.ui.common.formatSize
 import io.github.casl0.mediastoreexplorer.ui.common.formatString
-import io.github.casl0.mediastoreexplorer.ui.preview.PreviewMediaRepository
 import io.github.casl0.mediastoreexplorer.ui.theme.MediaStoreExplorerTheme
 
 /**
@@ -48,7 +47,21 @@ fun FilesScreen(
     initialPermissionsGranted: Boolean? = null,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    FilesContent(
+        uiState = uiState,
+        onLoadFiles = viewModel::loadFiles,
+        modifier = modifier,
+        initialPermissionsGranted = initialPermissionsGranted,
+    )
+}
 
+@Composable
+private fun FilesContent(
+    uiState: FilesUiState,
+    onLoadFiles: () -> Unit,
+    modifier: Modifier = Modifier,
+    initialPermissionsGranted: Boolean? = null,
+) {
     val context = LocalContext.current
     val requiredPermissions =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -80,7 +93,7 @@ fun FilesScreen(
 
     LaunchedEffect(permissionsGranted) {
         if (permissionsGranted) {
-            viewModel.loadFiles()
+            onLoadFiles()
         }
     }
 
@@ -159,9 +172,6 @@ fun FilesScreen(
 @Composable
 private fun FilesScreenPermissionDeniedPreview() {
     MediaStoreExplorerTheme {
-        FilesScreen(
-            viewModel = FilesViewModel(PreviewMediaRepository()),
-            initialPermissionsGranted = false,
-        )
+        FilesContent(uiState = FilesUiState(), onLoadFiles = {}, initialPermissionsGranted = false)
     }
 }
