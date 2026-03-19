@@ -124,7 +124,6 @@ constructor(
         }
 }
 
-@Suppress("DEPRECATION")
 private fun Cursor.toImageItems(): List<ImageItem> =
     generateSequence { if (moveToNext()) toImageItem() else null }.toList()
 
@@ -159,7 +158,6 @@ private fun Cursor.toImageItem(): ImageItem =
         originalDocumentId = optStringColR(MediaStore.Images.Media.ORIGINAL_DOCUMENT_ID),
     )
 
-@Suppress("DEPRECATION")
 private fun Cursor.toVideoItems(): List<VideoItem> =
     generateSequence { if (moveToNext()) toVideoItem() else null }.toList()
 
@@ -288,7 +286,6 @@ private fun audioProjection(): Array<String> =
         }
         .toTypedArray()
 
-@Suppress("DEPRECATION")
 private fun Cursor.toAudioItems(): List<AudioItem> =
     generateSequence { if (moveToNext()) toAudioItem() else null }.toList()
 
