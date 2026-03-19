@@ -32,6 +32,7 @@ class MediaTableTest {
                 columns = testColumns,
                 isLoading = true,
                 error = null,
+                key = { it },
             )
         }
 
@@ -53,6 +54,7 @@ class MediaTableTest {
                 columns = testColumns,
                 isLoading = false,
                 error = errorMessage,
+                key = { it },
             )
         }
 
@@ -68,7 +70,13 @@ class MediaTableTest {
     @Test
     fun items_が空_のとき_空メッセージが表示される() {
         composeTestRule.setContent {
-            MediaTable(items = emptyList(), columns = testColumns, isLoading = false, error = null)
+            MediaTable(
+                items = emptyList(),
+                columns = testColumns,
+                isLoading = false,
+                error = null,
+                key = { it },
+            )
         }
 
         composeTestRule.onNodeWithText(context.getString(R.string.no_items)).assertIsDisplayed()
@@ -86,6 +94,7 @@ class MediaTableTest {
                 columns = testColumns,
                 isLoading = false,
                 error = null,
+                key = { it },
             )
         }
 
@@ -100,6 +109,7 @@ class MediaTableTest {
                 columns = testColumns,
                 isLoading = false,
                 error = null,
+                key = { it },
             )
         }
 
@@ -120,6 +130,7 @@ class MediaTableTest {
                 columns = multiColumns,
                 isLoading = false,
                 error = null,
+                key = { it },
             )
         }
 

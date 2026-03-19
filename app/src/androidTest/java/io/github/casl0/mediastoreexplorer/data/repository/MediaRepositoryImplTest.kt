@@ -5,6 +5,10 @@ import android.os.Build
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
+import io.github.casl0.mediastoreexplorer.data.repository.datasource.AudioMediaDataSource
+import io.github.casl0.mediastoreexplorer.data.repository.datasource.DownloadMediaDataSource
+import io.github.casl0.mediastoreexplorer.data.repository.datasource.ImageMediaDataSource
+import io.github.casl0.mediastoreexplorer.data.repository.datasource.VideoMediaDataSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertNotNull
@@ -30,8 +34,12 @@ class MediaRepositoryImplTest {
         }
 
     private val repository by lazy {
+        val resolver = context.contentResolver
         MediaRepositoryImpl(
-            contentResolver = context.contentResolver,
+            imageDataSource = ImageMediaDataSource(resolver),
+            videoDataSource = VideoMediaDataSource(resolver),
+            audioDataSource = AudioMediaDataSource(resolver),
+            downloadDataSource = DownloadMediaDataSource(resolver),
             ioDispatcher = Dispatchers.Unconfined,
         )
     }
@@ -97,6 +105,28 @@ class MediaRepositoryImplTest {
     @Test
     fun getAudios_アイテムが存在する場合_idが正の値である() = runBlocking {
         val result = repository.getAudios()
+        result.forEach { item -> assert(item.id > 0) { "id must be positive, but was ${item.id}" } }
+    }
+
+    // endregion
+
+    // region getDownloads
+
+    @Test
+    fun getDownloads_例外を投げずに呼び出せる() = runBlocking {
+        val result = repository.getDownloads()
+        assertNotNull(result)
+    }
+
+    @Test
+    fun getDownloads_戻り値はリストである() = runBlocking {
+        val result = repository.getDownloads()
+        assert(result.size >= 0)
+    }
+
+    @Test
+    fun getDownloads_アイテムが存在する場合_idが正の値である() = runBlocking {
+        val result = repository.getDownloads()
         result.forEach { item -> assert(item.id > 0) { "id must be positive, but was ${item.id}" } }
     }
 
