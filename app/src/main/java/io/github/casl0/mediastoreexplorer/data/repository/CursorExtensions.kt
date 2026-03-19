@@ -29,3 +29,6 @@ internal fun Cursor.optLongColR(column: String): Long? =
 
 internal fun Cursor.optIntColR(column: String): Int? =
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) optIntCol(column) else null
+
+internal fun Cursor.optIntColU(column: String): Int? =
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) optIntCol(column) else null

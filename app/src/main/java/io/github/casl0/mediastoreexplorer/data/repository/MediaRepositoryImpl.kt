@@ -5,6 +5,7 @@ import android.database.Cursor
 import android.os.Build
 import android.provider.MediaStore
 import io.github.casl0.mediastoreexplorer.data.model.AudioItem
+import io.github.casl0.mediastoreexplorer.data.model.DownloadItem
 import io.github.casl0.mediastoreexplorer.data.model.ImageItem
 import io.github.casl0.mediastoreexplorer.data.model.VideoItem
 import io.github.casl0.mediastoreexplorer.di.IoDispatcher
@@ -120,6 +121,29 @@ constructor(
                     "${MediaStore.Audio.Media.DATE_MODIFIED} DESC",
                 )
                 ?.use { cursor -> result.addAll(cursor.toAudioItems()) }
+            result
+        }
+
+    @Suppress("DEPRECATION")
+    override suspend fun getDownloads(): List<DownloadItem> =
+        withContext(ioDispatcher) {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) return@withContext emptyList()
+            val queryUri =
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL)
+                } else {
+                    MediaStore.Downloads.EXTERNAL_CONTENT_URI
+                }
+            val result = mutableListOf<DownloadItem>()
+            contentResolver
+                .query(
+                    queryUri,
+                    downloadProjection(),
+                    null,
+                    null,
+                    "${MediaStore.Downloads.DATE_MODIFIED} DESC",
+                )
+                ?.use { cursor -> result.addAll(cursor.toDownloadItems()) }
             result
         }
 }
@@ -326,4 +350,60 @@ private fun Cursor.toAudioItem(): AudioItem =
         generationModified = optLongColR(MediaStore.Audio.Media.GENERATION_MODIFIED),
         documentId = optStringColR(MediaStore.Audio.Media.DOCUMENT_ID),
         originalDocumentId = optStringColR(MediaStore.Audio.Media.ORIGINAL_DOCUMENT_ID),
+    )
+
+@Suppress("DEPRECATION", "InlinedApi")
+private fun downloadProjection(): Array<String> =
+    buildList {
+            add(MediaStore.Downloads._ID)
+            add(MediaStore.Downloads.DISPLAY_NAME)
+            add(MediaStore.Downloads.SIZE)
+            add(MediaStore.Downloads.MIME_TYPE)
+            add(MediaStore.Downloads.DATE_ADDED)
+            add(MediaStore.Downloads.DATE_MODIFIED)
+            add(MediaStore.Downloads.DATA)
+            add(MediaStore.Downloads.RELATIVE_PATH)
+            add(MediaStore.Downloads.VOLUME_NAME)
+            add(MediaStore.Downloads.IS_PENDING)
+            add(MediaStore.Downloads.DOWNLOAD_URI)
+            add(MediaStore.Downloads.REFERER_URI)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                add(MediaStore.Downloads.IS_FAVORITE)
+                add(MediaStore.Downloads.IS_TRASHED)
+                add(MediaStore.Downloads.GENERATION_ADDED)
+                add(MediaStore.Downloads.GENERATION_MODIFIED)
+                add(MediaStore.Downloads.DOCUMENT_ID)
+                add(MediaStore.Downloads.ORIGINAL_DOCUMENT_ID)
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                add(MediaStore.Downloads.IS_DRM)
+            }
+        }
+        .toTypedArray()
+
+private fun Cursor.toDownloadItems(): List<DownloadItem> =
+    generateSequence { if (moveToNext()) toDownloadItem() else null }.toList()
+
+@Suppress("DEPRECATION", "InlinedApi")
+private fun Cursor.toDownloadItem(): DownloadItem =
+    DownloadItem(
+        id = getLong(getColumnIndexOrThrow(MediaStore.Downloads._ID)),
+        displayName = optStringCol(MediaStore.Downloads.DISPLAY_NAME),
+        size = optLongCol(MediaStore.Downloads.SIZE),
+        mimeType = optStringCol(MediaStore.Downloads.MIME_TYPE),
+        dateAdded = optLongCol(MediaStore.Downloads.DATE_ADDED),
+        dateModified = optLongCol(MediaStore.Downloads.DATE_MODIFIED),
+        data = optStringCol(MediaStore.Downloads.DATA),
+        relativePath = optStringCol(MediaStore.Downloads.RELATIVE_PATH),
+        volumeName = optStringCol(MediaStore.Downloads.VOLUME_NAME),
+        isPending = optIntCol(MediaStore.Downloads.IS_PENDING),
+        downloadUri = optStringCol(MediaStore.Downloads.DOWNLOAD_URI),
+        refererUri = optStringCol(MediaStore.Downloads.REFERER_URI),
+        isFavorite = optIntColR(MediaStore.Downloads.IS_FAVORITE),
+        isTrashed = optIntColR(MediaStore.Downloads.IS_TRASHED),
+        generationAdded = optLongColR(MediaStore.Downloads.GENERATION_ADDED),
+        generationModified = optLongColR(MediaStore.Downloads.GENERATION_MODIFIED),
+        documentId = optStringColR(MediaStore.Downloads.DOCUMENT_ID),
+        originalDocumentId = optStringColR(MediaStore.Downloads.ORIGINAL_DOCUMENT_ID),
+        isDrm = optIntColU(MediaStore.Downloads.IS_DRM),
     )

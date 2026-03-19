@@ -1,6 +1,7 @@
 package io.github.casl0.mediastoreexplorer.ui.preview
 
 import io.github.casl0.mediastoreexplorer.data.model.AudioItem
+import io.github.casl0.mediastoreexplorer.data.model.DownloadItem
 import io.github.casl0.mediastoreexplorer.data.model.ImageItem
 import io.github.casl0.mediastoreexplorer.data.model.VideoItem
 import io.github.casl0.mediastoreexplorer.data.repository.MediaRepository
@@ -16,4 +17,6 @@ internal class PreviewMediaRepository : MediaRepository {
     override suspend fun getVideos(): List<VideoItem> = emptyList()
 
     override suspend fun getAudios(): List<AudioItem> = emptyList()
+
+    override suspend fun getDownloads(): List<DownloadItem> = emptyList()
 }
