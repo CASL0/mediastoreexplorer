@@ -1,3 +1,5 @@
+[[英語/English](/README.md)]
+
 # MediaStoreExplorer
 
 [MediaStore](https://developer.android.com/reference/android/provider/MediaStore) のコレクション（画像・動画・音声・ダウンロード・ファイル）をタブで閲覧する Android アプリです。
@@ -15,13 +17,13 @@
 
 ## 技術スタック
 
-| カテゴリ | ライブラリ |
-|---|---|
-| UI | Jetpack Compose |
+| カテゴリ       | ライブラリ                   |
+| -------------- | ---------------------------- |
+| UI             | Jetpack Compose              |
 | アーキテクチャ | ViewModel + StateFlow（UDF） |
-| DI | Hilt |
-| 非同期処理 | Kotlin Coroutines |
-| ビルド | Gradle（Kotlin DSL） |
+| DI             | Hilt                         |
+| 非同期処理     | Kotlin Coroutines            |
+| ビルド         | Gradle（Kotlin DSL）         |
 
 ## アーキテクチャ
 

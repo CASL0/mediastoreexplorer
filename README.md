@@ -1,3 +1,5 @@
+[[Japanese/日本語](/README.ja.md)]
+
 # MediaStoreExplorer
 
 An Android app that browses [MediaStore](https://developer.android.com/reference/android/provider/MediaStore) collections — Images, Videos, Audios, Downloads, and Files — in a tabbed interface.
@@ -15,13 +17,13 @@ An Android app that browses [MediaStore](https://developer.android.com/reference
 
 ## Tech Stack
 
-| Category | Library |
-|---|---|
-| UI | Jetpack Compose |
+| Category     | Library                     |
+| ------------ | --------------------------- |
+| UI           | Jetpack Compose             |
 | Architecture | ViewModel + StateFlow (UDF) |
-| DI | Hilt |
-| Async | Kotlin Coroutines |
-| Build | Gradle (Kotlin DSL) |
+| DI           | Hilt                        |
+| Async        | Kotlin Coroutines           |
+| Build        | Gradle (Kotlin DSL)         |
 
 ## Architecture
 
