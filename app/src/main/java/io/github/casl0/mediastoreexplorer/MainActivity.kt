@@ -6,6 +6,8 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.casl0.mediastoreexplorer.ui.audios.AudiosViewModel
 import io.github.casl0.mediastoreexplorer.ui.downloads.DownloadsViewModel
@@ -31,7 +33,11 @@ class MainActivity : AppCompatActivity() {
         window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
         enableEdgeToEdge()
         setContent {
-            MediaStoreExplorerTheme {
+            val preferences by settingsViewModel.uiState.collectAsStateWithLifecycle()
+            MediaStoreExplorerTheme(
+                themeMode = preferences.themeMode,
+                dynamicColor = preferences.dynamicColor,
+            ) {
                 AppNavGraph(
                     imagesViewModel = imagesViewModel,
                     videosViewModel = videosViewModel,
