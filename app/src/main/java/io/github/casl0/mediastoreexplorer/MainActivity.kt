@@ -6,7 +6,10 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.core.os.LocaleListCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.casl0.mediastoreexplorer.ui.audios.AudiosViewModel
@@ -34,6 +37,7 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContent {
             val preferences by settingsViewModel.uiState.collectAsStateWithLifecycle()
+            LaunchedEffect(preferences.appLanguage) { applyAppLanguage(preferences.appLanguage) }
             MediaStoreExplorerTheme(
                 themeMode = preferences.themeMode,
                 dynamicColor = preferences.dynamicColor,
@@ -47,6 +51,18 @@ class MainActivity : AppCompatActivity() {
                     settingsViewModel = settingsViewModel,
                 )
             }
+        }
+    }
+
+    private fun applyAppLanguage(languageTag: String?) {
+        val target =
+            if (languageTag.isNullOrBlank()) {
+                LocaleListCompat.getEmptyLocaleList()
+            } else {
+                LocaleListCompat.forLanguageTags(languageTag)
+            }
+        if (AppCompatDelegate.getApplicationLocales() != target) {
+            AppCompatDelegate.setApplicationLocales(target)
         }
     }
 }
