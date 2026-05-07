@@ -2,10 +2,10 @@ package io.github.casl0.mediastoreexplorer
 
 import android.os.Bundle
 import android.view.WindowManager
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -36,7 +36,7 @@ import io.github.casl0.mediastoreexplorer.ui.videos.VideosViewModel
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
 
     private val imagesViewModel: ImagesViewModel by viewModels()
     private val videosViewModel: VideosViewModel by viewModels()
