@@ -8,16 +8,7 @@
   },
   "language": "japanese",
   "permissions": {
-    "allow": [
-      "Bash(./gradlew test*UnitTest)",
-      "Bash(./gradlew connected*AndroidTest)",
-      "Bash(./gradlew jacoco*)",
-      "Bash(./gradlew spotless*)",
-      "Bash(./gradlew assemble*)",
-      "Bash(./gradlew detekt)",
-      "Bash(./gradlew compile*)",
-      "Bash(./gradlew lint*)"
-    ]
+    "allow": ["Bash(./gradlew:*)", "Bash(android:*)"]
   },
   "hooks": {
     "PostToolUse": [
