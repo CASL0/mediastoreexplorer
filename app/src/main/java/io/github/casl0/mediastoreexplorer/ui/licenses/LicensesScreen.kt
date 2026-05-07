@@ -11,14 +11,18 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import com.mikepenz.aboutlibraries.ui.compose.android.produceLibraries
 import com.mikepenz.aboutlibraries.ui.compose.m3.LibrariesContainer
 import io.github.casl0.mediastoreexplorer.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LicensesScreen(onBackClick: () -> Unit) {
+    val libraries by produceLibraries(R.raw.aboutlibraries)
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -34,6 +38,9 @@ fun LicensesScreen(onBackClick: () -> Unit) {
             )
         }
     ) { innerPadding ->
-        LibrariesContainer(modifier = Modifier.fillMaxSize().padding(innerPadding))
+        LibrariesContainer(
+            libraries = libraries,
+            modifier = Modifier.fillMaxSize().padding(innerPadding),
+        )
     }
 }
