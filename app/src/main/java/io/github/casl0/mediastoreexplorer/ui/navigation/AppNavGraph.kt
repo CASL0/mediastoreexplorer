@@ -1,6 +1,5 @@
 package io.github.casl0.mediastoreexplorer.ui.navigation
 
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
@@ -9,15 +8,14 @@ import io.github.casl0.mediastoreexplorer.ui.audios.AudiosViewModel
 import io.github.casl0.mediastoreexplorer.ui.downloads.DownloadsViewModel
 import io.github.casl0.mediastoreexplorer.ui.files.FilesViewModel
 import io.github.casl0.mediastoreexplorer.ui.images.ImagesViewModel
+import io.github.casl0.mediastoreexplorer.ui.licenses.LicensesScreen
 import io.github.casl0.mediastoreexplorer.ui.settings.SettingsScreen
 import io.github.casl0.mediastoreexplorer.ui.settings.SettingsViewModel
 import io.github.casl0.mediastoreexplorer.ui.videos.VideosViewModel
 
 /**
- * アプリ全体のトップレベル画面ルーティング。
- *
- * 既存のタブ画面 (`MainTabsScreen`) を `AppRoute.Main` に紐づけ、設定アイコンタップで `AppRoute.Settings` を push
- * する。Licenses 画面の中身は後続コミットで実装するためプレースホルダーのまま。
+ * アプリ全体のトップレベル画面ルーティング。既存のタブ画面 (`MainTabsScreen`) を `AppRoute.Main` に紐づけ、設定アイコン タップで
+ * `AppRoute.Settings` / `AppRoute.Licenses` を push する。
  */
 @Composable
 fun AppNavGraph(
@@ -52,7 +50,9 @@ fun AppNavGraph(
                         onLicensesClick = { backStack.add(AppRoute.Licenses) },
                     )
                 }
-                entry<AppRoute.Licenses> { Text("Licenses (placeholder)") }
+                entry<AppRoute.Licenses> {
+                    LicensesScreen(onBackClick = { backStack.removeLastOrNull() })
+                }
             },
     )
 }
