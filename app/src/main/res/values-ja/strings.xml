@@ -5,6 +5,24 @@
     <string name="action_settings">設定</string>
     <string name="action_back">戻る</string>
 
+    <!-- 設定画面 -->
+    <string name="settings_title">設定</string>
+    <string name="settings_section_appearance">外観</string>
+    <string name="settings_section_about">アプリについて</string>
+    <string name="settings_theme">テーマ</string>
+    <string name="settings_theme_system">端末設定に合わせる</string>
+    <string name="settings_theme_light">ライト</string>
+    <string name="settings_theme_dark">ダーク</string>
+    <string name="settings_dynamic_color">Dynamic Color</string>
+    <string name="settings_dynamic_color_summary">壁紙から生成した配色を使う（Android 12 以降）</string>
+    <string name="settings_language">言語</string>
+    <string name="settings_language_system">端末設定に合わせる</string>
+    <string name="settings_language_english">English</string>
+    <string name="settings_language_japanese">日本語</string>
+    <string name="settings_app_version">アプリバージョン</string>
+    <string name="settings_app_version_format">%1$s (%2$d)</string>
+    <string name="settings_oss_licenses">OSS ライセンス</string>
+
     <!-- タブ -->
     <string name="tab_images">画像</string>
     <string name="tab_videos">動画</string>

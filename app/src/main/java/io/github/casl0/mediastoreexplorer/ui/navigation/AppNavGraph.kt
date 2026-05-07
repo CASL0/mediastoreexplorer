@@ -9,13 +9,15 @@ import io.github.casl0.mediastoreexplorer.ui.audios.AudiosViewModel
 import io.github.casl0.mediastoreexplorer.ui.downloads.DownloadsViewModel
 import io.github.casl0.mediastoreexplorer.ui.files.FilesViewModel
 import io.github.casl0.mediastoreexplorer.ui.images.ImagesViewModel
+import io.github.casl0.mediastoreexplorer.ui.settings.SettingsScreen
+import io.github.casl0.mediastoreexplorer.ui.settings.SettingsViewModel
 import io.github.casl0.mediastoreexplorer.ui.videos.VideosViewModel
 
 /**
  * アプリ全体のトップレベル画面ルーティング。
  *
  * 既存のタブ画面 (`MainTabsScreen`) を `AppRoute.Main` に紐づけ、設定アイコンタップで `AppRoute.Settings` を push
- * する。Settings / Licenses 画面の中身は後続コミットで 実装するため、ここではプレースホルダー Composable を入れておく。
+ * する。Licenses 画面の中身は後続コミットで実装するためプレースホルダーのまま。
  */
 @Composable
 fun AppNavGraph(
@@ -24,6 +26,7 @@ fun AppNavGraph(
     audiosViewModel: AudiosViewModel,
     downloadsViewModel: DownloadsViewModel,
     filesViewModel: FilesViewModel,
+    settingsViewModel: SettingsViewModel,
 ) {
     val backStack = rememberNavBackStack(AppRoute.Main)
 
@@ -42,7 +45,13 @@ fun AppNavGraph(
                         onSettingsClick = { backStack.add(AppRoute.Settings) },
                     )
                 }
-                entry<AppRoute.Settings> { Text("Settings (placeholder)") }
+                entry<AppRoute.Settings> {
+                    SettingsScreen(
+                        viewModel = settingsViewModel,
+                        onBackClick = { backStack.removeLastOrNull() },
+                        onLicensesClick = { backStack.add(AppRoute.Licenses) },
+                    )
+                }
                 entry<AppRoute.Licenses> { Text("Licenses (placeholder)") }
             },
     )

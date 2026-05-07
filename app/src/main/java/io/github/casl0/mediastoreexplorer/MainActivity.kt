@@ -12,6 +12,7 @@ import io.github.casl0.mediastoreexplorer.ui.downloads.DownloadsViewModel
 import io.github.casl0.mediastoreexplorer.ui.files.FilesViewModel
 import io.github.casl0.mediastoreexplorer.ui.images.ImagesViewModel
 import io.github.casl0.mediastoreexplorer.ui.navigation.AppNavGraph
+import io.github.casl0.mediastoreexplorer.ui.settings.SettingsViewModel
 import io.github.casl0.mediastoreexplorer.ui.theme.MediaStoreExplorerTheme
 import io.github.casl0.mediastoreexplorer.ui.videos.VideosViewModel
 
@@ -23,6 +24,7 @@ class MainActivity : AppCompatActivity() {
     private val audiosViewModel: AudiosViewModel by viewModels()
     private val downloadsViewModel: DownloadsViewModel by viewModels()
     private val filesViewModel: FilesViewModel by viewModels()
+    private val settingsViewModel: SettingsViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,6 +38,7 @@ class MainActivity : AppCompatActivity() {
                     audiosViewModel = audiosViewModel,
                     downloadsViewModel = downloadsViewModel,
                     filesViewModel = filesViewModel,
+                    settingsViewModel = settingsViewModel,
                 )
             }
         }
