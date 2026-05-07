@@ -56,23 +56,6 @@ class SettingsViewModelTest {
     }
 
     // endregion
-
-    // region setAppLanguage
-
-    @Test
-    fun setAppLanguage_を呼ぶと_Repository_に書き込まれる() = runTest {
-        viewModel.setAppLanguage("ja")
-        assertEquals("ja", fakeRepository.current.appLanguage)
-    }
-
-    @Test
-    fun setAppLanguage_null_を渡すと_Repository_の値がクリアされる() = runTest {
-        fakeRepository.update { it.copy(appLanguage = "ja") }
-        viewModel.setAppLanguage(null)
-        assertEquals(null, fakeRepository.current.appLanguage)
-    }
-
-    // endregion
 }
 
 private class FakeUserPreferencesRepository : UserPreferencesRepository {
@@ -88,13 +71,5 @@ private class FakeUserPreferencesRepository : UserPreferencesRepository {
 
     override suspend fun setDynamicColor(enabled: Boolean) {
         state.update { it.copy(dynamicColor = enabled) }
-    }
-
-    override suspend fun setAppLanguage(languageTag: String?) {
-        state.update { it.copy(appLanguage = languageTag?.takeIf(String::isNotBlank)) }
-    }
-
-    fun update(transform: (UserPreferences) -> UserPreferences) {
-        state.update(transform)
     }
 }

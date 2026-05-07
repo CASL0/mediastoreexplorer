@@ -11,7 +11,6 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -45,11 +44,10 @@ class UserPreferencesRepositoryImplTest {
     // region 初期状態
 
     @Test
-    fun 初期状態は_System_と_dynamicColor_true_と_appLanguage_null() = runTest {
+    fun 初期状態は_System_と_dynamicColor_true() = runTest {
         val state = repository.preferences.first()
         assertEquals(ThemeMode.System, state.themeMode)
         assertEquals(true, state.dynamicColor)
-        assertNull(state.appLanguage)
     }
 
     // endregion
@@ -70,30 +68,6 @@ class UserPreferencesRepositoryImplTest {
     fun setDynamicColor_false_を渡すと_dynamicColor_に保存される() = runTest {
         repository.setDynamicColor(false)
         assertEquals(false, repository.preferences.first().dynamicColor)
-    }
-
-    // endregion
-
-    // region setAppLanguage
-
-    @Test
-    fun setAppLanguage_ja_を渡すと_appLanguage_に保存される() = runTest {
-        repository.setAppLanguage("ja")
-        assertEquals("ja", repository.preferences.first().appLanguage)
-    }
-
-    @Test
-    fun setAppLanguage_null_を渡すと_appLanguage_がクリアされる() = runTest {
-        repository.setAppLanguage("ja")
-        repository.setAppLanguage(null)
-        assertNull(repository.preferences.first().appLanguage)
-    }
-
-    @Test
-    fun setAppLanguage_空文字を渡すと_appLanguage_がクリアされる() = runTest {
-        repository.setAppLanguage("ja")
-        repository.setAppLanguage("")
-        assertNull(repository.preferences.first().appLanguage)
     }
 
     // endregion

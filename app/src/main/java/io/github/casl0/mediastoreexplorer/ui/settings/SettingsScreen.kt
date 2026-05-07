@@ -1,5 +1,6 @@
 package io.github.casl0.mediastoreexplorer.ui.settings
 
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -32,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.os.LocaleListCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.casl0.mediastoreexplorer.BuildConfig
 import io.github.casl0.mediastoreexplorer.R
@@ -71,10 +73,7 @@ fun SettingsScreen(
                 enabled = state.dynamicColor,
                 onEnabledChange = viewModel::setDynamicColor,
             )
-            LanguageRow(
-                appLanguage = state.appLanguage,
-                onLanguageChange = viewModel::setAppLanguage,
-            )
+            LanguageRow()
 
             HorizontalDivider()
 
@@ -166,7 +165,7 @@ private fun DynamicColorRow(enabled: Boolean, onEnabledChange: (Boolean) -> Unit
 }
 
 @Composable
-private fun LanguageRow(appLanguage: String?, onLanguageChange: (String?) -> Unit) {
+private fun LanguageRow() {
     var dialogOpen by remember { mutableStateOf(false) }
     val options =
         listOf(
@@ -174,11 +173,11 @@ private fun LanguageRow(appLanguage: String?, onLanguageChange: (String?) -> Uni
             "en" to R.string.settings_language_english,
             "ja" to R.string.settings_language_japanese,
         )
-    val selectedLabel =
-        options.firstOrNull { it.first == appLanguage }?.second ?: R.string.settings_language_system
+    val currentTag = AppCompatDelegate.getApplicationLocales().get(0)?.toLanguageTag()
+    val selected = options.firstOrNull { it.first == currentTag } ?: options.first()
     SettingsRow(
         title = stringResource(R.string.settings_language),
-        summary = stringResource(selectedLabel),
+        summary = stringResource(selected.second),
         onClick = { dialogOpen = true },
     )
     if (dialogOpen) {
@@ -186,9 +185,9 @@ private fun LanguageRow(appLanguage: String?, onLanguageChange: (String?) -> Uni
             title = stringResource(R.string.settings_language),
             options = options,
             optionLabel = { stringResource(it.second) },
-            selected = options.firstOrNull { it.first == appLanguage } ?: options.first(),
-            onSelected = {
-                onLanguageChange(it.first)
+            selected = selected,
+            onSelected = { option ->
+                AppCompatDelegate.setApplicationLocales(option.first.toLocaleListCompat())
                 dialogOpen = false
             },
             onDismiss = { dialogOpen = false },
@@ -240,3 +239,7 @@ private fun ThemeMode.labelRes(): Int =
         ThemeMode.Light -> R.string.settings_theme_light
         ThemeMode.Dark -> R.string.settings_theme_dark
     }
+
+private fun String?.toLocaleListCompat(): LocaleListCompat =
+    if (isNullOrBlank()) LocaleListCompat.getEmptyLocaleList()
+    else LocaleListCompat.forLanguageTags(this)

@@ -24,7 +24,6 @@ constructor(
             UserPreferences(
                 themeMode = prefs[KEY_THEME_MODE]?.toThemeModeOrNull() ?: ThemeMode.System,
                 dynamicColor = prefs[KEY_DYNAMIC_COLOR] ?: true,
-                appLanguage = prefs[KEY_APP_LANGUAGE]?.takeIf(String::isNotBlank),
             )
         }
 
@@ -36,22 +35,9 @@ constructor(
         withContext(ioDispatcher) { dataStore.edit { it[KEY_DYNAMIC_COLOR] = enabled } }
     }
 
-    override suspend fun setAppLanguage(languageTag: String?) {
-        withContext(ioDispatcher) {
-            dataStore.edit { prefs ->
-                if (languageTag.isNullOrBlank()) {
-                    prefs.remove(KEY_APP_LANGUAGE)
-                } else {
-                    prefs[KEY_APP_LANGUAGE] = languageTag
-                }
-            }
-        }
-    }
-
     private companion object {
         val KEY_THEME_MODE = stringPreferencesKey("theme_mode")
         val KEY_DYNAMIC_COLOR = booleanPreferencesKey("dynamic_color")
-        val KEY_APP_LANGUAGE = stringPreferencesKey("app_language")
 
         fun String.toThemeModeOrNull(): ThemeMode? =
             ThemeMode.entries.firstOrNull { it.name == this }

@@ -32,10 +32,6 @@ constructor(private val userPreferencesRepository: UserPreferencesRepository) : 
         viewModelScope.launch { userPreferencesRepository.setDynamicColor(enabled) }
     }
 
-    fun setAppLanguage(languageTag: String?) {
-        viewModelScope.launch { userPreferencesRepository.setAppLanguage(languageTag) }
-    }
-
     private companion object {
         const val STATE_TIMEOUT_MS = 5_000L
     }
