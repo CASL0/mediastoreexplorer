@@ -102,51 +102,63 @@ fun <T> MediaTable(
 
         else -> {
             LazyColumn(modifier = modifier.fillMaxSize()) {
-                stickyHeader {
-                    Row(
-                        modifier =
-                            Modifier.fillMaxWidth()
-                                .background(MaterialTheme.colorScheme.primaryContainer)
-                                .horizontalScroll(scrollState)
-                    ) {
-                        columns.forEach { col ->
-                            TableHeaderCell(text = col.header, width = col.width)
-                        }
-                    }
-                    HorizontalDivider(thickness = 2.dp, color = MaterialTheme.colorScheme.primary)
-                }
-
+                stickyHeader { MediaTableHeaderRow(columns = columns, scrollState = scrollState) }
                 itemsIndexed(items, key = { _, item -> key(item) }) { index, item ->
-                    val rowBackground =
-                        if (index % 2 == 0) {
-                            MaterialTheme.colorScheme.surface
-                        } else {
-                            MaterialTheme.colorScheme.surfaceVariant
-                        }
-                    Row(
-                        modifier =
-                            Modifier.fillMaxWidth()
-                                .background(rowBackground)
-                                .horizontalScroll(scrollState)
-                    ) {
-                        columns.forEach { col ->
-                            if (col.customContent != null) {
-                                Box(
-                                    modifier = Modifier.size(col.width).padding(4.dp),
-                                    contentAlignment = Alignment.Center,
-                                ) {
-                                    col.customContent.invoke(item)
-                                }
-                            } else {
-                                TableDataCell(text = col.getValue(item), width = col.width)
-                            }
-                        }
-                    }
-                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                    MediaTableDataRow(
+                        item = item,
+                        columns = columns,
+                        index = index,
+                        scrollState = scrollState,
+                    )
                 }
             }
         }
     }
+}
+
+@Composable
+private fun <T> MediaTableHeaderRow(columns: List<TableColumn<T>>, scrollState: ScrollState) {
+    Row(
+        modifier =
+            Modifier.fillMaxWidth()
+                .background(MaterialTheme.colorScheme.primaryContainer)
+                .horizontalScroll(scrollState)
+    ) {
+        columns.forEach { col -> TableHeaderCell(text = col.header, width = col.width) }
+    }
+    HorizontalDivider(thickness = 2.dp, color = MaterialTheme.colorScheme.primary)
+}
+
+@Composable
+private fun <T> MediaTableDataRow(
+    item: T,
+    columns: List<TableColumn<T>>,
+    index: Int,
+    scrollState: ScrollState,
+) {
+    val rowBackground =
+        if (index % 2 == 0) {
+            MaterialTheme.colorScheme.surface
+        } else {
+            MaterialTheme.colorScheme.surfaceVariant
+        }
+    Row(
+        modifier = Modifier.fillMaxWidth().background(rowBackground).horizontalScroll(scrollState)
+    ) {
+        columns.forEach { col ->
+            if (col.customContent != null) {
+                Box(
+                    modifier = Modifier.size(col.width).padding(4.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    col.customContent.invoke(item)
+                }
+            } else {
+                TableDataCell(text = col.getValue(item), width = col.width)
+            }
+        }
+    }
+    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 }
 
 @Composable
