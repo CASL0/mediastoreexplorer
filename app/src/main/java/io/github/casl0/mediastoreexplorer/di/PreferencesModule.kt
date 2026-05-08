@@ -13,6 +13,8 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import io.github.casl0.mediastoreexplorer.data.datasource.UserPreferencesDataSource
+import io.github.casl0.mediastoreexplorer.data.datasource.UserPreferencesDataSourceImpl
 import io.github.casl0.mediastoreexplorer.data.repository.UserPreferencesRepository
 import io.github.casl0.mediastoreexplorer.data.repository.UserPreferencesRepositoryImpl
 import javax.inject.Singleton
@@ -36,7 +38,13 @@ object PreferencesDataStoreModule {
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class PreferencesRepositoryModule {
+abstract class PreferencesBindingModule {
+
+    @Binds
+    @Singleton
+    abstract fun bindUserPreferencesDataSource(
+        impl: UserPreferencesDataSourceImpl
+    ): UserPreferencesDataSource
 
     @Binds
     @Singleton
