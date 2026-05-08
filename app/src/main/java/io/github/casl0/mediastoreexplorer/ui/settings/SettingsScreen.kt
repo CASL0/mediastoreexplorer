@@ -170,7 +170,7 @@ private fun LanguageRow() {
     val options =
         listOf(
             null to R.string.settings_language_system,
-            "en" to R.string.settings_language_english,
+            "en-US" to R.string.settings_language_english,
             "ja" to R.string.settings_language_japanese,
         )
     val currentTag = AppCompatDelegate.getApplicationLocales().get(0)?.toLanguageTag()
