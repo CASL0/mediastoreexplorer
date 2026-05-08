@@ -1,18 +1,10 @@
-package io.github.casl0.mediastoreexplorer.data.repository.datasource
+package io.github.casl0.mediastoreexplorer.data.datasource
 
 import android.content.ContentResolver
 import android.database.Cursor
 import android.os.Build
 import android.provider.MediaStore
 import io.github.casl0.mediastoreexplorer.data.model.FileItem
-import io.github.casl0.mediastoreexplorer.data.repository.optIntCol
-import io.github.casl0.mediastoreexplorer.data.repository.optIntColQ
-import io.github.casl0.mediastoreexplorer.data.repository.optIntColR
-import io.github.casl0.mediastoreexplorer.data.repository.optLongCol
-import io.github.casl0.mediastoreexplorer.data.repository.optLongColR
-import io.github.casl0.mediastoreexplorer.data.repository.optStringCol
-import io.github.casl0.mediastoreexplorer.data.repository.optStringColQ
-import io.github.casl0.mediastoreexplorer.data.repository.optStringColR
 import javax.inject.Inject
 
 class FileMediaDataSource @Inject constructor(private val contentResolver: ContentResolver) {

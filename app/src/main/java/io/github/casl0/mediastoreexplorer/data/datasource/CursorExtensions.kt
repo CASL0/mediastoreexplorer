@@ -1,4 +1,4 @@
-package io.github.casl0.mediastoreexplorer.data.repository
+package io.github.casl0.mediastoreexplorer.data.datasource
 
 import android.database.Cursor
 import android.os.Build

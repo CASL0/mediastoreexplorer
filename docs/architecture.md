@@ -66,13 +66,15 @@ val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
 ### データ層
 
+データ層は by-type 構成（`model/` / `repository/` / `datasource/` を data 直下にフラット配置）。
+
 | 要素 | 実装 | 責務 |
 | --- | --- | --- |
-| Repository インターフェース | `MediaRepository.kt` | `getImages()` / `getVideos()` / `getAudios()` / `getDownloads()` の契約定義 |
-| Repository 実装 | `MediaRepositoryImpl.kt` | 各 DataSource へ委譲し `withContext(@IoDispatcher)` でスレッドを切り替える薄いアダプター |
-| DataSource | `datasource/ImageMediaDataSource.kt` など (4クラス) | コレクションごとに `ContentResolver.query()` → Cursor マッピングの責務を持つ |
-| Cursor 拡張関数 | `CursorExtensions.kt` | `opt*Col` / `opt*ColQ` / `opt*ColR` / `opt*ColU` — nullable 列読み取りと API バージョンガードを集約 |
-| モデル | `ImageItem` / `VideoItem` / `AudioItem` / `DownloadItem` | MediaStore カラムを全フィールド化したデータクラス |
+| Repository インターフェース | `repository/MediaRepository.kt` / `repository/UserPreferencesRepository.kt` | UI に対する契約定義 |
+| Repository 実装 | `repository/MediaRepositoryImpl.kt` / `repository/UserPreferencesRepositoryImpl.kt` | `withContext(@IoDispatcher)` でスレッド切替し DataSource / DataStore に委譲 |
+| DataSource | `datasource/ImageMediaDataSource.kt` など (5クラス) | コレクションごとに `ContentResolver.query()` → Cursor マッピング |
+| Cursor 拡張関数 | `datasource/CursorExtensions.kt` | `opt*Col` / `opt*ColQ` / `opt*ColR` / `opt*ColU` — nullable 列読み取りと API バージョンガードを集約 |
+| モデル | `model/ImageItem` / `VideoItem` / `AudioItem` / `DownloadItem` / `FileItem` / `UserPreferences` / `ThemeMode` | データ層公開データクラスと enum を集約 |
 
 ---
 
@@ -87,16 +89,18 @@ app/src/main/java/.../
 │   ├── RepositoryModule.kt      # MediaRepository → MediaRepositoryImpl のバインド
 │   └── DispatcherQualifiers.kt  # @IoDispatcher アノテーション定義
 ├── data/
-│   ├── model/                   # ImageItem, VideoItem, AudioItem, DownloadItem
-│   └── repository/
-│       ├── MediaRepository.kt
-│       ├── MediaRepositoryImpl.kt
+│   ├── model/                   # ImageItem / VideoItem / AudioItem / DownloadItem / FileItem
+│   │                            # UserPreferences / ThemeMode
+│   ├── repository/
+│   │   ├── MediaRepository.kt + Impl
+│   │   └── UserPreferencesRepository.kt + Impl
+│   └── datasource/
 │       ├── CursorExtensions.kt  # Cursor opt*Col 拡張関数
-│       └── datasource/
-│           ├── ImageMediaDataSource.kt
-│           ├── VideoMediaDataSource.kt
-│           ├── AudioMediaDataSource.kt
-│           └── DownloadMediaDataSource.kt
+│       ├── ImageMediaDataSource.kt
+│       ├── VideoMediaDataSource.kt
+│       ├── AudioMediaDataSource.kt
+│       ├── DownloadMediaDataSource.kt
+│       └── FileMediaDataSource.kt
 └── ui/
     ├── common/
     │   ├── MediaTable.kt
