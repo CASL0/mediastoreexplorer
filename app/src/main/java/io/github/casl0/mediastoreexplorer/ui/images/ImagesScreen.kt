@@ -71,12 +71,7 @@ private fun ImagesContent(
     initialPermissionsGranted: Boolean? = null,
 ) {
     val context = LocalContext.current
-    val requiredPermissions =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            arrayOf(Manifest.permission.READ_MEDIA_IMAGES)
-        } else {
-            arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
-        }
+    val requiredPermissions = imagesRequiredPermissions()
 
     var permissionsGranted by remember {
         mutableStateOf(
@@ -108,105 +103,109 @@ private fun ImagesContent(
             modifier = modifier,
         )
     } else {
-        val yes = stringResource(R.string.bool_yes)
-        val no = stringResource(R.string.bool_no)
-        val columns: List<TableColumn<ImageItem>> =
-            listOf(
-                TableColumn(
-                    header = stringResource(R.string.col_thumbnail),
-                    width = 72.dp,
-                    customContent = { item ->
-                        val uri =
-                            ContentUris.withAppendedId(
-                                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                                item.id,
-                            )
-                        AsyncImage(
-                            model = uri,
-                            contentDescription = item.displayName,
-                            modifier = Modifier.clip(RoundedCornerShape(4.dp)),
-                            contentScale = ContentScale.Crop,
-                        )
-                    },
-                ),
-                TableColumn(stringResource(R.string.col_id), 80.dp) { it.id.toString() },
-                TableColumn(stringResource(R.string.col_display_name), 200.dp) {
-                    formatString(it.displayName)
-                },
-                TableColumn(stringResource(R.string.col_size), 100.dp) { formatSize(it.size) },
-                TableColumn(stringResource(R.string.col_mime_type), 160.dp) {
-                    formatString(it.mimeType)
-                },
-                TableColumn(stringResource(R.string.col_date_added), 160.dp) {
-                    formatDateSec(it.dateAdded)
-                },
-                TableColumn(stringResource(R.string.col_date_modified), 160.dp) {
-                    formatDateSec(it.dateModified)
-                },
-                TableColumn(stringResource(R.string.col_date_taken), 160.dp) {
-                    formatDateMs(it.dateTaken)
-                },
-                TableColumn(stringResource(R.string.col_width), 80.dp) { formatInt(it.width) },
-                TableColumn(stringResource(R.string.col_height), 80.dp) { formatInt(it.height) },
-                TableColumn(stringResource(R.string.col_orientation), 80.dp) {
-                    formatInt(it.orientation)
-                },
-                TableColumn(stringResource(R.string.col_bucket_id), 140.dp) {
-                    formatString(it.bucketId)
-                },
-                TableColumn(stringResource(R.string.col_bucket_name), 180.dp) {
-                    formatString(it.bucketDisplayName)
-                },
-                TableColumn(stringResource(R.string.col_description), 200.dp) {
-                    formatString(it.description)
-                },
-                TableColumn(stringResource(R.string.col_is_private), 80.dp) {
-                    formatBool(it.isPrivate, yes, no)
-                },
-                TableColumn(stringResource(R.string.col_latitude), 130.dp) {
-                    formatDouble(it.latitude)
-                },
-                TableColumn(stringResource(R.string.col_longitude), 130.dp) {
-                    formatDouble(it.longitude)
-                },
-                TableColumn(stringResource(R.string.col_data), 300.dp) { formatString(it.data) },
-                TableColumn(stringResource(R.string.col_relative_path), 220.dp) {
-                    formatString(it.relativePath)
-                },
-                TableColumn(stringResource(R.string.col_volume_name), 140.dp) {
-                    formatString(it.volumeName)
-                },
-                TableColumn(stringResource(R.string.col_is_pending), 80.dp) {
-                    formatBool(it.isPending, yes, no)
-                },
-                TableColumn(stringResource(R.string.col_is_favorite), 100.dp) {
-                    formatBool(it.isFavorite, yes, no)
-                },
-                TableColumn(stringResource(R.string.col_is_trashed), 80.dp) {
-                    formatBool(it.isTrashed, yes, no)
-                },
-                TableColumn(stringResource(R.string.col_generation_added), 120.dp) {
-                    formatLong(it.generationAdded)
-                },
-                TableColumn(stringResource(R.string.col_generation_modified), 120.dp) {
-                    formatLong(it.generationModified)
-                },
-                TableColumn(stringResource(R.string.col_document_id), 220.dp) {
-                    formatString(it.documentId)
-                },
-                TableColumn(stringResource(R.string.col_original_document_id), 220.dp) {
-                    formatString(it.originalDocumentId)
-                },
-            )
-        MediaTable(
-            items = uiState.images,
-            columns = columns,
-            isLoading = uiState.isLoading,
-            error = uiState.error,
-            modifier = modifier,
-            key = { it.id },
-        )
+        ImagesTable(uiState = uiState, modifier = modifier)
     }
+}
+
+private fun imagesRequiredPermissions(): Array<String> =
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        arrayOf(Manifest.permission.READ_MEDIA_IMAGES)
+    } else {
+        arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
+    }
+
+@Composable
+private fun ImagesTable(uiState: ImagesUiState, modifier: Modifier) {
+    MediaTable(
+        items = uiState.images,
+        columns = imageMediaColumns(),
+        isLoading = uiState.isLoading,
+        error = uiState.error,
+        modifier = modifier,
+        key = { it.id },
+    )
+}
+
+@Composable
+@Suppress("LongMethod") // MediaStore.Images が公開する 27 カラムの宣言的リストのため分割しない
+private fun imageMediaColumns(): List<TableColumn<ImageItem>> {
+    val yes = stringResource(R.string.bool_yes)
+    val no = stringResource(R.string.bool_no)
+    return listOf(
+        TableColumn(
+            header = stringResource(R.string.col_thumbnail),
+            width = 72.dp,
+            customContent = { item ->
+                val uri =
+                    ContentUris.withAppendedId(
+                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                        item.id,
+                    )
+                AsyncImage(
+                    model = uri,
+                    contentDescription = item.displayName,
+                    modifier = Modifier.clip(RoundedCornerShape(4.dp)),
+                    contentScale = ContentScale.Crop,
+                )
+            },
+        ),
+        TableColumn(stringResource(R.string.col_id), 80.dp) { it.id.toString() },
+        TableColumn(stringResource(R.string.col_display_name), 200.dp) {
+            formatString(it.displayName)
+        },
+        TableColumn(stringResource(R.string.col_size), 100.dp) { formatSize(it.size) },
+        TableColumn(stringResource(R.string.col_mime_type), 160.dp) { formatString(it.mimeType) },
+        TableColumn(stringResource(R.string.col_date_added), 160.dp) {
+            formatDateSec(it.dateAdded)
+        },
+        TableColumn(stringResource(R.string.col_date_modified), 160.dp) {
+            formatDateSec(it.dateModified)
+        },
+        TableColumn(stringResource(R.string.col_date_taken), 160.dp) { formatDateMs(it.dateTaken) },
+        TableColumn(stringResource(R.string.col_width), 80.dp) { formatInt(it.width) },
+        TableColumn(stringResource(R.string.col_height), 80.dp) { formatInt(it.height) },
+        TableColumn(stringResource(R.string.col_orientation), 80.dp) { formatInt(it.orientation) },
+        TableColumn(stringResource(R.string.col_bucket_id), 140.dp) { formatString(it.bucketId) },
+        TableColumn(stringResource(R.string.col_bucket_name), 180.dp) {
+            formatString(it.bucketDisplayName)
+        },
+        TableColumn(stringResource(R.string.col_description), 200.dp) {
+            formatString(it.description)
+        },
+        TableColumn(stringResource(R.string.col_is_private), 80.dp) {
+            formatBool(it.isPrivate, yes, no)
+        },
+        TableColumn(stringResource(R.string.col_latitude), 130.dp) { formatDouble(it.latitude) },
+        TableColumn(stringResource(R.string.col_longitude), 130.dp) { formatDouble(it.longitude) },
+        TableColumn(stringResource(R.string.col_data), 300.dp) { formatString(it.data) },
+        TableColumn(stringResource(R.string.col_relative_path), 220.dp) {
+            formatString(it.relativePath)
+        },
+        TableColumn(stringResource(R.string.col_volume_name), 140.dp) {
+            formatString(it.volumeName)
+        },
+        TableColumn(stringResource(R.string.col_is_pending), 80.dp) {
+            formatBool(it.isPending, yes, no)
+        },
+        TableColumn(stringResource(R.string.col_is_favorite), 100.dp) {
+            formatBool(it.isFavorite, yes, no)
+        },
+        TableColumn(stringResource(R.string.col_is_trashed), 80.dp) {
+            formatBool(it.isTrashed, yes, no)
+        },
+        TableColumn(stringResource(R.string.col_generation_added), 120.dp) {
+            formatLong(it.generationAdded)
+        },
+        TableColumn(stringResource(R.string.col_generation_modified), 120.dp) {
+            formatLong(it.generationModified)
+        },
+        TableColumn(stringResource(R.string.col_document_id), 220.dp) {
+            formatString(it.documentId)
+        },
+        TableColumn(stringResource(R.string.col_original_document_id), 220.dp) {
+            formatString(it.originalDocumentId)
+        },
+    )
 }
 
 @Preview(showBackground = true)
