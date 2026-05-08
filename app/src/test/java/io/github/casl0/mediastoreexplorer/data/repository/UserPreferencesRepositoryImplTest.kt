@@ -1,6 +1,7 @@
-package io.github.casl0.mediastoreexplorer.data.preferences
+package io.github.casl0.mediastoreexplorer.data.repository
 
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
+import io.github.casl0.mediastoreexplorer.data.model.ThemeMode
 import java.io.File
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi

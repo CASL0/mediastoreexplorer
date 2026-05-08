@@ -13,8 +13,8 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import io.github.casl0.mediastoreexplorer.data.preferences.UserPreferencesRepository
-import io.github.casl0.mediastoreexplorer.data.preferences.UserPreferencesRepositoryImpl
+import io.github.casl0.mediastoreexplorer.data.repository.UserPreferencesRepository
+import io.github.casl0.mediastoreexplorer.data.repository.UserPreferencesRepositoryImpl
 import javax.inject.Singleton
 
 @Module

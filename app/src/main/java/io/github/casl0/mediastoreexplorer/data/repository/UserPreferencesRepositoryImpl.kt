@@ -1,10 +1,12 @@
-package io.github.casl0.mediastoreexplorer.data.preferences
+package io.github.casl0.mediastoreexplorer.data.repository
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import io.github.casl0.mediastoreexplorer.data.model.ThemeMode
+import io.github.casl0.mediastoreexplorer.data.model.UserPreferences
 import io.github.casl0.mediastoreexplorer.di.IoDispatcher
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineDispatcher

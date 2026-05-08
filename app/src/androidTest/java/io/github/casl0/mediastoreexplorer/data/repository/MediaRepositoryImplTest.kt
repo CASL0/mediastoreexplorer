@@ -5,11 +5,11 @@ import android.os.Build
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
-import io.github.casl0.mediastoreexplorer.data.repository.datasource.AudioMediaDataSource
-import io.github.casl0.mediastoreexplorer.data.repository.datasource.DownloadMediaDataSource
-import io.github.casl0.mediastoreexplorer.data.repository.datasource.FileMediaDataSource
-import io.github.casl0.mediastoreexplorer.data.repository.datasource.ImageMediaDataSource
-import io.github.casl0.mediastoreexplorer.data.repository.datasource.VideoMediaDataSource
+import io.github.casl0.mediastoreexplorer.data.datasource.AudioMediaDataSource
+import io.github.casl0.mediastoreexplorer.data.datasource.DownloadMediaDataSource
+import io.github.casl0.mediastoreexplorer.data.datasource.FileMediaDataSource
+import io.github.casl0.mediastoreexplorer.data.datasource.ImageMediaDataSource
+import io.github.casl0.mediastoreexplorer.data.datasource.VideoMediaDataSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertNotNull

@@ -37,7 +37,7 @@ import androidx.core.os.LocaleListCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.casl0.mediastoreexplorer.BuildConfig
 import io.github.casl0.mediastoreexplorer.R
-import io.github.casl0.mediastoreexplorer.data.preferences.ThemeMode
+import io.github.casl0.mediastoreexplorer.data.model.ThemeMode
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)

@@ -3,9 +3,9 @@ package io.github.casl0.mediastoreexplorer.ui.settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.casl0.mediastoreexplorer.data.preferences.ThemeMode
-import io.github.casl0.mediastoreexplorer.data.preferences.UserPreferences
-import io.github.casl0.mediastoreexplorer.data.preferences.UserPreferencesRepository
+import io.github.casl0.mediastoreexplorer.data.model.ThemeMode
+import io.github.casl0.mediastoreexplorer.data.model.UserPreferences
+import io.github.casl0.mediastoreexplorer.data.repository.UserPreferencesRepository
 import javax.inject.Inject
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
