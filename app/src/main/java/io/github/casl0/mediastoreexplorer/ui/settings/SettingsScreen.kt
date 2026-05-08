@@ -38,6 +38,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.casl0.mediastoreexplorer.BuildConfig
 import io.github.casl0.mediastoreexplorer.R
 import io.github.casl0.mediastoreexplorer.data.preferences.ThemeMode
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -173,8 +174,11 @@ private fun LanguageRow() {
             "en-US" to R.string.settings_language_english,
             "ja" to R.string.settings_language_japanese,
         )
-    val currentTag = AppCompatDelegate.getApplicationLocales().get(0)?.toLanguageTag()
-    val selected = options.firstOrNull { it.first == currentTag } ?: options.first()
+    val currentLanguage = AppCompatDelegate.getApplicationLocales().get(0)?.language
+    val selected =
+        options.firstOrNull { (tag, _) ->
+            tag?.let { Locale.forLanguageTag(it).language } == currentLanguage
+        } ?: options.first()
     SettingsRow(
         title = stringResource(R.string.settings_language),
         summary = stringResource(selected.second),
