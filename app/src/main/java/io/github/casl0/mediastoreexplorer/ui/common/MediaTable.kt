@@ -70,6 +70,7 @@ class TableColumn<T>(
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
+@Suppress("LongParameterList") // 表示データ・カラム定義・ロード/エラー状態・key 抽出を独立に受け取る汎用テーブルのため
 fun <T> MediaTable(
     items: List<T>,
     columns: List<TableColumn<T>>,

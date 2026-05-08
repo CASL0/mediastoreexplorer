@@ -18,6 +18,7 @@ import io.github.casl0.mediastoreexplorer.ui.videos.VideosViewModel
  * `AppRoute.Settings` / `AppRoute.Licenses` を push する。
  */
 @Composable
+@Suppress("LongParameterList") // メディア種別ごとの ViewModel と設定 ViewModel を集約して受け取るため
 fun AppNavGraph(
     imagesViewModel: ImagesViewModel,
     videosViewModel: VideosViewModel,

@@ -19,12 +19,6 @@ style:
       - 'PreviewLightDark'
       - 'PreviewScreenSizes'
 
-complexity:
-  # Composable で ViewModel を集約して受け取るユースケースは慣用のため除外
-  LongParameterList:
-    ignoreAnnotated:
-      - 'Composable'
-
 naming:
   FunctionNaming:
     # Compose の Composable 関数は大文字始まりを許容
