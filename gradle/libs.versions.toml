@@ -18,7 +18,7 @@ ktfmt = "0.62"
 nav3 = "1.0.0"
 datastore = "1.2.1"
 appcompat = "1.7.1"
-kotlinxSerialization = "1.7.3"
+kotlinxSerialization = "1.11.0"
 aboutLibraries = "14.2.0"
 
 [libraries]
