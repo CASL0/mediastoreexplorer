@@ -2,6 +2,11 @@
 
 # MediaStoreExplorer
 
+[![codecov](https://codecov.io/gh/CASL0/mediastoreexplorer/graph/badge.svg)](https://codecov.io/gh/CASL0/mediastoreexplorer)
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
+[![minSdk](https://img.shields.io/badge/minSdk-24-brightgreen)](https://developer.android.com/tools/releases/platforms#7.0)
+[![targetSdk](https://img.shields.io/badge/targetSdk-36-brightgreen)](https://developer.android.com/tools/releases/platforms#16)
+
 An Android app that browses [MediaStore](https://developer.android.com/reference/android/provider/MediaStore) collections — Images, Videos, Audios, Downloads, and Files — in a tabbed interface.
 
 ## Requirements
