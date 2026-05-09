@@ -2,6 +2,11 @@
 
 # MediaStoreExplorer
 
+[![codecov](https://codecov.io/gh/CASL0/mediastoreexplorer/graph/badge.svg)](https://codecov.io/gh/CASL0/mediastoreexplorer)
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
+[![minSdk](https://img.shields.io/badge/minSdk-24-brightgreen)](https://developer.android.com/tools/releases/platforms#7.0)
+[![targetSdk](https://img.shields.io/badge/targetSdk-36-brightgreen)](https://developer.android.com/tools/releases/platforms#16)
+
 [MediaStore](https://developer.android.com/reference/android/provider/MediaStore) のコレクション（画像・動画・音声・ダウンロード・ファイル）をタブで閲覧する Android アプリです。
 
 ## 動作要件
