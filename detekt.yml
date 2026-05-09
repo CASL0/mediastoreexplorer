@@ -12,6 +12,12 @@ style:
   # Compose の末尾ラムダスタイルと衝突するためオフ
   TrailingWhitespace:
     active: true
+  # @Preview 関数は Android Studio のプレビューから呼ばれるため未使用判定の対象外とする
+  UnusedPrivateMember:
+    ignoreAnnotated:
+      - 'Preview'
+      - 'PreviewLightDark'
+      - 'PreviewScreenSizes'
 
 naming:
   FunctionNaming:

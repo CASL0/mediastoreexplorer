@@ -63,12 +63,7 @@ private fun DownloadsContent(
     initialPermissionsGranted: Boolean? = null,
 ) {
     val context = LocalContext.current
-    val requiredPermissions =
-        if (Build.VERSION.SDK_INT in Build.VERSION_CODES.Q..Build.VERSION_CODES.S_V2) {
-            arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
-        } else {
-            emptyArray()
-        }
+    val requiredPermissions = downloadsRequiredPermissions()
 
     var permissionsGranted by remember {
         mutableStateOf(
@@ -102,71 +97,83 @@ private fun DownloadsContent(
             modifier = modifier,
         )
     } else {
-        val yes = stringResource(R.string.bool_yes)
-        val no = stringResource(R.string.bool_no)
-        val columns: List<TableColumn<DownloadItem>> =
-            listOf(
-                TableColumn(stringResource(R.string.col_id), 80.dp) { it.id.toString() },
-                TableColumn(stringResource(R.string.col_display_name), 200.dp) {
-                    formatString(it.displayName)
-                },
-                TableColumn(stringResource(R.string.col_size), 100.dp) { formatSize(it.size) },
-                TableColumn(stringResource(R.string.col_mime_type), 160.dp) {
-                    formatString(it.mimeType)
-                },
-                TableColumn(stringResource(R.string.col_date_added), 160.dp) {
-                    formatDateSec(it.dateAdded)
-                },
-                TableColumn(stringResource(R.string.col_date_modified), 160.dp) {
-                    formatDateSec(it.dateModified)
-                },
-                TableColumn(stringResource(R.string.col_data), 300.dp) { formatString(it.data) },
-                TableColumn(stringResource(R.string.col_relative_path), 220.dp) {
-                    formatString(it.relativePath)
-                },
-                TableColumn(stringResource(R.string.col_volume_name), 140.dp) {
-                    formatString(it.volumeName)
-                },
-                TableColumn(stringResource(R.string.col_is_pending), 80.dp) {
-                    formatBool(it.isPending, yes, no)
-                },
-                TableColumn(stringResource(R.string.col_download_uri), 300.dp) {
-                    formatString(it.downloadUri)
-                },
-                TableColumn(stringResource(R.string.col_referer_uri), 300.dp) {
-                    formatString(it.refererUri)
-                },
-                TableColumn(stringResource(R.string.col_is_favorite), 100.dp) {
-                    formatBool(it.isFavorite, yes, no)
-                },
-                TableColumn(stringResource(R.string.col_is_trashed), 80.dp) {
-                    formatBool(it.isTrashed, yes, no)
-                },
-                TableColumn(stringResource(R.string.col_generation_added), 120.dp) {
-                    formatLong(it.generationAdded)
-                },
-                TableColumn(stringResource(R.string.col_generation_modified), 120.dp) {
-                    formatLong(it.generationModified)
-                },
-                TableColumn(stringResource(R.string.col_document_id), 220.dp) {
-                    formatString(it.documentId)
-                },
-                TableColumn(stringResource(R.string.col_original_document_id), 220.dp) {
-                    formatString(it.originalDocumentId)
-                },
-                TableColumn(stringResource(R.string.col_is_drm), 80.dp) {
-                    formatBool(it.isDrm, yes, no)
-                },
-            )
-        MediaTable(
-            items = uiState.downloads,
-            columns = columns,
-            isLoading = uiState.isLoading,
-            error = uiState.error,
-            modifier = modifier,
-            key = { it.id },
-        )
+        DownloadsTable(uiState = uiState, modifier = modifier)
     }
+}
+
+private fun downloadsRequiredPermissions(): Array<String> =
+    if (Build.VERSION.SDK_INT in Build.VERSION_CODES.Q..Build.VERSION_CODES.S_V2) {
+        arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
+    } else {
+        emptyArray()
+    }
+
+@Composable
+private fun DownloadsTable(uiState: DownloadsUiState, modifier: Modifier) {
+    MediaTable(
+        items = uiState.downloads,
+        columns = downloadMediaColumns(),
+        isLoading = uiState.isLoading,
+        error = uiState.error,
+        modifier = modifier,
+        key = { it.id },
+    )
+}
+
+@Composable
+@Suppress("LongMethod") // MediaStore.Downloads が公開する 19 カラムの宣言的リストのため分割しない
+private fun downloadMediaColumns(): List<TableColumn<DownloadItem>> {
+    val yes = stringResource(R.string.bool_yes)
+    val no = stringResource(R.string.bool_no)
+    return listOf(
+        TableColumn(stringResource(R.string.col_id), 80.dp) { it.id.toString() },
+        TableColumn(stringResource(R.string.col_display_name), 200.dp) {
+            formatString(it.displayName)
+        },
+        TableColumn(stringResource(R.string.col_size), 100.dp) { formatSize(it.size) },
+        TableColumn(stringResource(R.string.col_mime_type), 160.dp) { formatString(it.mimeType) },
+        TableColumn(stringResource(R.string.col_date_added), 160.dp) {
+            formatDateSec(it.dateAdded)
+        },
+        TableColumn(stringResource(R.string.col_date_modified), 160.dp) {
+            formatDateSec(it.dateModified)
+        },
+        TableColumn(stringResource(R.string.col_data), 300.dp) { formatString(it.data) },
+        TableColumn(stringResource(R.string.col_relative_path), 220.dp) {
+            formatString(it.relativePath)
+        },
+        TableColumn(stringResource(R.string.col_volume_name), 140.dp) {
+            formatString(it.volumeName)
+        },
+        TableColumn(stringResource(R.string.col_is_pending), 80.dp) {
+            formatBool(it.isPending, yes, no)
+        },
+        TableColumn(stringResource(R.string.col_download_uri), 300.dp) {
+            formatString(it.downloadUri)
+        },
+        TableColumn(stringResource(R.string.col_referer_uri), 300.dp) {
+            formatString(it.refererUri)
+        },
+        TableColumn(stringResource(R.string.col_is_favorite), 100.dp) {
+            formatBool(it.isFavorite, yes, no)
+        },
+        TableColumn(stringResource(R.string.col_is_trashed), 80.dp) {
+            formatBool(it.isTrashed, yes, no)
+        },
+        TableColumn(stringResource(R.string.col_generation_added), 120.dp) {
+            formatLong(it.generationAdded)
+        },
+        TableColumn(stringResource(R.string.col_generation_modified), 120.dp) {
+            formatLong(it.generationModified)
+        },
+        TableColumn(stringResource(R.string.col_document_id), 220.dp) {
+            formatString(it.documentId)
+        },
+        TableColumn(stringResource(R.string.col_original_document_id), 220.dp) {
+            formatString(it.originalDocumentId)
+        },
+        TableColumn(stringResource(R.string.col_is_drm), 80.dp) { formatBool(it.isDrm, yes, no) },
+    )
 }
 
 @Preview(showBackground = true)

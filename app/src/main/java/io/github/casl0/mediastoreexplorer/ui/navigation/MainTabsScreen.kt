@@ -34,6 +34,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
+@Suppress("LongParameterList") // 5 種類のメディアタブ ViewModel と設定遷移コールバックを集約するため
 fun MainTabsScreen(
     imagesViewModel: ImagesViewModel,
     videosViewModel: VideosViewModel,

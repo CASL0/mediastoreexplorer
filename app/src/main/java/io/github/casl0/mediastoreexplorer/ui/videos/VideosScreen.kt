@@ -66,12 +66,7 @@ private fun VideosContent(
     initialPermissionsGranted: Boolean? = null,
 ) {
     val context = LocalContext.current
-    val requiredPermissions =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            arrayOf(Manifest.permission.READ_MEDIA_VIDEO)
-        } else {
-            arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
-        }
+    val requiredPermissions = videosRequiredPermissions()
 
     var permissionsGranted by remember {
         mutableStateOf(
@@ -103,105 +98,101 @@ private fun VideosContent(
             modifier = modifier,
         )
     } else {
-        val yes = stringResource(R.string.bool_yes)
-        val no = stringResource(R.string.bool_no)
-        val columns: List<TableColumn<VideoItem>> =
-            listOf(
-                TableColumn(stringResource(R.string.col_id), 80.dp) { it.id.toString() },
-                TableColumn(stringResource(R.string.col_display_name), 200.dp) {
-                    formatString(it.displayName)
-                },
-                TableColumn(stringResource(R.string.col_size), 100.dp) { formatSize(it.size) },
-                TableColumn(stringResource(R.string.col_mime_type), 160.dp) {
-                    formatString(it.mimeType)
-                },
-                TableColumn(stringResource(R.string.col_date_added), 160.dp) {
-                    formatDateSec(it.dateAdded)
-                },
-                TableColumn(stringResource(R.string.col_date_modified), 160.dp) {
-                    formatDateSec(it.dateModified)
-                },
-                TableColumn(stringResource(R.string.col_date_taken), 160.dp) {
-                    formatDateMs(it.dateTaken)
-                },
-                TableColumn(stringResource(R.string.col_width), 80.dp) { formatInt(it.width) },
-                TableColumn(stringResource(R.string.col_height), 80.dp) { formatInt(it.height) },
-                TableColumn(stringResource(R.string.col_duration), 100.dp) {
-                    formatDuration(it.duration)
-                },
-                TableColumn(stringResource(R.string.col_resolution), 120.dp) {
-                    formatString(it.resolution)
-                },
-                TableColumn(stringResource(R.string.col_bucket_id), 140.dp) {
-                    formatString(it.bucketId)
-                },
-                TableColumn(stringResource(R.string.col_bucket_name), 180.dp) {
-                    formatString(it.bucketDisplayName)
-                },
-                TableColumn(stringResource(R.string.col_description), 200.dp) {
-                    formatString(it.description)
-                },
-                TableColumn(stringResource(R.string.col_category), 120.dp) {
-                    formatString(it.category)
-                },
-                TableColumn(stringResource(R.string.col_language), 80.dp) {
-                    formatString(it.language)
-                },
-                TableColumn(stringResource(R.string.col_artist), 160.dp) {
-                    formatString(it.artist)
-                },
-                TableColumn(stringResource(R.string.col_album), 160.dp) { formatString(it.album) },
-                TableColumn(stringResource(R.string.col_tags), 160.dp) { formatString(it.tags) },
-                TableColumn(stringResource(R.string.col_bookmark), 120.dp) {
-                    formatLong(it.bookmark)
-                },
-                TableColumn(stringResource(R.string.col_is_private), 80.dp) {
-                    formatBool(it.isPrivate, yes, no)
-                },
-                TableColumn(stringResource(R.string.col_latitude), 130.dp) {
-                    formatDouble(it.latitude)
-                },
-                TableColumn(stringResource(R.string.col_longitude), 130.dp) {
-                    formatDouble(it.longitude)
-                },
-                TableColumn(stringResource(R.string.col_data), 300.dp) { formatString(it.data) },
-                TableColumn(stringResource(R.string.col_relative_path), 220.dp) {
-                    formatString(it.relativePath)
-                },
-                TableColumn(stringResource(R.string.col_volume_name), 140.dp) {
-                    formatString(it.volumeName)
-                },
-                TableColumn(stringResource(R.string.col_is_pending), 80.dp) {
-                    formatBool(it.isPending, yes, no)
-                },
-                TableColumn(stringResource(R.string.col_is_favorite), 100.dp) {
-                    formatBool(it.isFavorite, yes, no)
-                },
-                TableColumn(stringResource(R.string.col_is_trashed), 80.dp) {
-                    formatBool(it.isTrashed, yes, no)
-                },
-                TableColumn(stringResource(R.string.col_generation_added), 120.dp) {
-                    formatLong(it.generationAdded)
-                },
-                TableColumn(stringResource(R.string.col_generation_modified), 120.dp) {
-                    formatLong(it.generationModified)
-                },
-                TableColumn(stringResource(R.string.col_document_id), 220.dp) {
-                    formatString(it.documentId)
-                },
-                TableColumn(stringResource(R.string.col_original_document_id), 220.dp) {
-                    formatString(it.originalDocumentId)
-                },
-            )
-        MediaTable(
-            items = uiState.videos,
-            columns = columns,
-            isLoading = uiState.isLoading,
-            error = uiState.error,
-            modifier = modifier,
-            key = { it.id },
-        )
+        VideosTable(uiState = uiState, modifier = modifier)
     }
+}
+
+private fun videosRequiredPermissions(): Array<String> =
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        arrayOf(Manifest.permission.READ_MEDIA_VIDEO)
+    } else {
+        arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
+    }
+
+@Composable
+private fun VideosTable(uiState: VideosUiState, modifier: Modifier) {
+    MediaTable(
+        items = uiState.videos,
+        columns = videoMediaColumns(),
+        isLoading = uiState.isLoading,
+        error = uiState.error,
+        modifier = modifier,
+        key = { it.id },
+    )
+}
+
+@Composable
+@Suppress("LongMethod") // MediaStore.Video が公開する 32 カラムの宣言的リストのため分割しない
+private fun videoMediaColumns(): List<TableColumn<VideoItem>> {
+    val yes = stringResource(R.string.bool_yes)
+    val no = stringResource(R.string.bool_no)
+    return listOf(
+        TableColumn(stringResource(R.string.col_id), 80.dp) { it.id.toString() },
+        TableColumn(stringResource(R.string.col_display_name), 200.dp) {
+            formatString(it.displayName)
+        },
+        TableColumn(stringResource(R.string.col_size), 100.dp) { formatSize(it.size) },
+        TableColumn(stringResource(R.string.col_mime_type), 160.dp) { formatString(it.mimeType) },
+        TableColumn(stringResource(R.string.col_date_added), 160.dp) {
+            formatDateSec(it.dateAdded)
+        },
+        TableColumn(stringResource(R.string.col_date_modified), 160.dp) {
+            formatDateSec(it.dateModified)
+        },
+        TableColumn(stringResource(R.string.col_date_taken), 160.dp) { formatDateMs(it.dateTaken) },
+        TableColumn(stringResource(R.string.col_width), 80.dp) { formatInt(it.width) },
+        TableColumn(stringResource(R.string.col_height), 80.dp) { formatInt(it.height) },
+        TableColumn(stringResource(R.string.col_duration), 100.dp) { formatDuration(it.duration) },
+        TableColumn(stringResource(R.string.col_resolution), 120.dp) {
+            formatString(it.resolution)
+        },
+        TableColumn(stringResource(R.string.col_bucket_id), 140.dp) { formatString(it.bucketId) },
+        TableColumn(stringResource(R.string.col_bucket_name), 180.dp) {
+            formatString(it.bucketDisplayName)
+        },
+        TableColumn(stringResource(R.string.col_description), 200.dp) {
+            formatString(it.description)
+        },
+        TableColumn(stringResource(R.string.col_category), 120.dp) { formatString(it.category) },
+        TableColumn(stringResource(R.string.col_language), 80.dp) { formatString(it.language) },
+        TableColumn(stringResource(R.string.col_artist), 160.dp) { formatString(it.artist) },
+        TableColumn(stringResource(R.string.col_album), 160.dp) { formatString(it.album) },
+        TableColumn(stringResource(R.string.col_tags), 160.dp) { formatString(it.tags) },
+        TableColumn(stringResource(R.string.col_bookmark), 120.dp) { formatLong(it.bookmark) },
+        TableColumn(stringResource(R.string.col_is_private), 80.dp) {
+            formatBool(it.isPrivate, yes, no)
+        },
+        TableColumn(stringResource(R.string.col_latitude), 130.dp) { formatDouble(it.latitude) },
+        TableColumn(stringResource(R.string.col_longitude), 130.dp) { formatDouble(it.longitude) },
+        TableColumn(stringResource(R.string.col_data), 300.dp) { formatString(it.data) },
+        TableColumn(stringResource(R.string.col_relative_path), 220.dp) {
+            formatString(it.relativePath)
+        },
+        TableColumn(stringResource(R.string.col_volume_name), 140.dp) {
+            formatString(it.volumeName)
+        },
+        TableColumn(stringResource(R.string.col_is_pending), 80.dp) {
+            formatBool(it.isPending, yes, no)
+        },
+        TableColumn(stringResource(R.string.col_is_favorite), 100.dp) {
+            formatBool(it.isFavorite, yes, no)
+        },
+        TableColumn(stringResource(R.string.col_is_trashed), 80.dp) {
+            formatBool(it.isTrashed, yes, no)
+        },
+        TableColumn(stringResource(R.string.col_generation_added), 120.dp) {
+            formatLong(it.generationAdded)
+        },
+        TableColumn(stringResource(R.string.col_generation_modified), 120.dp) {
+            formatLong(it.generationModified)
+        },
+        TableColumn(stringResource(R.string.col_document_id), 220.dp) {
+            formatString(it.documentId)
+        },
+        TableColumn(stringResource(R.string.col_original_document_id), 220.dp) {
+            formatString(it.originalDocumentId)
+        },
+    )
 }
 
 @Preview(showBackground = true)

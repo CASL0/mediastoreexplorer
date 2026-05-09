@@ -200,6 +200,7 @@ private fun LanguageRow() {
 }
 
 @Composable
+@Suppress("LongParameterList") // 汎用ダイアログのためタイトル・選択肢・ラベル抽出・選択値・コールバックを独立に受け取る
 private fun <T> SingleChoiceDialog(
     title: String,
     options: List<T>,

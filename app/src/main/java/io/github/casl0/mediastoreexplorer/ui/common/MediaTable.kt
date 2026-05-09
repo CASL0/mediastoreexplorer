@@ -38,25 +38,6 @@ import io.github.casl0.mediastoreexplorer.R
 import io.github.casl0.mediastoreexplorer.ui.theme.MediaStoreExplorerTheme
 
 /**
- * テーブルの 1 カラムを定義するクラス。
- *
- * テキストセルの場合は [getValue] を指定する。 カスタム Composable セル（サムネイル等）の場合は [customContent] を指定する。 両方指定した場合は
- * [customContent] が優先される。
- *
- * @param T テーブルに表示するアイテムの型
- * @property header ヘッダーに表示する文字列
- * @property width カラムの表示幅
- * @property customContent カスタムセル描画用の Composable。null の場合は [getValue] の結果をテキスト表示する
- * @property getValue アイテムからセルの表示文字列を取得する関数。[customContent] が null の場合のみ使用される
- */
-class TableColumn<T>(
-    val header: String,
-    val width: Dp,
-    val customContent: (@Composable (T) -> Unit)? = null,
-    val getValue: (T) -> String = { "" },
-)
-
-/**
  * sticky ヘッダーと水平スクロールを備えたメディアテーブル。
  *
  * ロード中はプログレスインジケーター、エラー時はエラーメッセージ、 アイテムが空の場合は空メッセージを表示する。
@@ -70,6 +51,7 @@ class TableColumn<T>(
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
+@Suppress("LongParameterList") // 表示データ・カラム定義・ロード/エラー状態・key 抽出を独立に受け取る汎用テーブルのため
 fun <T> MediaTable(
     items: List<T>,
     columns: List<TableColumn<T>>,
@@ -101,51 +83,63 @@ fun <T> MediaTable(
 
         else -> {
             LazyColumn(modifier = modifier.fillMaxSize()) {
-                stickyHeader {
-                    Row(
-                        modifier =
-                            Modifier.fillMaxWidth()
-                                .background(MaterialTheme.colorScheme.primaryContainer)
-                                .horizontalScroll(scrollState)
-                    ) {
-                        columns.forEach { col ->
-                            TableHeaderCell(text = col.header, width = col.width)
-                        }
-                    }
-                    HorizontalDivider(thickness = 2.dp, color = MaterialTheme.colorScheme.primary)
-                }
-
+                stickyHeader { MediaTableHeaderRow(columns = columns, scrollState = scrollState) }
                 itemsIndexed(items, key = { _, item -> key(item) }) { index, item ->
-                    val rowBackground =
-                        if (index % 2 == 0) {
-                            MaterialTheme.colorScheme.surface
-                        } else {
-                            MaterialTheme.colorScheme.surfaceVariant
-                        }
-                    Row(
-                        modifier =
-                            Modifier.fillMaxWidth()
-                                .background(rowBackground)
-                                .horizontalScroll(scrollState)
-                    ) {
-                        columns.forEach { col ->
-                            if (col.customContent != null) {
-                                Box(
-                                    modifier = Modifier.size(col.width).padding(4.dp),
-                                    contentAlignment = Alignment.Center,
-                                ) {
-                                    col.customContent.invoke(item)
-                                }
-                            } else {
-                                TableDataCell(text = col.getValue(item), width = col.width)
-                            }
-                        }
-                    }
-                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                    MediaTableDataRow(
+                        item = item,
+                        columns = columns,
+                        index = index,
+                        scrollState = scrollState,
+                    )
                 }
             }
         }
     }
+}
+
+@Composable
+private fun <T> MediaTableHeaderRow(columns: List<TableColumn<T>>, scrollState: ScrollState) {
+    Row(
+        modifier =
+            Modifier.fillMaxWidth()
+                .background(MaterialTheme.colorScheme.primaryContainer)
+                .horizontalScroll(scrollState)
+    ) {
+        columns.forEach { col -> TableHeaderCell(text = col.header, width = col.width) }
+    }
+    HorizontalDivider(thickness = 2.dp, color = MaterialTheme.colorScheme.primary)
+}
+
+@Composable
+private fun <T> MediaTableDataRow(
+    item: T,
+    columns: List<TableColumn<T>>,
+    index: Int,
+    scrollState: ScrollState,
+) {
+    val rowBackground =
+        if (index % 2 == 0) {
+            MaterialTheme.colorScheme.surface
+        } else {
+            MaterialTheme.colorScheme.surfaceVariant
+        }
+    Row(
+        modifier = Modifier.fillMaxWidth().background(rowBackground).horizontalScroll(scrollState)
+    ) {
+        columns.forEach { col ->
+            if (col.customContent != null) {
+                Box(
+                    modifier = Modifier.size(col.width).padding(4.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    col.customContent.invoke(item)
+                }
+            } else {
+                TableDataCell(text = col.getValue(item), width = col.width)
+            }
+        }
+    }
+    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 }
 
 @Composable
