@@ -1,0 +1,20 @@
+name: Setup JDK and Gradle
+description: Install Temurin JDK and prepare Gradle for Android builds.
+
+inputs:
+  java-version:
+    description: Temurin JDK version to install.
+    required: false
+    default: "25"
+
+runs:
+  using: composite
+  steps:
+    - name: Setup Java
+      uses: actions/setup-java@v5
+      with:
+        distribution: "temurin"
+        java-version: ${{ inputs.java-version }}
+
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v6
