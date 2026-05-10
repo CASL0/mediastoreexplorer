@@ -8,6 +8,10 @@ plugins {
     jacoco
 }
 
+val versionMajor = 1 // x-release-please-major
+val versionMinor = 0 // x-release-please-minor
+val versionPatch = 0 // x-release-please-patch
+
 android {
     namespace = "io.github.casl0.mediastoreexplorer"
     compileSdk { version = release(36) { minorApiLevel = 1 } }
@@ -16,8 +20,8 @@ android {
         applicationId = "io.github.casl0.mediastoreexplorer"
         minSdk = 24
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = versionMajor * 10000 + versionMinor * 100 + versionPatch
+        versionName = "$versionMajor.$versionMinor.$versionPatch"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
