@@ -56,9 +56,9 @@ chore: spotless フックを追加
 ci: lint 用のジョブを追加
 ```
 
-## semantic-release
+## release-please
 
-`main` へのマージ時に semantic-release が自動でバージョンを決定してリリースする。
+`main` へのマージ時に [release-please](https://github.com/googleapis/release-please) がリリース PR を自動で作成・更新する。リリース PR をマージすると semver タグと GitHub Release が作成される。
 
 | コミットに含まれる type | バージョン変化 |
 | ----------------------- | -------------- |
@@ -66,3 +66,5 @@ ci: lint 用のジョブを追加
 | `feat`                  | minor (0.x.0)  |
 | `fix`, `perf`           | patch (0.0.x)  |
 | それ以外                | リリースなし   |
+
+`app/build.gradle.kts` の `versionMajor` / `versionMinor` / `versionPatch` は release-please のアノテーション (`x-release-please-major` など) によって自動更新される。`versionCode` はそれらから `versionMajor * 10000 + versionMinor * 100 + versionPatch` で算出。
