@@ -10,19 +10,10 @@
         android:pivotY="54"
         android:rotation="-22">
         <path
-            android:fillColor="#984061"
+            android:fillColor="#00000000"
             android:pathData="M41,28 L67,28 Q73,28 73,34 L73,74 Q73,80 67,80 L41,80 Q35,80 35,74 L35,34 Q35,28 41,28 Z"
             android:strokeColor="#FFFFFF"
-            android:strokeWidth="1.5" />
-        <path
-            android:fillColor="#FFFFFF"
-            android:pathData="M50,64 L50,42 L60,39 L60,50" />
-        <path
-            android:fillColor="#FFFFFF"
-            android:pathData="M47,63m-4,1.5a4,3 0 1,0 8,0a4,3 0 1,0 -8,0" />
-        <path
-            android:fillColor="#FFFFFF"
-            android:pathData="M57,50m-4,1.5a4,3 0 1,0 8,0a4,3 0 1,0 -8,0" />
+            android:strokeWidth="2.2" />
     </group>
 
     <group
@@ -30,10 +21,10 @@
         android:pivotY="54"
         android:rotation="0">
         <path
-            android:fillColor="#006A6A"
+            android:fillColor="#00000000"
             android:pathData="M41,28 L67,28 Q73,28 73,34 L73,74 Q73,80 67,80 L41,80 Q35,80 35,74 L35,34 Q35,28 41,28 Z"
             android:strokeColor="#FFFFFF"
-            android:strokeWidth="1.5" />
+            android:strokeWidth="2.2" />
         <path
             android:fillColor="#FFFFFF"
             android:pathData="M47,42 L67,54 L47,66 Z" />
@@ -44,16 +35,10 @@
         android:pivotY="54"
         android:rotation="22">
         <path
-            android:fillColor="#EADDFF"
+            android:fillColor="#00000000"
             android:pathData="M41,28 L67,28 Q73,28 73,34 L73,74 Q73,80 67,80 L41,80 Q35,80 35,74 L35,34 Q35,28 41,28 Z"
             android:strokeColor="#FFFFFF"
-            android:strokeWidth="1.5" />
-        <path
-            android:fillColor="#F2B8B5"
-            android:pathData="M62,42m-4,0a4,4 0 1,0 8,0a4,4 0 1,0 -8,0" />
-        <path
-            android:fillColor="#4F378B"
-            android:pathData="M37,76 L48,58 L55,66 L62,52 L70,76 Z" />
+            android:strokeWidth="2.2" />
     </group>
 
 </vector>
