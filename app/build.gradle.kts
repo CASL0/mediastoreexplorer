@@ -1,3 +1,6 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
@@ -11,6 +14,14 @@ plugins {
 val versionMajor = 1 // x-release-please-major
 val versionMinor = 0 // x-release-please-minor
 val versionPatch = 0 // x-release-please-patch
+
+val keystorePropertiesFile = rootProject.file("keystore.properties")
+val keystoreProperties =
+    Properties().apply {
+        if (keystorePropertiesFile.exists()) {
+            load(FileInputStream(keystorePropertiesFile))
+        }
+    }
 
 android {
     namespace = "io.github.casl0.mediastoreexplorer"
@@ -26,6 +37,27 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        create("release") {
+            when {
+                keystorePropertiesFile.exists() -> {
+                    storeFile = file(keystoreProperties["storeFile"] as String)
+                    storePassword = keystoreProperties["storePassword"] as String
+                    keyAlias = keystoreProperties["keyAlias"] as String
+                    keyPassword = keystoreProperties["keyPassword"] as String
+                }
+                System.getenv("KEYSTORE_PATH") != null -> {
+                    storeFile = file(System.getenv("KEYSTORE_PATH"))
+                    storePassword = System.getenv("KEYSTORE_PASSWORD")
+                    keyAlias = System.getenv("KEY_ALIAS")
+                    keyPassword = System.getenv("KEY_PASSWORD")
+                }
+            // どちらも無い場合は storeFile 未設定のままにし、release は
+            // debug 署名にフォールバックして検証だけ可能にする
+            }
+        }
+    }
+
     buildTypes {
         debug {
             enableUnitTestCoverage = true
@@ -33,6 +65,15 @@ android {
         }
         release {
             isMinifyEnabled = true
+            isShrinkResources = true
+            // keystore.properties か環境変数のどちらかが存在する場合のみ release
+            // 署名を当てる。両方無いローカル検証では debug 署名にフォールバックする
+            signingConfig =
+                if (signingConfigs.getByName("release").storeFile != null) {
+                    signingConfigs.getByName("release")
+                } else {
+                    signingConfigs.getByName("debug")
+                }
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
