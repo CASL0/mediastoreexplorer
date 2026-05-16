@@ -15,3 +15,6 @@
 local.properties
 .idea
 /tmp
+keystore.properties
+*.jks
+*.keystore
