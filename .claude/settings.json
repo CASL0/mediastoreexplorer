@@ -8,7 +8,12 @@
   },
   "language": "japanese",
   "permissions": {
-    "allow": ["Bash(./gradlew:*)", "Bash(android:*)"]
+    "allow": ["Bash(./gradlew:*)", "Bash(android:*)"],
+    "deny": [
+      "Read(keystore.properties)",
+      "Edit(keystore.properties)",
+      "Write(keystore.properties)"
+    ]
   },
   "hooks": {
     "PostToolUse": [
