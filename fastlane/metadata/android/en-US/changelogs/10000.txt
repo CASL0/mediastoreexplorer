@@ -1,0 +1,7 @@
+Initial release.
+
+- Browse Images, Videos, Audios, Downloads, and Files from MediaStore in a tabbed interface
+- Runtime permission handling with a dedicated permission screen
+- Read-only access — no writes to your MediaStore
+
+Built with Jetpack Compose, supports Android 7.0 (API 24) and later.
