@@ -38,6 +38,12 @@ description: mediastoreexplorer プロジェクト（Kotlin / Jetpack Compose）
 - [ ] 現在地が `c:\Users\ooshiro\ghq\github.com\CASL0\mediastoreexplorer` の作業ツリーである
 - [ ] `git status` がクリーン、または現在のブランチが本実装専用である
 
+加えて、計画 Issue の番号があれば確認しておく:
+
+- `android-implementation-planner` が Step 9 で `gh issue create` を実行した場合、会話文脈に Issue 番号（`#<番号>`）が残っているはず
+- 番号が見当たらないが計画 Issue は存在しそうという場合、`gh issue list --label enhancement --search "実装計画: <タイトル>"` で照合する
+- 計画 Issue が立っていなければ、それ自体は致命ではない。ただし PR の `Closes #...` 行は省略する（存在しない Issue を参照しない）
+
 未コミット変更がある場合の判断は以下:
 
 - **計画と関連が明確な変更**（同じファイル群への手を入れた途中、計画上 Phase 1 で触る箇所への準備変更など）→ `git stash push -u -m "<context>"` を提案し、対象ブランチ作成後に `git stash pop` で復帰させる選択肢を出す
@@ -223,6 +229,7 @@ gh pr create --base main --title "<PR タイトル>" --body "$(cat <<'EOF'
 - [ ] ./gradlew connectedDebugAndroidTest（必要なら手動）
 
 ## Related plan
+Closes #<計画 Issue 番号>
 <実装計画の要点 or 計画書のセクション参照>
 
 ## Security notes
@@ -233,7 +240,11 @@ EOF
 
 PR タイトルは Conventional Commits の 1 行目をそのまま使う形を推奨（squash merge 時にもメッセージ規約が保たれる）。
 
-PR 本文の `Related plan` には、`android-implementation-planner` が出した計画の要約を貼る。レビューア / 将来の自分が「なぜこの実装になったか」を辿れるようにする。
+PR 本文の `Related plan` は次のルールで埋める:
+
+- `android-implementation-planner` が Step 9 で立てた計画 Issue がある場合、先頭に `Closes #<番号>` を 1 行で書く。PR が squash merge されると GitHub 側で Issue が自動クローズされ、「計画 → 実装 → クローズ」が辿れる
+- 計画 Issue が無い場合は `Closes` 行を省略し、計画の要点を 3〜5 行で要約する
+- 既存 Issue を完全には解消しない部分実装の場合は `Refs #<番号>` を使い（自動クローズを避ける）、残作業を 1 行添える
 
 ### 6. 確認待ちで停止する
 
