@@ -12,7 +12,10 @@
     "deny": [
       "Read(keystore.properties)",
       "Edit(keystore.properties)",
-      "Write(keystore.properties)"
+      "Write(keystore.properties)",
+      "Read(service_account.json)",
+      "Edit(service_account.json)",
+      "Write(service_account.json)"
     ]
   },
   "hooks": {
