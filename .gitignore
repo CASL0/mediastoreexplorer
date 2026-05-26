@@ -26,3 +26,4 @@ keystore.properties
 /fastlane/screenshots/
 /fastlane/test_output/
 /fastlane/*.json
+/service_account.json
