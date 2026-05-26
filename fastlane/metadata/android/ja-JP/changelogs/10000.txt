@@ -1,0 +1,5 @@
+初回リリース。
+
+- MediaStore の Images / Videos / Audios / Downloads / Files をタブ式 UI で閲覧
+- 専用画面でランタイム権限を要求
+- 読み取り専用 — MediaStore への書き込みは行いません
