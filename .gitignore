@@ -18,6 +18,7 @@ local.properties
 keystore.properties
 *.jks
 *.keystore
+*.aab
 
 # Fastlane / Ruby
 /vendor/bundle/
