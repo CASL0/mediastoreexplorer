@@ -1,27 +1,19 @@
 package io.github.casl0.mediastoreexplorer.ui.audios
 
 import android.Manifest
-import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Build
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.casl0.mediastoreexplorer.R
 import io.github.casl0.mediastoreexplorer.data.model.AudioItem
 import io.github.casl0.mediastoreexplorer.ui.common.MediaTable
+import io.github.casl0.mediastoreexplorer.ui.common.PermissionGate
 import io.github.casl0.mediastoreexplorer.ui.common.PermissionRequiredScreen
 import io.github.casl0.mediastoreexplorer.ui.common.TableColumn
 import io.github.casl0.mediastoreexplorer.ui.common.formatBool
@@ -36,10 +28,12 @@ import io.github.casl0.mediastoreexplorer.ui.theme.MediaStoreExplorerTheme
 /**
  * 端末内の音声ファイルをテーブル形式で表示する画面。
  *
- * 権限が未付与の場合は [PermissionRequiredScreen] を表示し、 付与後に自動で音声を読み込む。
+ * 権限が未付与の場合は [PermissionGate] が [PermissionRequiredScreen] を表示し、 付与後に自動で音声を読み込む。
+ * [initialPermissionsGranted] が指定された場合はプレビュー/テスト目的で PermissionGate を経由せず直接 [AudiosContent] を表示する。
  *
  * @param viewModel 音声データと UI 状態を管理する [AudiosViewModel]
  * @param modifier レイアウト調整用の [Modifier]
+ * @param initialPermissionsGranted プレビュー/テスト用の権限状態オーバーライド
  */
 @Composable
 fun AudiosScreen(
@@ -48,63 +42,52 @@ fun AudiosScreen(
     initialPermissionsGranted: Boolean? = null,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    AudiosContent(
-        uiState = uiState,
-        onLoadAudios = viewModel::loadAudios,
+    if (initialPermissionsGranted != null) {
+        AudiosContent(
+            uiState = uiState,
+            permissionsGranted = initialPermissionsGranted,
+            onRequestPermission = {},
+            modifier = modifier,
+        )
+        return
+    }
+    PermissionGate(
+        permissions = audiosRequiredPermissions(),
+        message = stringResource(R.string.permission_audios_message),
+        rationaleMessage = stringResource(R.string.permission_audios_rationale),
+        onGranted = viewModel::loadAudios,
         modifier = modifier,
-        initialPermissionsGranted = initialPermissionsGranted,
-    )
+    ) {
+        AudiosTable(uiState = uiState, modifier = modifier)
+    }
 }
 
 @Composable
 private fun AudiosContent(
     uiState: AudiosUiState,
-    onLoadAudios: () -> Unit,
+    permissionsGranted: Boolean,
+    onRequestPermission: () -> Unit,
     modifier: Modifier = Modifier,
-    initialPermissionsGranted: Boolean? = null,
+    showRationale: Boolean = false,
 ) {
-    val context = LocalContext.current
-    val requiredPermissions = audiosRequiredPermissions()
-
-    var permissionsGranted by remember {
-        mutableStateOf(
-            initialPermissionsGranted
-                ?: requiredPermissions.all {
-                    ContextCompat.checkSelfPermission(context, it) ==
-                        PackageManager.PERMISSION_GRANTED
-                }
-        )
-    }
-
-    val permissionLauncher =
-        rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.RequestMultiplePermissions()
-        ) { results ->
-            permissionsGranted = results.values.all { it }
-        }
-
-    LaunchedEffect(permissionsGranted) {
-        if (permissionsGranted) {
-            onLoadAudios()
-        }
-    }
-
     if (!permissionsGranted) {
         PermissionRequiredScreen(
             message = stringResource(R.string.permission_audios_message),
-            onRequestPermission = { permissionLauncher.launch(requiredPermissions) },
+            onRequestPermission = onRequestPermission,
             modifier = modifier,
+            rationaleMessage = stringResource(R.string.permission_audios_rationale),
+            showRationale = showRationale,
         )
     } else {
         AudiosTable(uiState = uiState, modifier = modifier)
     }
 }
 
-private fun audiosRequiredPermissions(): Array<String> =
+private fun audiosRequiredPermissions(): List<String> =
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        arrayOf(Manifest.permission.READ_MEDIA_AUDIO)
+        listOf(Manifest.permission.READ_MEDIA_AUDIO)
     } else {
-        arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
+        listOf(Manifest.permission.READ_EXTERNAL_STORAGE)
     }
 
 @Composable
@@ -207,8 +190,22 @@ private fun AudiosScreenPermissionDeniedPreview() {
     MediaStoreExplorerTheme {
         AudiosContent(
             uiState = AudiosUiState(),
-            onLoadAudios = {},
-            initialPermissionsGranted = false,
+            permissionsGranted = false,
+            onRequestPermission = {},
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Rationale")
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true, name = "Rationale (Dark)")
+@Composable
+private fun AudiosScreenRationalePreview() {
+    MediaStoreExplorerTheme {
+        AudiosContent(
+            uiState = AudiosUiState(),
+            permissionsGranted = false,
+            onRequestPermission = {},
+            showRationale = true,
         )
     }
 }
