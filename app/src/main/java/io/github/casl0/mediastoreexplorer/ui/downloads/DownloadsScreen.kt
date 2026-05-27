@@ -1,27 +1,19 @@
 package io.github.casl0.mediastoreexplorer.ui.downloads
 
 import android.Manifest
-import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Build
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.casl0.mediastoreexplorer.R
 import io.github.casl0.mediastoreexplorer.data.model.DownloadItem
 import io.github.casl0.mediastoreexplorer.ui.common.MediaTable
+import io.github.casl0.mediastoreexplorer.ui.common.PermissionGate
 import io.github.casl0.mediastoreexplorer.ui.common.PermissionRequiredScreen
 import io.github.casl0.mediastoreexplorer.ui.common.TableColumn
 import io.github.casl0.mediastoreexplorer.ui.common.formatBool
@@ -34,11 +26,13 @@ import io.github.casl0.mediastoreexplorer.ui.theme.MediaStoreExplorerTheme
 /**
  * 端末内のダウンロードファイルをテーブル形式で表示する画面。
  *
- * API 29-32 では権限が未付与の場合は [PermissionRequiredScreen] を表示し、 付与後に自動でダウンロード一覧を読み込む。 API 33+
- * では専用パーミッションがないため権限ゲートなしに読み込む。
+ * API 29-32 では権限が未付与の場合は [PermissionGate] が [PermissionRequiredScreen] を表示し、 付与後に自動で読み込む。 API 33+ /
+ * API 28 以下では権限不要のため [PermissionGate] は即 content を表示する。 [initialPermissionsGranted]
+ * が指定された場合はプレビュー/テスト目的で PermissionGate を経由せず直接 [DownloadsContent] を表示する。
  *
  * @param viewModel ダウンロードデータと UI 状態を管理する [DownloadsViewModel]
  * @param modifier レイアウト調整用の [Modifier]
+ * @param initialPermissionsGranted プレビュー/テスト用の権限状態オーバーライド
  */
 @Composable
 fun DownloadsScreen(
@@ -47,65 +41,52 @@ fun DownloadsScreen(
     initialPermissionsGranted: Boolean? = null,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    DownloadsContent(
-        uiState = uiState,
-        onLoadDownloads = viewModel::loadDownloads,
+    if (initialPermissionsGranted != null) {
+        DownloadsContent(
+            uiState = uiState,
+            permissionsGranted = initialPermissionsGranted,
+            onRequestPermission = {},
+            modifier = modifier,
+        )
+        return
+    }
+    PermissionGate(
+        permissions = downloadsRequiredPermissions(),
+        message = stringResource(R.string.permission_downloads_message),
+        rationaleMessage = stringResource(R.string.permission_downloads_rationale),
+        onGranted = viewModel::loadDownloads,
         modifier = modifier,
-        initialPermissionsGranted = initialPermissionsGranted,
-    )
+    ) {
+        DownloadsTable(uiState = uiState, modifier = modifier)
+    }
 }
 
 @Composable
 private fun DownloadsContent(
     uiState: DownloadsUiState,
-    onLoadDownloads: () -> Unit,
+    permissionsGranted: Boolean,
+    onRequestPermission: () -> Unit,
     modifier: Modifier = Modifier,
-    initialPermissionsGranted: Boolean? = null,
+    showRationale: Boolean = false,
 ) {
-    val context = LocalContext.current
-    val requiredPermissions = downloadsRequiredPermissions()
-
-    var permissionsGranted by remember {
-        mutableStateOf(
-            initialPermissionsGranted
-                ?: if (requiredPermissions.isEmpty()) true
-                else
-                    requiredPermissions.all {
-                        ContextCompat.checkSelfPermission(context, it) ==
-                            PackageManager.PERMISSION_GRANTED
-                    }
-        )
-    }
-
-    val permissionLauncher =
-        rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.RequestMultiplePermissions()
-        ) { results ->
-            permissionsGranted = results.values.all { it }
-        }
-
-    LaunchedEffect(permissionsGranted) {
-        if (permissionsGranted) {
-            onLoadDownloads()
-        }
-    }
-
     if (!permissionsGranted) {
         PermissionRequiredScreen(
             message = stringResource(R.string.permission_downloads_message),
-            onRequestPermission = { permissionLauncher.launch(requiredPermissions) },
+            onRequestPermission = onRequestPermission,
             modifier = modifier,
+            rationaleMessage = stringResource(R.string.permission_downloads_rationale),
+            showRationale = showRationale,
         )
     } else {
         DownloadsTable(uiState = uiState, modifier = modifier)
     }
 }
 
-private fun downloadsRequiredPermissions(): Array<String> =
+private fun downloadsRequiredPermissions(): List<String> =
     if (Build.VERSION.SDK_INT in Build.VERSION_CODES.Q..Build.VERSION_CODES.S_V2) {
-        arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
+        listOf(Manifest.permission.READ_EXTERNAL_STORAGE)
     } else {
-        emptyArray()
+        emptyList()
     }
 
 @Composable
@@ -183,8 +164,22 @@ private fun DownloadsScreenPermissionDeniedPreview() {
     MediaStoreExplorerTheme {
         DownloadsContent(
             uiState = DownloadsUiState(),
-            onLoadDownloads = {},
-            initialPermissionsGranted = false,
+            permissionsGranted = false,
+            onRequestPermission = {},
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Rationale")
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true, name = "Rationale (Dark)")
+@Composable
+private fun DownloadsScreenRationalePreview() {
+    MediaStoreExplorerTheme {
+        DownloadsContent(
+            uiState = DownloadsUiState(),
+            permissionsGranted = false,
+            onRequestPermission = {},
+            showRationale = true,
         )
     }
 }
