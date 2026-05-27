@@ -34,7 +34,9 @@
     <!-- Permission screen -->
     <string name="grant_permission">Grant Permission</string>
     <string name="permission_images_message">Permission to access images is required.\nTap \"Grant Permission\".</string>
+    <string name="permission_images_rationale">Image access is required to display the table. Please grant the permission to continue.</string>
     <string name="permission_videos_message">Permission to access videos is required.\nTap \"Grant Permission\".</string>
+    <string name="permission_videos_rationale">Video access is required to display the table. Please grant the permission to continue.</string>
 
     <!-- Boolean display -->
     <string name="bool_yes">Yes</string>
@@ -88,6 +90,7 @@
 
     <!-- Permission screen (audio) -->
     <string name="permission_audios_message">Permission to access audio files is required.\nTap \"Grant Permission\".</string>
+    <string name="permission_audios_rationale">Audio access is required to display the table. Please grant the permission to continue.</string>
 
     <!-- Audio-specific columns -->
     <string name="col_title">Title</string>
@@ -108,6 +111,7 @@
 
     <!-- Permission screen (downloads) -->
     <string name="permission_downloads_message">Permission to access downloads is required.\nTap \"Grant Permission\".</string>
+    <string name="permission_downloads_rationale">Download access is required to display the table. Please grant the permission to continue.</string>
 
     <!-- Downloads-specific columns -->
     <string name="col_download_uri">Download URI</string>
@@ -119,6 +123,7 @@
 
     <!-- Permission screen (files) -->
     <string name="permission_files_message">Permission to access files is required.\nTap \"Grant Permission\".</string>
+    <string name="permission_files_rationale">File access is required to display the table. Please grant the permission to continue.</string>
 
     <!-- Files-specific columns -->
     <string name="col_media_type">Media Type</string>

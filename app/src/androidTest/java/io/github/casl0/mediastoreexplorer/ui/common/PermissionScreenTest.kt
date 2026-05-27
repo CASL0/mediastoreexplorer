@@ -22,12 +22,31 @@ class PermissionScreenTest {
     // region メッセージ表示
 
     @Test
-    fun 渡したメッセージが画面に表示される() {
+    fun showRationaleがfalseのとき_messageが画面に表示される() {
         composeTestRule.setContent {
-            PermissionRequiredScreen(message = "テストメッセージ", onRequestPermission = {})
+            PermissionRequiredScreen(
+                message = "通常メッセージ",
+                rationaleMessage = "rationaleメッセージ",
+                showRationale = false,
+                onRequestPermission = {},
+            )
         }
 
-        composeTestRule.onNodeWithText("テストメッセージ").assertIsDisplayed()
+        composeTestRule.onNodeWithText("通常メッセージ").assertIsDisplayed()
+    }
+
+    @Test
+    fun showRationaleがtrueのとき_rationaleMessageが画面に表示される() {
+        composeTestRule.setContent {
+            PermissionRequiredScreen(
+                message = "通常メッセージ",
+                rationaleMessage = "rationaleメッセージ",
+                showRationale = true,
+                onRequestPermission = {},
+            )
+        }
+
+        composeTestRule.onNodeWithText("rationaleメッセージ").assertIsDisplayed()
     }
 
     // endregion
@@ -37,7 +56,12 @@ class PermissionScreenTest {
     @Test
     fun 権限付与ボタンが表示される() {
         composeTestRule.setContent {
-            PermissionRequiredScreen(message = "テストメッセージ", onRequestPermission = {})
+            PermissionRequiredScreen(
+                message = "テストメッセージ",
+                rationaleMessage = "rationaleメッセージ",
+                showRationale = false,
+                onRequestPermission = {},
+            )
         }
 
         composeTestRule
@@ -49,7 +73,12 @@ class PermissionScreenTest {
     fun 権限付与ボタンをタップするとコールバックが呼ばれる() {
         var called = false
         composeTestRule.setContent {
-            PermissionRequiredScreen(message = "テストメッセージ", onRequestPermission = { called = true })
+            PermissionRequiredScreen(
+                message = "テストメッセージ",
+                rationaleMessage = "rationaleメッセージ",
+                showRationale = false,
+                onRequestPermission = { called = true },
+            )
         }
 
         composeTestRule.onNodeWithText(context.getString(R.string.grant_permission)).performClick()
