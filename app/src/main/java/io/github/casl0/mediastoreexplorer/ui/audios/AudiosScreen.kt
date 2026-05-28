@@ -14,7 +14,6 @@ import io.github.casl0.mediastoreexplorer.R
 import io.github.casl0.mediastoreexplorer.data.model.AudioItem
 import io.github.casl0.mediastoreexplorer.ui.common.MediaTable
 import io.github.casl0.mediastoreexplorer.ui.common.PermissionGate
-import io.github.casl0.mediastoreexplorer.ui.common.PermissionRequiredScreen
 import io.github.casl0.mediastoreexplorer.ui.common.TableColumn
 import io.github.casl0.mediastoreexplorer.ui.common.formatBool
 import io.github.casl0.mediastoreexplorer.ui.common.formatDateSec
@@ -26,14 +25,11 @@ import io.github.casl0.mediastoreexplorer.ui.common.formatString
 import io.github.casl0.mediastoreexplorer.ui.theme.MediaStoreExplorerTheme
 
 /**
- * 端末内の音声ファイルをテーブル形式で表示する画面。
- *
- * 権限が未付与の場合は [PermissionGate] が [PermissionRequiredScreen] を表示し、 付与後に自動で音声を読み込む。
- * [initialPermissionsGranted] が指定された場合はプレビュー/テスト目的で PermissionGate を経由せず直接 [AudiosContent] を表示する。
+ * 端末内の音声ファイルをテーブル形式で表示する画面（ViewModel 注入版）。 Preview や Test 用には stateless overload を使用すること。
  *
  * @param viewModel 音声データと UI 状態を管理する [AudiosViewModel]
  * @param modifier レイアウト調整用の [Modifier]
- * @param initialPermissionsGranted プレビュー/テスト用の権限状態オーバーライド
+ * @param initialPermissionsGranted プレビュー/テスト用の権限状態オーバーライド（null なら実状態を参照）
  */
 @Composable
 fun AudiosScreen(
@@ -42,43 +38,39 @@ fun AudiosScreen(
     initialPermissionsGranted: Boolean? = null,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    if (initialPermissionsGranted != null) {
-        AudiosContent(
-            uiState = uiState,
-            permissionsGranted = initialPermissionsGranted,
-            onRequestPermission = {},
-            modifier = modifier,
-        )
-        return
-    }
+    AudiosScreen(
+        uiState = uiState,
+        onLoadAudios = viewModel::loadAudios,
+        modifier = modifier,
+        initialPermissionsGranted = initialPermissionsGranted,
+    )
+}
+
+/**
+ * 端末内の音声ファイルをテーブル形式で表示する画面（stateless overload）。
+ *
+ * 権限ゲートは [PermissionGate] に委譲する。
+ *
+ * @param uiState 表示する UI 状態
+ * @param onLoadAudios 全権限が付与されたタイミングで呼ばれるロードトリガー
+ * @param modifier レイアウト調整用の [Modifier]
+ * @param initialPermissionsGranted プレビュー/テスト用の権限状態オーバーライド（null なら実状態を参照）
+ */
+@Composable
+fun AudiosScreen(
+    uiState: AudiosUiState,
+    onLoadAudios: () -> Unit,
+    modifier: Modifier = Modifier,
+    initialPermissionsGranted: Boolean? = null,
+) {
     PermissionGate(
         permissions = audiosRequiredPermissions(),
         message = stringResource(R.string.permission_audios_message),
         rationaleMessage = stringResource(R.string.permission_audios_rationale),
-        onGranted = viewModel::loadAudios,
+        onGranted = onLoadAudios,
         modifier = modifier,
+        initialGrantedOverride = initialPermissionsGranted,
     ) {
-        AudiosTable(uiState = uiState, modifier = modifier)
-    }
-}
-
-@Composable
-private fun AudiosContent(
-    uiState: AudiosUiState,
-    permissionsGranted: Boolean,
-    onRequestPermission: () -> Unit,
-    modifier: Modifier = Modifier,
-    showRationale: Boolean = false,
-) {
-    if (!permissionsGranted) {
-        PermissionRequiredScreen(
-            message = stringResource(R.string.permission_audios_message),
-            onRequestPermission = onRequestPermission,
-            modifier = modifier,
-            rationaleMessage = stringResource(R.string.permission_audios_rationale),
-            showRationale = showRationale,
-        )
-    } else {
         AudiosTable(uiState = uiState, modifier = modifier)
     }
 }
@@ -188,24 +180,10 @@ private fun audioMediaColumns(): List<TableColumn<AudioItem>> {
 @Composable
 private fun AudiosScreenPermissionDeniedPreview() {
     MediaStoreExplorerTheme {
-        AudiosContent(
+        AudiosScreen(
             uiState = AudiosUiState(),
-            permissionsGranted = false,
-            onRequestPermission = {},
-        )
-    }
-}
-
-@Preview(showBackground = true, name = "Rationale")
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true, name = "Rationale (Dark)")
-@Composable
-private fun AudiosScreenRationalePreview() {
-    MediaStoreExplorerTheme {
-        AudiosContent(
-            uiState = AudiosUiState(),
-            permissionsGranted = false,
-            onRequestPermission = {},
-            showRationale = true,
+            onLoadAudios = {},
+            initialPermissionsGranted = false,
         )
     }
 }

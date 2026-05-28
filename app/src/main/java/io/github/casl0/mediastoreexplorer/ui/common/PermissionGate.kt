@@ -23,21 +23,37 @@ import com.google.accompanist.permissions.shouldShowRationale
  * @param rationaleMessage `shouldShowRationale = true` のときに表示する説明文
  * @param onGranted 全権限が付与されたタイミングで呼ばれる副作用
  * @param modifier 権限要求画面に適用される [Modifier]
+ * @param initialGrantedOverride プレビュー/テスト用に Accompanist を経由せず権限状態を強制するオーバーライド。 null の場合は実 OS
+ *   状態を参照する
  * @param content 権限が付与された後に表示される本体
  */
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 @Suppress(
     "LongParameterList"
-) // 権限リスト/2 つのメッセージ/コールバック/モディファイア/コンテンツの組合せは Composable スロット API として妥当
+) // 権限リスト/2 つのメッセージ/コールバック/モディファイア/オーバーライド/コンテンツの組合せは Composable スロット API として妥当
 fun PermissionGate(
     permissions: List<String>,
     message: String,
     rationaleMessage: String,
     onGranted: () -> Unit,
     modifier: Modifier = Modifier,
+    initialGrantedOverride: Boolean? = null,
     content: @Composable () -> Unit,
 ) {
+    if (initialGrantedOverride != null) {
+        if (initialGrantedOverride) {
+            content()
+        } else {
+            PermissionRequiredScreen(
+                message = message,
+                rationaleMessage = rationaleMessage,
+                onRequestPermission = {},
+                modifier = modifier,
+            )
+        }
+        return
+    }
     val state = rememberMultiplePermissionsState(permissions)
     val granted = state.allPermissionsGranted
     val currentOnGranted by rememberUpdatedState(onGranted)

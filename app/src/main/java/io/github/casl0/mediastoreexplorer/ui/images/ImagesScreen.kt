@@ -20,7 +20,6 @@ import io.github.casl0.mediastoreexplorer.R
 import io.github.casl0.mediastoreexplorer.data.model.ImageItem
 import io.github.casl0.mediastoreexplorer.ui.common.MediaTable
 import io.github.casl0.mediastoreexplorer.ui.common.PermissionGate
-import io.github.casl0.mediastoreexplorer.ui.common.PermissionRequiredScreen
 import io.github.casl0.mediastoreexplorer.ui.common.TableColumn
 import io.github.casl0.mediastoreexplorer.ui.common.formatBool
 import io.github.casl0.mediastoreexplorer.ui.common.formatDateMs
@@ -33,14 +32,11 @@ import io.github.casl0.mediastoreexplorer.ui.common.formatString
 import io.github.casl0.mediastoreexplorer.ui.theme.MediaStoreExplorerTheme
 
 /**
- * 端末内の画像をテーブル形式で表示する画面。
- *
- * 権限が未付与の場合は [PermissionGate] が [PermissionRequiredScreen] を表示し、 付与後に自動で画像を読み込む。
- * [initialPermissionsGranted] が指定された場合はプレビュー/テスト目的で PermissionGate を経由せず直接 [ImagesContent] を表示する。
+ * 端末内の画像をテーブル形式で表示する画面（ViewModel 注入版）。 Preview や Test 用には stateless overload を使用すること。
  *
  * @param viewModel 画像データと UI 状態を管理する [ImagesViewModel]
  * @param modifier レイアウト調整用の [Modifier]
- * @param initialPermissionsGranted プレビュー/テスト用の権限状態オーバーライド
+ * @param initialPermissionsGranted プレビュー/テスト用の権限状態オーバーライド（null なら実状態を参照）
  */
 @Composable
 fun ImagesScreen(
@@ -49,43 +45,40 @@ fun ImagesScreen(
     initialPermissionsGranted: Boolean? = null,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    if (initialPermissionsGranted != null) {
-        ImagesContent(
-            uiState = uiState,
-            permissionsGranted = initialPermissionsGranted,
-            onRequestPermission = {},
-            modifier = modifier,
-        )
-        return
-    }
+    ImagesScreen(
+        uiState = uiState,
+        onLoadImages = viewModel::loadImages,
+        modifier = modifier,
+        initialPermissionsGranted = initialPermissionsGranted,
+    )
+}
+
+/**
+ * 端末内の画像をテーブル形式で表示する画面（stateless overload）。
+ *
+ * 権限ゲートは [PermissionGate] に委譲する。Preview / Test では [initialPermissionsGranted] を渡すことで Accompanist
+ * を経由せず権限状態を強制できる。
+ *
+ * @param uiState 表示する UI 状態
+ * @param onLoadImages 全権限が付与されたタイミングで呼ばれるロードトリガー
+ * @param modifier レイアウト調整用の [Modifier]
+ * @param initialPermissionsGranted プレビュー/テスト用の権限状態オーバーライド（null なら実状態を参照）
+ */
+@Composable
+fun ImagesScreen(
+    uiState: ImagesUiState,
+    onLoadImages: () -> Unit,
+    modifier: Modifier = Modifier,
+    initialPermissionsGranted: Boolean? = null,
+) {
     PermissionGate(
         permissions = imagesRequiredPermissions(),
         message = stringResource(R.string.permission_images_message),
         rationaleMessage = stringResource(R.string.permission_images_rationale),
-        onGranted = viewModel::loadImages,
+        onGranted = onLoadImages,
         modifier = modifier,
+        initialGrantedOverride = initialPermissionsGranted,
     ) {
-        ImagesTable(uiState = uiState, modifier = modifier)
-    }
-}
-
-@Composable
-private fun ImagesContent(
-    uiState: ImagesUiState,
-    permissionsGranted: Boolean,
-    onRequestPermission: () -> Unit,
-    modifier: Modifier = Modifier,
-    showRationale: Boolean = false,
-) {
-    if (!permissionsGranted) {
-        PermissionRequiredScreen(
-            message = stringResource(R.string.permission_images_message),
-            onRequestPermission = onRequestPermission,
-            modifier = modifier,
-            rationaleMessage = stringResource(R.string.permission_images_rationale),
-            showRationale = showRationale,
-        )
-    } else {
         ImagesTable(uiState = uiState, modifier = modifier)
     }
 }
@@ -196,24 +189,10 @@ private fun imageMediaColumns(): List<TableColumn<ImageItem>> {
 @Composable
 private fun ImagesScreenPermissionDeniedPreview() {
     MediaStoreExplorerTheme {
-        ImagesContent(
+        ImagesScreen(
             uiState = ImagesUiState(),
-            permissionsGranted = false,
-            onRequestPermission = {},
-        )
-    }
-}
-
-@Preview(showBackground = true, name = "Rationale")
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true, name = "Rationale (Dark)")
-@Composable
-private fun ImagesScreenRationalePreview() {
-    MediaStoreExplorerTheme {
-        ImagesContent(
-            uiState = ImagesUiState(),
-            permissionsGranted = false,
-            onRequestPermission = {},
-            showRationale = true,
+            onLoadImages = {},
+            initialPermissionsGranted = false,
         )
     }
 }

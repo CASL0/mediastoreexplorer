@@ -14,7 +14,6 @@ import io.github.casl0.mediastoreexplorer.R
 import io.github.casl0.mediastoreexplorer.data.model.VideoItem
 import io.github.casl0.mediastoreexplorer.ui.common.MediaTable
 import io.github.casl0.mediastoreexplorer.ui.common.PermissionGate
-import io.github.casl0.mediastoreexplorer.ui.common.PermissionRequiredScreen
 import io.github.casl0.mediastoreexplorer.ui.common.TableColumn
 import io.github.casl0.mediastoreexplorer.ui.common.formatBool
 import io.github.casl0.mediastoreexplorer.ui.common.formatDateMs
@@ -28,14 +27,11 @@ import io.github.casl0.mediastoreexplorer.ui.common.formatString
 import io.github.casl0.mediastoreexplorer.ui.theme.MediaStoreExplorerTheme
 
 /**
- * 端末内の動画をテーブル形式で表示する画面。
- *
- * 権限が未付与の場合は [PermissionGate] が [PermissionRequiredScreen] を表示し、 付与後に自動で動画を読み込む。
- * [initialPermissionsGranted] が指定された場合はプレビュー/テスト目的で PermissionGate を経由せず直接 [VideosContent] を表示する。
+ * 端末内の動画をテーブル形式で表示する画面（ViewModel 注入版）。 Preview や Test 用には stateless overload を使用すること。
  *
  * @param viewModel 動画データと UI 状態を管理する [VideosViewModel]
  * @param modifier レイアウト調整用の [Modifier]
- * @param initialPermissionsGranted プレビュー/テスト用の権限状態オーバーライド
+ * @param initialPermissionsGranted プレビュー/テスト用の権限状態オーバーライド（null なら実状態を参照）
  */
 @Composable
 fun VideosScreen(
@@ -44,43 +40,39 @@ fun VideosScreen(
     initialPermissionsGranted: Boolean? = null,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    if (initialPermissionsGranted != null) {
-        VideosContent(
-            uiState = uiState,
-            permissionsGranted = initialPermissionsGranted,
-            onRequestPermission = {},
-            modifier = modifier,
-        )
-        return
-    }
+    VideosScreen(
+        uiState = uiState,
+        onLoadVideos = viewModel::loadVideos,
+        modifier = modifier,
+        initialPermissionsGranted = initialPermissionsGranted,
+    )
+}
+
+/**
+ * 端末内の動画をテーブル形式で表示する画面（stateless overload）。
+ *
+ * 権限ゲートは [PermissionGate] に委譲する。
+ *
+ * @param uiState 表示する UI 状態
+ * @param onLoadVideos 全権限が付与されたタイミングで呼ばれるロードトリガー
+ * @param modifier レイアウト調整用の [Modifier]
+ * @param initialPermissionsGranted プレビュー/テスト用の権限状態オーバーライド（null なら実状態を参照）
+ */
+@Composable
+fun VideosScreen(
+    uiState: VideosUiState,
+    onLoadVideos: () -> Unit,
+    modifier: Modifier = Modifier,
+    initialPermissionsGranted: Boolean? = null,
+) {
     PermissionGate(
         permissions = videosRequiredPermissions(),
         message = stringResource(R.string.permission_videos_message),
         rationaleMessage = stringResource(R.string.permission_videos_rationale),
-        onGranted = viewModel::loadVideos,
+        onGranted = onLoadVideos,
         modifier = modifier,
+        initialGrantedOverride = initialPermissionsGranted,
     ) {
-        VideosTable(uiState = uiState, modifier = modifier)
-    }
-}
-
-@Composable
-private fun VideosContent(
-    uiState: VideosUiState,
-    permissionsGranted: Boolean,
-    onRequestPermission: () -> Unit,
-    modifier: Modifier = Modifier,
-    showRationale: Boolean = false,
-) {
-    if (!permissionsGranted) {
-        PermissionRequiredScreen(
-            message = stringResource(R.string.permission_videos_message),
-            onRequestPermission = onRequestPermission,
-            modifier = modifier,
-            rationaleMessage = stringResource(R.string.permission_videos_rationale),
-            showRationale = showRationale,
-        )
-    } else {
         VideosTable(uiState = uiState, modifier = modifier)
     }
 }
@@ -183,24 +175,10 @@ private fun videoMediaColumns(): List<TableColumn<VideoItem>> {
 @Composable
 private fun VideosScreenPermissionDeniedPreview() {
     MediaStoreExplorerTheme {
-        VideosContent(
+        VideosScreen(
             uiState = VideosUiState(),
-            permissionsGranted = false,
-            onRequestPermission = {},
-        )
-    }
-}
-
-@Preview(showBackground = true, name = "Rationale")
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true, name = "Rationale (Dark)")
-@Composable
-private fun VideosScreenRationalePreview() {
-    MediaStoreExplorerTheme {
-        VideosContent(
-            uiState = VideosUiState(),
-            permissionsGranted = false,
-            onRequestPermission = {},
-            showRationale = true,
+            onLoadVideos = {},
+            initialPermissionsGranted = false,
         )
     }
 }

@@ -14,7 +14,6 @@ import io.github.casl0.mediastoreexplorer.R
 import io.github.casl0.mediastoreexplorer.data.model.FileItem
 import io.github.casl0.mediastoreexplorer.ui.common.MediaTable
 import io.github.casl0.mediastoreexplorer.ui.common.PermissionGate
-import io.github.casl0.mediastoreexplorer.ui.common.PermissionRequiredScreen
 import io.github.casl0.mediastoreexplorer.ui.common.TableColumn
 import io.github.casl0.mediastoreexplorer.ui.common.formatBool
 import io.github.casl0.mediastoreexplorer.ui.common.formatDateSec
@@ -24,15 +23,11 @@ import io.github.casl0.mediastoreexplorer.ui.common.formatString
 import io.github.casl0.mediastoreexplorer.ui.theme.MediaStoreExplorerTheme
 
 /**
- * 端末内の全ファイルをテーブル形式で表示する画面。
- *
- * 権限が未付与の場合は [PermissionGate] が [PermissionRequiredScreen] を表示し、 付与後に自動でファイル一覧を読み込む。 API 33+ では
- * READ_MEDIA_IMAGES / READ_MEDIA_VIDEO / READ_MEDIA_AUDIO を要求する。 [initialPermissionsGranted]
- * が指定された場合はプレビュー/テスト目的で PermissionGate を経由せず直接 [FilesContent] を表示する。
+ * 端末内の全ファイルをテーブル形式で表示する画面（ViewModel 注入版）。 Preview や Test 用には stateless overload を使用すること。
  *
  * @param viewModel ファイルデータと UI 状態を管理する [FilesViewModel]
  * @param modifier レイアウト調整用の [Modifier]
- * @param initialPermissionsGranted プレビュー/テスト用の権限状態オーバーライド
+ * @param initialPermissionsGranted プレビュー/テスト用の権限状態オーバーライド（null なら実状態を参照）
  */
 @Composable
 fun FilesScreen(
@@ -41,43 +36,40 @@ fun FilesScreen(
     initialPermissionsGranted: Boolean? = null,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    if (initialPermissionsGranted != null) {
-        FilesContent(
-            uiState = uiState,
-            permissionsGranted = initialPermissionsGranted,
-            onRequestPermission = {},
-            modifier = modifier,
-        )
-        return
-    }
+    FilesScreen(
+        uiState = uiState,
+        onLoadFiles = viewModel::loadFiles,
+        modifier = modifier,
+        initialPermissionsGranted = initialPermissionsGranted,
+    )
+}
+
+/**
+ * 端末内の全ファイルをテーブル形式で表示する画面（stateless overload）。
+ *
+ * 権限ゲートは [PermissionGate] に委譲する。API 33+ では `READ_MEDIA_IMAGES` / `READ_MEDIA_VIDEO` /
+ * `READ_MEDIA_AUDIO` を要求する。
+ *
+ * @param uiState 表示する UI 状態
+ * @param onLoadFiles 全権限が付与されたタイミングで呼ばれるロードトリガー
+ * @param modifier レイアウト調整用の [Modifier]
+ * @param initialPermissionsGranted プレビュー/テスト用の権限状態オーバーライド（null なら実状態を参照）
+ */
+@Composable
+fun FilesScreen(
+    uiState: FilesUiState,
+    onLoadFiles: () -> Unit,
+    modifier: Modifier = Modifier,
+    initialPermissionsGranted: Boolean? = null,
+) {
     PermissionGate(
         permissions = filesRequiredPermissions(),
         message = stringResource(R.string.permission_files_message),
         rationaleMessage = stringResource(R.string.permission_files_rationale),
-        onGranted = viewModel::loadFiles,
+        onGranted = onLoadFiles,
         modifier = modifier,
+        initialGrantedOverride = initialPermissionsGranted,
     ) {
-        FilesTable(uiState = uiState, modifier = modifier)
-    }
-}
-
-@Composable
-private fun FilesContent(
-    uiState: FilesUiState,
-    permissionsGranted: Boolean,
-    onRequestPermission: () -> Unit,
-    modifier: Modifier = Modifier,
-    showRationale: Boolean = false,
-) {
-    if (!permissionsGranted) {
-        PermissionRequiredScreen(
-            message = stringResource(R.string.permission_files_message),
-            onRequestPermission = onRequestPermission,
-            modifier = modifier,
-            rationaleMessage = stringResource(R.string.permission_files_rationale),
-            showRationale = showRationale,
-        )
-    } else {
         FilesTable(uiState = uiState, modifier = modifier)
     }
 }
@@ -164,20 +156,6 @@ private fun fileMediaColumns(): List<TableColumn<FileItem>> {
 @Composable
 private fun FilesScreenPermissionDeniedPreview() {
     MediaStoreExplorerTheme {
-        FilesContent(uiState = FilesUiState(), permissionsGranted = false, onRequestPermission = {})
-    }
-}
-
-@Preview(showBackground = true, name = "Rationale")
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true, name = "Rationale (Dark)")
-@Composable
-private fun FilesScreenRationalePreview() {
-    MediaStoreExplorerTheme {
-        FilesContent(
-            uiState = FilesUiState(),
-            permissionsGranted = false,
-            onRequestPermission = {},
-            showRationale = true,
-        )
+        FilesScreen(uiState = FilesUiState(), onLoadFiles = {}, initialPermissionsGranted = false)
     }
 }
