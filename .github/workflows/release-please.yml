@@ -9,6 +9,12 @@ on:
 jobs:
   release-please:
     runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+      major: ${{ steps.release.outputs.major }}
+      minor: ${{ steps.release.outputs.minor }}
+      patch: ${{ steps.release.outputs.patch }}
     steps:
       - name: Generate GitHub App token
         id: app-token
@@ -24,3 +30,124 @@ jobs:
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
           token: ${{ steps.app-token.outputs.token }}
+
+  commit-changelog:
+    needs: release-please
+    if: needs.release-please.outputs.release_created == 'true'
+    runs-on: ubuntu-latest
+    outputs:
+      sha: ${{ steps.commit.outputs.sha }}
+    steps:
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v3
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          ref: main
+          token: ${{ steps.app-token.outputs.token }}
+
+      - name: Configure Git user
+        env:
+          APP_ID: ${{ secrets.APP_ID }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          APP_SLUG=$(gh api /app -q .slug)
+          git config user.name "${APP_SLUG}[bot]"
+          git config user.email "${APP_ID}+${APP_SLUG}[bot]@users.noreply.github.com"
+
+      - name: Generate Play Store changelog
+        env:
+          MAJOR: ${{ needs.release-please.outputs.major }}
+          MINOR: ${{ needs.release-please.outputs.minor }}
+          PATCH: ${{ needs.release-please.outputs.patch }}
+        run: |
+          set -euo pipefail
+          VERSION_CODE=$((MAJOR * 10000 + MINOR * 100 + PATCH))
+          CHANGELOG_DIR="fastlane/metadata/android/ja-JP/changelogs"
+          CHANGELOG_FILE="${CHANGELOG_DIR}/${VERSION_CODE}.txt"
+          mkdir -p "${CHANGELOG_DIR}"
+
+          # release-please の simple モードでは patch>0 == fix のみ、
+          # patch==0 == feat (または BREAKING CHANGE) を含むリリース。
+          if [ "${PATCH}" -gt 0 ]; then
+            MESSAGE="不具合修正と細かな改善を行いました。"
+          else
+            MESSAGE="新機能の追加と改善を行いました。"
+          fi
+          printf '%s\n' "${MESSAGE}" > "${CHANGELOG_FILE}"
+
+          echo "CHANGELOG_FILE=${CHANGELOG_FILE}" >> "$GITHUB_ENV"
+
+      - name: Commit and push changelog
+        id: commit
+        env:
+          TAG_NAME: ${{ needs.release-please.outputs.tag_name }}
+        run: |
+          set -euo pipefail
+          git add "${CHANGELOG_FILE}"
+          if git diff --cached --quiet; then
+            echo "No changelog changes to commit."
+          else
+            git commit -m "🤖 chore(release): add Play Store changelog for ${TAG_NAME}"
+            git push origin main
+          fi
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+  publish:
+    needs: [release-please, commit-changelog]
+    if: needs.release-please.outputs.release_created == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout changelog commit
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ needs.commit-changelog.outputs.sha }}
+          lfs: true
+
+      - name: Setup JDK and Gradle
+        uses: ./.github/actions/setup-jdk-gradle
+
+      - name: Setup Ruby and bundler
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+          bundler-cache: true
+
+      - name: Restore release keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          set -euo pipefail
+          if [ -z "${KEYSTORE_BASE64}" ]; then
+            echo "::error::ANDROID_KEYSTORE_BASE64 secret is not set"
+            exit 1
+          fi
+          printf '%s' "${KEYSTORE_BASE64}" | base64 -d > release.jks
+
+      - name: Restore Play service account JSON
+        env:
+          PLAY_SERVICE_ACCOUNT_JSON: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+        run: |
+          set -euo pipefail
+          if [ -z "${PLAY_SERVICE_ACCOUNT_JSON}" ]; then
+            echo "::error::PLAY_SERVICE_ACCOUNT_JSON secret is not set"
+            exit 1
+          fi
+          printf '%s' "${PLAY_SERVICE_ACCOUNT_JSON}" > service_account.json
+
+      - name: Run fastlane deploy
+        env:
+          KEYSTORE_PATH: ${{ github.workspace }}/release.jks
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: bundle exec fastlane deploy
+
+      - name: Cleanup secrets
+        if: always()
+        run: rm -f release.jks service_account.json
