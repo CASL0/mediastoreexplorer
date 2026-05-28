@@ -115,7 +115,7 @@ jobs:
       - name: Setup Ruby and bundler
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "3.4"
+          ruby-version: "3.4.9"
           bundler-cache: true
 
       - name: Restore release keystore
