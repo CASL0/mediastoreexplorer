@@ -53,12 +53,10 @@ jobs:
 
       - name: Configure Git user
         env:
-          APP_ID: ${{ secrets.APP_ID }}
-          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          APP_SLUG: ${{ steps.app-token.outputs.app-slug }}
         run: |
-          APP_SLUG=$(gh api /app -q .slug)
           git config user.name "${APP_SLUG}[bot]"
-          git config user.email "${APP_ID}+${APP_SLUG}[bot]@users.noreply.github.com"
+          git config user.email "${APP_SLUG}[bot]@users.noreply.github.com"
 
       - name: Generate Play Store changelog
         env:
