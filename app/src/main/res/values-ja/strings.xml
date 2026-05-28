@@ -34,7 +34,9 @@
     <!-- 権限画面 -->
     <string name="grant_permission">権限を付与する</string>
     <string name="permission_images_message">画像へのアクセス権限が必要です。\n「権限を付与する」をタップしてください。</string>
+    <string name="permission_images_rationale">テーブルを表示するには画像へのアクセス権限が必要です。続行するには権限を付与してください。</string>
     <string name="permission_videos_message">動画へのアクセス権限が必要です。\n「権限を付与する」をタップしてください。</string>
+    <string name="permission_videos_rationale">テーブルを表示するには動画へのアクセス権限が必要です。続行するには権限を付与してください。</string>
 
     <!-- 真偽値表示 -->
     <string name="bool_yes">はい</string>
@@ -88,6 +90,7 @@
 
     <!-- 権限画面（音声） -->
     <string name="permission_audios_message">音声ファイルへのアクセス権限が必要です。\n「権限を付与する」をタップしてください。</string>
+    <string name="permission_audios_rationale">テーブルを表示するには音声ファイルへのアクセス権限が必要です。続行するには権限を付与してください。</string>
 
     <!-- 音声固有カラム -->
     <string name="col_title">タイトル</string>
@@ -108,6 +111,7 @@
 
     <!-- 権限画面（ダウンロード） -->
     <string name="permission_downloads_message">ダウンロードファイルへのアクセス権限が必要です。\n「権限を付与する」をタップしてください。</string>
+    <string name="permission_downloads_rationale">テーブルを表示するにはダウンロードファイルへのアクセス権限が必要です。続行するには権限を付与してください。</string>
 
     <!-- ダウンロード固有カラム -->
     <string name="col_download_uri">ダウンロードURI</string>
@@ -119,6 +123,7 @@
 
     <!-- 権限画面（ファイル） -->
     <string name="permission_files_message">ファイルへのアクセス権限が必要です。\n「権限を付与する」をタップしてください。</string>
+    <string name="permission_files_rationale">テーブルを表示するにはファイルへのアクセス権限が必要です。続行するには権限を付与してください。</string>
 
     <!-- ファイル固有カラム -->
     <string name="col_media_type">メディアタイプ</string>

@@ -2,33 +2,24 @@ package io.github.casl0.mediastoreexplorer.ui.images
 
 import android.Manifest
 import android.content.ContentUris
-import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Build
 import android.provider.MediaStore
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import io.github.casl0.mediastoreexplorer.R
 import io.github.casl0.mediastoreexplorer.data.model.ImageItem
 import io.github.casl0.mediastoreexplorer.ui.common.MediaTable
-import io.github.casl0.mediastoreexplorer.ui.common.PermissionRequiredScreen
+import io.github.casl0.mediastoreexplorer.ui.common.PermissionGate
 import io.github.casl0.mediastoreexplorer.ui.common.TableColumn
 import io.github.casl0.mediastoreexplorer.ui.common.formatBool
 import io.github.casl0.mediastoreexplorer.ui.common.formatDateMs
@@ -41,12 +32,11 @@ import io.github.casl0.mediastoreexplorer.ui.common.formatString
 import io.github.casl0.mediastoreexplorer.ui.theme.MediaStoreExplorerTheme
 
 /**
- * 端末内の画像をテーブル形式で表示する画面。
- *
- * 権限が未付与の場合は [PermissionRequiredScreen] を表示し、 付与後に自動で画像を読み込む。
+ * 端末内の画像をテーブル形式で表示する画面（ViewModel 注入版）。 Preview や Test 用には stateless overload を使用すること。
  *
  * @param viewModel 画像データと UI 状態を管理する [ImagesViewModel]
  * @param modifier レイアウト調整用の [Modifier]
+ * @param initialPermissionsGranted プレビュー/テスト用の権限状態オーバーライド（null なら実状態を参照）
  */
 @Composable
 fun ImagesScreen(
@@ -55,7 +45,7 @@ fun ImagesScreen(
     initialPermissionsGranted: Boolean? = null,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    ImagesContent(
+    ImagesScreen(
         uiState = uiState,
         onLoadImages = viewModel::loadImages,
         modifier = modifier,
@@ -63,55 +53,41 @@ fun ImagesScreen(
     )
 }
 
+/**
+ * 端末内の画像をテーブル形式で表示する画面（stateless overload）。
+ *
+ * 権限ゲートは [PermissionGate] に委譲する。Preview / Test では [initialPermissionsGranted] を渡すことで Accompanist
+ * を経由せず権限状態を強制できる。
+ *
+ * @param uiState 表示する UI 状態
+ * @param onLoadImages 全権限が付与されたタイミングで呼ばれるロードトリガー
+ * @param modifier レイアウト調整用の [Modifier]
+ * @param initialPermissionsGranted プレビュー/テスト用の権限状態オーバーライド（null なら実状態を参照）
+ */
 @Composable
-private fun ImagesContent(
+fun ImagesScreen(
     uiState: ImagesUiState,
     onLoadImages: () -> Unit,
     modifier: Modifier = Modifier,
     initialPermissionsGranted: Boolean? = null,
 ) {
-    val context = LocalContext.current
-    val requiredPermissions = imagesRequiredPermissions()
-
-    var permissionsGranted by remember {
-        mutableStateOf(
-            initialPermissionsGranted
-                ?: requiredPermissions.all {
-                    ContextCompat.checkSelfPermission(context, it) ==
-                        PackageManager.PERMISSION_GRANTED
-                }
-        )
-    }
-
-    val permissionLauncher =
-        rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.RequestMultiplePermissions()
-        ) { results ->
-            permissionsGranted = results.values.all { it }
-        }
-
-    LaunchedEffect(permissionsGranted) {
-        if (permissionsGranted) {
-            onLoadImages()
-        }
-    }
-
-    if (!permissionsGranted) {
-        PermissionRequiredScreen(
-            message = stringResource(R.string.permission_images_message),
-            onRequestPermission = { permissionLauncher.launch(requiredPermissions) },
-            modifier = modifier,
-        )
-    } else {
+    PermissionGate(
+        permissions = imagesRequiredPermissions(),
+        message = stringResource(R.string.permission_images_message),
+        rationaleMessage = stringResource(R.string.permission_images_rationale),
+        onGranted = onLoadImages,
+        modifier = modifier,
+        initialGrantedOverride = initialPermissionsGranted,
+    ) {
         ImagesTable(uiState = uiState, modifier = modifier)
     }
 }
 
-private fun imagesRequiredPermissions(): Array<String> =
+private fun imagesRequiredPermissions(): List<String> =
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        arrayOf(Manifest.permission.READ_MEDIA_IMAGES)
+        listOf(Manifest.permission.READ_MEDIA_IMAGES)
     } else {
-        arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
+        listOf(Manifest.permission.READ_EXTERNAL_STORAGE)
     }
 
 @Composable
@@ -213,7 +189,7 @@ private fun imageMediaColumns(): List<TableColumn<ImageItem>> {
 @Composable
 private fun ImagesScreenPermissionDeniedPreview() {
     MediaStoreExplorerTheme {
-        ImagesContent(
+        ImagesScreen(
             uiState = ImagesUiState(),
             onLoadImages = {},
             initialPermissionsGranted = false,

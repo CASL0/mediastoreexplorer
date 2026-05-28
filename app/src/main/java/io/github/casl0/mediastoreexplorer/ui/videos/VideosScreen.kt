@@ -1,28 +1,19 @@
 package io.github.casl0.mediastoreexplorer.ui.videos
 
 import android.Manifest
-import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Build
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.casl0.mediastoreexplorer.R
 import io.github.casl0.mediastoreexplorer.data.model.VideoItem
 import io.github.casl0.mediastoreexplorer.ui.common.MediaTable
-import io.github.casl0.mediastoreexplorer.ui.common.PermissionRequiredScreen
+import io.github.casl0.mediastoreexplorer.ui.common.PermissionGate
 import io.github.casl0.mediastoreexplorer.ui.common.TableColumn
 import io.github.casl0.mediastoreexplorer.ui.common.formatBool
 import io.github.casl0.mediastoreexplorer.ui.common.formatDateMs
@@ -36,12 +27,11 @@ import io.github.casl0.mediastoreexplorer.ui.common.formatString
 import io.github.casl0.mediastoreexplorer.ui.theme.MediaStoreExplorerTheme
 
 /**
- * 端末内の動画をテーブル形式で表示する画面。
- *
- * 権限が未付与の場合は [PermissionRequiredScreen] を表示し、 付与後に自動で動画を読み込む。
+ * 端末内の動画をテーブル形式で表示する画面（ViewModel 注入版）。 Preview や Test 用には stateless overload を使用すること。
  *
  * @param viewModel 動画データと UI 状態を管理する [VideosViewModel]
  * @param modifier レイアウト調整用の [Modifier]
+ * @param initialPermissionsGranted プレビュー/テスト用の権限状態オーバーライド（null なら実状態を参照）
  */
 @Composable
 fun VideosScreen(
@@ -50,7 +40,7 @@ fun VideosScreen(
     initialPermissionsGranted: Boolean? = null,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    VideosContent(
+    VideosScreen(
         uiState = uiState,
         onLoadVideos = viewModel::loadVideos,
         modifier = modifier,
@@ -58,55 +48,40 @@ fun VideosScreen(
     )
 }
 
+/**
+ * 端末内の動画をテーブル形式で表示する画面（stateless overload）。
+ *
+ * 権限ゲートは [PermissionGate] に委譲する。
+ *
+ * @param uiState 表示する UI 状態
+ * @param onLoadVideos 全権限が付与されたタイミングで呼ばれるロードトリガー
+ * @param modifier レイアウト調整用の [Modifier]
+ * @param initialPermissionsGranted プレビュー/テスト用の権限状態オーバーライド（null なら実状態を参照）
+ */
 @Composable
-private fun VideosContent(
+fun VideosScreen(
     uiState: VideosUiState,
     onLoadVideos: () -> Unit,
     modifier: Modifier = Modifier,
     initialPermissionsGranted: Boolean? = null,
 ) {
-    val context = LocalContext.current
-    val requiredPermissions = videosRequiredPermissions()
-
-    var permissionsGranted by remember {
-        mutableStateOf(
-            initialPermissionsGranted
-                ?: requiredPermissions.all {
-                    ContextCompat.checkSelfPermission(context, it) ==
-                        PackageManager.PERMISSION_GRANTED
-                }
-        )
-    }
-
-    val permissionLauncher =
-        rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.RequestMultiplePermissions()
-        ) { results ->
-            permissionsGranted = results.values.all { it }
-        }
-
-    LaunchedEffect(permissionsGranted) {
-        if (permissionsGranted) {
-            onLoadVideos()
-        }
-    }
-
-    if (!permissionsGranted) {
-        PermissionRequiredScreen(
-            message = stringResource(R.string.permission_videos_message),
-            onRequestPermission = { permissionLauncher.launch(requiredPermissions) },
-            modifier = modifier,
-        )
-    } else {
+    PermissionGate(
+        permissions = videosRequiredPermissions(),
+        message = stringResource(R.string.permission_videos_message),
+        rationaleMessage = stringResource(R.string.permission_videos_rationale),
+        onGranted = onLoadVideos,
+        modifier = modifier,
+        initialGrantedOverride = initialPermissionsGranted,
+    ) {
         VideosTable(uiState = uiState, modifier = modifier)
     }
 }
 
-private fun videosRequiredPermissions(): Array<String> =
+private fun videosRequiredPermissions(): List<String> =
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        arrayOf(Manifest.permission.READ_MEDIA_VIDEO)
+        listOf(Manifest.permission.READ_MEDIA_VIDEO)
     } else {
-        arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
+        listOf(Manifest.permission.READ_EXTERNAL_STORAGE)
     }
 
 @Composable
@@ -200,7 +175,7 @@ private fun videoMediaColumns(): List<TableColumn<VideoItem>> {
 @Composable
 private fun VideosScreenPermissionDeniedPreview() {
     MediaStoreExplorerTheme {
-        VideosContent(
+        VideosScreen(
             uiState = VideosUiState(),
             onLoadVideos = {},
             initialPermissionsGranted = false,
