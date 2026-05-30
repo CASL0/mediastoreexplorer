@@ -27,7 +27,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -134,7 +134,7 @@ private fun SettingsRow(
 
 @Composable
 private fun ThemeRow(themeMode: ThemeMode, onThemeChange: (ThemeMode) -> Unit) {
-    var dialogOpen by remember { mutableStateOf(false) }
+    var dialogOpen by rememberSaveable { mutableStateOf(false) }
     SettingsRow(
         title = stringResource(R.string.settings_theme),
         summary = stringResource(themeMode.labelRes()),
@@ -167,7 +167,7 @@ private fun DynamicColorRow(enabled: Boolean, onEnabledChange: (Boolean) -> Unit
 
 @Composable
 private fun LanguageRow() {
-    var dialogOpen by remember { mutableStateOf(false) }
+    var dialogOpen by rememberSaveable { mutableStateOf(false) }
     val options =
         listOf(
             null to R.string.settings_language_system,
