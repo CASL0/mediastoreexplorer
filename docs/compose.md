@@ -303,6 +303,67 @@ LazyColumn(modifier = modifier.fillMaxSize()) {
 
 ---
 
+## derivedStateOf を使うべきとき
+
+`derivedStateOf` は **入力の state が、UI を更新したい頻度よりも頻繁に変化する**ときに使う。Kotlin Flow の `distinctUntilChanged` に相当し、不要な再コンポーズをフィルタリングするのが役割。
+
+> 判断基準: **入力 state が「出力したい変化」より多く変わる**なら使う。入力と出力が同じ頻度で変わるなら使わない。
+
+参考: [When should I use derivedStateOf?（Android Developers Blog）](https://medium.com/androiddevelopers/jetpack-compose-when-should-i-use-derivedstateof-63ce7954c11b)。
+
+### 使うべき例（入力 ≫ 出力）
+
+スクロール位置のように頻繁に変わる値から、稀にしか変わらない真偽値を導出する場合。
+
+```kotlin
+// firstVisibleItemIndex は 0,1,2... と頻繁に変わるが、出力 Boolean は true/false の切替のみ
+val showScrollToTop = remember {
+    derivedStateOf { lazyListState.firstVisibleItemIndex > 0 }
+}
+```
+
+入力（インデックスやスクロールオフセット）は毎フレーム変化しうるが、出力（ボタンの表示可否）はめったに変わらない。この**頻度の差**がある場面でこそ `derivedStateOf` が効く。
+
+### 使うべきでない例（入力 ＝ 出力）
+
+複数の state を単に連結・合成するだけで、出力が入力と同じ頻度で変わる場合は使わない。オーバーヘッドが増えるだけで何の効果もない。
+
+```kotlin
+// DON'T — fullName は firstName / lastName が変わるたびに必ず変わる（頻度差がない）
+val fullName = remember {
+    derivedStateOf { "$firstName $lastName" }
+}
+
+// DO — そのまま合成すればよい
+val fullName = "$firstName $lastName"
+```
+
+### state でない変数はキーに渡す
+
+`derivedStateOf` が変化を追跡するのは **Compose の state オブジェクトだけ**。通常の変数（関数引数など）は計算ブロック内で初期値のまま固定され、後から変わっても再計算されない。そうした非 state の値に依存する場合は、`remember` の **key** に渡して再初期化させる。
+
+```kotlin
+// WRONG — threshold が変わっても無視される
+val isEnabled = remember {
+    derivedStateOf { scrollPosition > threshold }
+}
+
+// CORRECT — threshold をキーにすると、変化時に derivedStateOf を作り直す
+val isEnabled = remember(threshold) {
+    derivedStateOf { scrollPosition > threshold }
+}
+```
+
+### remember(key) との使い分け
+
+| 状況 | 使うもの |
+| --- | --- |
+| key が変わるたびに UI を更新したい | `remember(key) { ... }` |
+| 入力が出力より頻繁に変わる（頻度差がある） | `remember { derivedStateOf { ... } }` |
+| 非 state の値にも依存する derived state | `remember(key) { derivedStateOf { ... } }` |
+
+---
+
 ## パーミッション要求
 
 ランタイム権限の要求は Composable 内で行い、状態ロジックを共通ゲートに集約する。
