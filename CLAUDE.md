@@ -87,6 +87,7 @@ Gradle 組み込みの `jacoco` プラグインを使用。
 - **コメントは自明でない箇所にのみ記述する。** 処理の意図や「なぜ」を説明しないコメントは書かない（例：`// リストを返す` のような自明な説明は不要）
 - **KDoc は自分が変更したコードにのみ追加する。** 変更していない既存コードに KDoc を後付けしない。追加する場合はパラメーターの制約・副作用など自明でない情報のみ記載する
 - **Android ベストプラクティスに従う。**
+  - Jetpack Compose の API 設計（命名・引数順・Modifier・状態ホイスティング・Preview 規約）は [docs/compose.md](docs/compose.md) に従う
   - UI ロジックは ViewModel に、View は状態の表示のみに徹する（Unidirectional Data Flow）
   - IO 処理は必ず `@IoDispatcher` で `withContext` を使って切り替える
   - `Context` を ViewModel に持ち込まない
