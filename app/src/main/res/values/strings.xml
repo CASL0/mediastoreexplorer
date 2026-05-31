@@ -30,6 +30,7 @@
     <!-- Table states -->
     <string name="error_message">Error: %s</string>
     <string name="no_items">No items</string>
+    <string name="scroll_to_top">Scroll to top</string>
 
     <!-- Permission screen -->
     <string name="grant_permission">Grant Permission</string>
