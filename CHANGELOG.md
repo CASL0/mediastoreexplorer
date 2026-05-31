@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.3.0](https://github.com/CASL0/mediastoreexplorer/compare/v1.2.0...v1.3.0) (2026-05-31)
+
+
+### Features
+
+* **common:** スクロールトップ用の文字列リソースを追加 ([49211c6](https://github.com/CASL0/mediastoreexplorer/commit/49211c6044fbf5a09d7c14dd903415a8b0e209ea))
+* **common:** メディアテーブルに一番上へ戻る FAB を追加 ([387418a](https://github.com/CASL0/mediastoreexplorer/commit/387418a28c5de1b7524df085ab1d68c1d3a52360))
+* **common:** メディアテーブルに一番上へ戻る FAB を追加 ([5addd1c](https://github.com/CASL0/mediastoreexplorer/commit/5addd1c5d208aa623b48ad0f90d13675152a6630))
+
 ## [1.2.0](https://github.com/CASL0/mediastoreexplorer/compare/v1.1.0...v1.2.0) (2026-05-30)
 
 
