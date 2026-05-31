@@ -23,6 +23,8 @@
 [optional footer]
 ```
 
+- **`description` および `body` は日本語で記述する。** `type` / `scope` は英語のまま使う
+
 ### type一覧
 
 | type       | 用途                                           | semver |
