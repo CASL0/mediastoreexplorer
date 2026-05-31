@@ -9,6 +9,8 @@
 
 [MediaStore](https://developer.android.com/reference/android/provider/MediaStore) のコレクション（画像・動画・音声・ダウンロード・ファイル）をタブで閲覧する Android アプリです。
 
+<a href="https://play.google.com/store/apps/details?id=io.github.casl0.mediastoreexplorer"><img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" alt="Google Play で手に入れよう" height="80"></a>
+
 ## 動作要件
 
 - Android 7.0（API 24）以降

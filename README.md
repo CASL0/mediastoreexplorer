@@ -9,6 +9,8 @@
 
 An Android app that browses [MediaStore](https://developer.android.com/reference/android/provider/MediaStore) collections — Images, Videos, Audios, Downloads, and Files — in a tabbed interface.
 
+<a href="https://play.google.com/store/apps/details?id=io.github.casl0.mediastoreexplorer"><img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" alt="Get it on Google Play" height="80"></a>
+
 ## Requirements
 
 - Android 7.0 (API 24) or later
