@@ -30,6 +30,7 @@
     <!-- テーブル状態 -->
     <string name="error_message">エラー: %s</string>
     <string name="no_items">アイテムがありません</string>
+    <string name="scroll_to_top">一番上へ戻る</string>
 
     <!-- 権限画面 -->
     <string name="grant_permission">権限を付与する</string>

@@ -1,6 +1,7 @@
 package io.github.casl0.mediastoreexplorer.ui.common
 
 import android.content.res.Configuration
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
@@ -13,18 +14,28 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PlainTooltip
+import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -36,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.casl0.mediastoreexplorer.R
 import io.github.casl0.mediastoreexplorer.ui.theme.MediaStoreExplorerTheme
+import kotlinx.coroutines.launch
 
 /**
  * sticky ヘッダーと水平スクロールを備えたメディアテーブル。
@@ -48,6 +60,7 @@ import io.github.casl0.mediastoreexplorer.ui.theme.MediaStoreExplorerTheme
  * @param isLoading データ読み込み中かどうか
  * @param error エラーメッセージ。エラーがない場合は null
  * @param modifier レイアウト調整用の [Modifier]
+ * @param listState 縦スクロール位置を保持・制御する [LazyListState]
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -58,6 +71,7 @@ fun <T> MediaTable(
     isLoading: Boolean,
     error: String?,
     modifier: Modifier = Modifier,
+    listState: LazyListState = rememberLazyListState(),
     key: (T) -> Any,
 ) {
     val scrollState: ScrollState = rememberScrollState()
@@ -82,15 +96,36 @@ fun <T> MediaTable(
             }
 
         else -> {
-            LazyColumn(modifier = modifier.fillMaxSize()) {
-                stickyHeader { MediaTableHeaderRow(columns = columns, scrollState = scrollState) }
-                itemsIndexed(items, key = { _, item -> key(item) }) { index, item ->
-                    MediaTableDataRow(
-                        item = item,
-                        columns = columns,
-                        index = index,
-                        scrollState = scrollState,
-                    )
+            val scope = rememberCoroutineScope()
+            val showScrollToTop by remember {
+                derivedStateOf { listState.firstVisibleItemIndex > 0 }
+            }
+            Box(modifier.fillMaxSize()) {
+                LazyColumn(state = listState, modifier = Modifier.fillMaxSize()) {
+                    stickyHeader {
+                        MediaTableHeaderRow(columns = columns, scrollState = scrollState)
+                    }
+                    itemsIndexed(items, key = { _, item -> key(item) }) { index, item ->
+                        MediaTableDataRow(
+                            item = item,
+                            columns = columns,
+                            index = index,
+                            scrollState = scrollState,
+                        )
+                    }
+                }
+                AnimatedVisibility(
+                    visible = showScrollToTop,
+                    modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp),
+                ) {
+                    SmallFloatingActionButton(
+                        onClick = { scope.launch { listState.animateScrollToItem(0) } }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.KeyboardArrowUp,
+                            contentDescription = stringResource(R.string.scroll_to_top),
+                        )
+                    }
                 }
             }
         }
