@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.3.1](https://github.com/CASL0/mediastoreexplorer/compare/v1.3.0...v1.3.1) (2026-07-02)
+
+
+### Bug Fixes
+
+* **deps:** update composebom to v2026.06.00 ([#70](https://github.com/CASL0/mediastoreexplorer/issues/70)) ([7d4a3d1](https://github.com/CASL0/mediastoreexplorer/commit/7d4a3d12afecf97a0521fb1a91dd0d8c104c0aef))
+* **deps:** update dependency androidx.compose:compose-bom to v2026.06.01 ([#81](https://github.com/CASL0/mediastoreexplorer/issues/81)) ([5c528c1](https://github.com/CASL0/mediastoreexplorer/commit/5c528c1d784318ae51e1e9a75e564cf276439b7b))
+* **deps:** update dependency androidx.navigation3:navigation3-runtime to v1.1.4 ([#82](https://github.com/CASL0/mediastoreexplorer/issues/82)) ([e0d1785](https://github.com/CASL0/mediastoreexplorer/commit/e0d178559e888d91dcb1a01de3ba9617b7bb7343))
+* **deps:** update nav3 to v1.1.3 ([#69](https://github.com/CASL0/mediastoreexplorer/issues/69)) ([28b65c1](https://github.com/CASL0/mediastoreexplorer/commit/28b65c188efbd66f74ec2df87eba3107762e74e1))
+
 ## [1.3.0](https://github.com/CASL0/mediastoreexplorer/compare/v1.2.0...v1.3.0) (2026-05-31)
 
 
