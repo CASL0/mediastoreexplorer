@@ -19,7 +19,7 @@ nav3 = "1.1.4"
 datastore = "1.2.1"
 appcompat = "1.7.1"
 kotlinxSerialization = "1.11.0"
-aboutLibraries = "14.2.1"
+aboutLibraries = "15.0.4"
 accompanistPermissions = "0.37.3"
 
 [libraries]
