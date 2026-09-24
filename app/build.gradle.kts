@@ -13,7 +13,7 @@ plugins {
 
 val versionMajor = 1 // x-release-please-major
 val versionMinor = 3 // x-release-please-minor
-val versionPatch = 0 // x-release-please-patch
+val versionPatch = 1 // x-release-please-patch
 
 val keystorePropertiesFile = rootProject.file("keystore.properties")
 val keystoreProperties =
